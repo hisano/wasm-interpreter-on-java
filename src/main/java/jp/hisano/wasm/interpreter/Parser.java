@@ -13,11 +13,11 @@ final class Parser {
 
 	private int readIndex;
 
-	public Parser(byte[] wasmBinary) {
+	Parser(byte[] wasmBinary) {
 		this.wasmBinary = wasmBinary;
 	}
 
-	public Module parseModule() {
+	Module parseModule() {
 		checkInt(MAGIC);
 		checkInt(VERSION);
 
@@ -31,10 +31,37 @@ final class Parser {
 				case 0x03:
 					readFunctionSection();
 					break;
+				case 0x07:
+					readExportSection();
+					break;
 			}
 		}
 
 		return module;
+	}
+
+	private void readExportSection() {
+		int length = readUnsignedLeb128();
+		for (int i = 0; i < length; i++) {
+			String name = readUtf8();
+			switch (readByte()) {
+				case 0x00:
+					module.addExportedFunction(name, readUnsignedLeb128());
+					break;
+			}
+		}
+	}
+
+	private String readUtf8() {
+		return new String(readBytes());
+	}
+
+	private byte[] readBytes() {
+		int length = readUnsignedLeb128();
+		byte[] result = new byte[length];
+		System.arraycopy(wasmBinary, readIndex, result, 0, length);
+		readIndex += length;
+		return result;
 	}
 
 	private void readFunctionSection() {

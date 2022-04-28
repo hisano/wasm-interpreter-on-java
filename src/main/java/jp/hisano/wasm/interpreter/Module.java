@@ -1,26 +1,33 @@
 package jp.hisano.wasm.interpreter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 final class Module {
 	private final List<FunctionType> functionTypes = new ArrayList<>();
 	private final List<Function> functions = new ArrayList<>();
+	private final Map<String, ExportedFunction> exportedFunctions = new HashMap<>();
 
 	void addFunctionType(ValueType[] parameterTypes, ValueType[] returnTypes) {
 		functionTypes.add(new FunctionType(parameterTypes, returnTypes));
 	}
 
-	public void addFunction(int typeIndex) {
+	void addFunction(int typeIndex) {
 		FunctionType functionType = functionTypes.get(typeIndex);
 		functions.add(new Function(functionType.parameterTypes, functionType.returnTypes));
 	}
 
-	public enum ValueType {
+	void addExportedFunction(String name, int functionIndex) {
+		exportedFunctions.put(name, new ExportedFunction(functions.get(functionIndex)));
+	}
+
+	enum ValueType {
 		I32, I64, F32, F64
 	}
 
-	private class Function {
+	class Function {
 		private final ValueType[] parameterTypes;
 		private final ValueType[] returnTypes;
 
