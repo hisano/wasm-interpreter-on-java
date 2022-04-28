@@ -23,6 +23,10 @@ final class Module {
 		exportedFunctions.put(name, new ExportedFunction(functions.get(functionIndex)));
 	}
 
+	void setFunctionBody(int functionIndex, byte[] body) {
+		functions.get(functionIndex).body = body;
+	}
+
 	enum ValueType {
 		I32, I64, F32, F64
 	}
@@ -30,6 +34,8 @@ final class Module {
 	class Function {
 		private final ValueType[] parameterTypes;
 		private final ValueType[] returnTypes;
+
+		private byte[] body;
 
 		Function(ValueType[] parameterTypes, ValueType[] returnTypes) {
 			this.parameterTypes = parameterTypes;

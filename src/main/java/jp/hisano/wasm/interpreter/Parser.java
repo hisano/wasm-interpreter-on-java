@@ -34,10 +34,21 @@ final class Parser {
 				case 0x07:
 					readExportSection();
 					break;
+				case 0x0A:
+					readCodeSection();
+					break;
 			}
 		}
 
 		return module;
+	}
+
+	private void readCodeSection() {
+		int length = readUnsignedLeb128();
+		for (int i = 0; i < length; i++) {
+			byte[] body = readBytes();
+			module.setFunctionBody(i, body);
+		}
 	}
 
 	private void readExportSection() {
