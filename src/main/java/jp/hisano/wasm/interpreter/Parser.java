@@ -28,10 +28,20 @@ final class Parser {
 				case 0x01:
 					readTypeSection();
 					break;
+				case 0x03:
+					readFunctionSection();
+					break;
 			}
 		}
 
 		return module;
+	}
+
+	private void readFunctionSection() {
+		int length = readUnsignedLeb128();
+		for (int i = 0; i < length; i++) {
+			module.addFunction(readUnsignedLeb128());
+		}
 	}
 
 	private void readTypeSection() {
