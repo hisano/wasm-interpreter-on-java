@@ -25,6 +25,10 @@ final class Parser {
 			int section = readByte();
 			int size = readUnsignedLeb128();
 			switch (section) {
+				case 0x00:
+					// ignore custom section
+					readIndex += size;
+					break;
 				case 0x01:
 					readTypeSection();
 					break;
