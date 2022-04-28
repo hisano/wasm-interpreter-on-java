@@ -1,10 +1,10 @@
 package jp.hisano.wasm.interpreter;
 
-public class Interpreter {
-	private final byte[] _wasm;
+public final class Interpreter {
+	private final Module module;
 
-	public Interpreter(byte[] wasm) {
-		_wasm = wasm;
+	public Interpreter(byte[] wasmBinary) {
+		module = new Parser(wasmBinary).parseModule();
 	}
 
 	public ExportedFunction getExportedFunction(String name) {
