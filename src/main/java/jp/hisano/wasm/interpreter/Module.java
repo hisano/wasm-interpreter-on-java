@@ -27,6 +27,10 @@ final class Module {
 		functions.get(functionIndex).body = body;
 	}
 
+	ExportedFunction getExportedFunction(String name) {
+		return exportedFunctions.get(name);
+	}
+
 	enum ValueType {
 		I32, I64, F32, F64
 	}

@@ -8,6 +8,6 @@ public final class Interpreter {
 	}
 
 	public ExportedFunction getExportedFunction(String name) {
-		return null;
+		return module.getExportedFunction(name);
 	}
 }
