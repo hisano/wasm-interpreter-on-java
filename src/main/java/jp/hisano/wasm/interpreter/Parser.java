@@ -50,8 +50,12 @@ final class Parser {
 	private void readCodeSection() {
 		int length = readUnsignedLeb128();
 		for (int i = 0; i < length; i++) {
-			byte[] body = readBytes();
-			module.setFunctionBody(i, body);
+			int size = readUnsignedLeb128();
+			int baseIndex = readIndex;
+			ValueType[] locals = readValueTypes();
+			int instructionLength = size - (readIndex - baseIndex);
+			byte[] instructions = readBytes(instructionLength);
+			module.setFunctionBody(i, locals, instructions);
 		}
 	}
 
@@ -72,7 +76,10 @@ final class Parser {
 	}
 
 	private byte[] readBytes() {
-		int length = readUnsignedLeb128();
+		return readBytes(readUnsignedLeb128());
+	}
+
+	private byte[] readBytes(int length) {
 		byte[] result = new byte[length];
 		System.arraycopy(wasmBinary, readIndex, result, 0, length);
 		readIndex += length;
@@ -100,21 +107,19 @@ final class Parser {
 	}
 
 	private void readFunctionType() {
-		module.addFunctionType(readResultTypes(), readResultTypes());
+		module.addFunctionType(readValueTypes(), readValueTypes());
 	}
 
-	private ValueType[] readResultTypes() {
+	private ValueType[] readValueTypes() {
 		int length = readUnsignedLeb128();
 		ValueType[] result = new ValueType[length];
 
-		int index = 0;
-		while (index < length) {
+		for (int i = 0; i < length; i++) {
 			switch (readByte()) {
 				case 0x7f:
-					result[index] = ValueType.I32;
+					result[i] = ValueType.I32;
 					break;
 			}
-			index++;
 		}
 
 		return result;
