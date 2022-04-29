@@ -22,7 +22,7 @@ final class Frame {
 
 	void invoke() {
 		while (true) {
-			int instruction = readByte();
+			int instruction = readUnsignedByte();
 			switch (instruction) {
 				case 0x0b: {
 					// end
@@ -68,6 +68,12 @@ final class Frame {
 					int right = popI32();
 					int left = popI32();
 					pushI32(left ^ right);
+					break;
+				}
+
+				case 0xC0: {
+					// i32.extend8_s
+					pushI32((byte)popI32());
 					break;
 				}
 
