@@ -76,6 +76,11 @@ final class Frame {
 					pushI32((byte)popI32());
 					break;
 				}
+				case 0xC1: {
+					// i32.extend16_s
+					pushI32((short)popI32());
+					break;
+				}
 
 				default: {
 					throw new UnsupportedOperationException("not implemented instruction (0x" + Integer.toHexString(instruction) + ")");
