@@ -23,10 +23,8 @@ final class Module {
 		exportedFunctions.put(name, new ExportedFunction(functions.get(functionIndex)));
 	}
 
-	void setFunctionBody(int functionIndex, ValueType[] locals, byte[] instructions) {
-		Function function = functions.get(functionIndex);
-		function.localTypes = locals;
-		function.instructions = instructions;
+	Function getFunction(int functionIndex) {
+		return functions.get(functionIndex);
 	}
 
 	ExportedFunction getExportedFunction(String name) {
@@ -47,6 +45,11 @@ final class Module {
 		Function(ValueType[] parameterTypes, ValueType[] returnTypes) {
 			this.parameterTypes = parameterTypes;
 			this.returnTypes = returnTypes;
+		}
+
+		void setBody(ValueType[] localTypes, byte[] instructions) {
+			this.localTypes = localTypes;
+			this.instructions = instructions;
 		}
 	}
 

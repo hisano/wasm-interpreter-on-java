@@ -71,10 +71,10 @@ final class Parser {
 		for (int i = 0; i < length; i++) {
 			int size = readUnsignedLeb128();
 			int baseIndex = readIndex;
-			ValueType[] locals = readValueTypes();
+			ValueType[] localTypes = readValueTypes();
 			int instructionLength = size - (readIndex - baseIndex);
 			byte[] instructions = readBytes(instructionLength);
-			module.setFunctionBody(i, locals, instructions);
+			module.getFunction(i).setBody(localTypes, instructions);
 		}
 	}
 
