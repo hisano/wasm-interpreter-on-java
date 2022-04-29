@@ -42,4 +42,16 @@ class InterpreterTest {
 
 		assertEquals((int)expectedValue, resultValue);
 	}
+
+	@ParameterizedTest(name = "{0} - {1} = {2} (i32)")
+	@CsvSource({
+			"1,1,0",
+	})
+	void sub(long first, long second, long expectedValue) throws IOException {
+		Interpreter interpreter = createInterpreter("spec/i32.0.wasm");
+
+		int resultValue = (Integer) interpreter.getExportedFunction("sub").invoke((int)first, (int)second);
+
+		assertEquals((int)expectedValue, resultValue);
+	}
 }

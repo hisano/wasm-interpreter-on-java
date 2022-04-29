@@ -22,22 +22,32 @@ final class Frame {
 
 	void invoke() {
 		while (true) {
-			switch (readByte()) {
-				case 0x20: {
-					// local.get
-					i32Stack[stackIndex++] = i32Locals[readUnsignedLeb128()];
-					break;
-				}
-				case 0x6a: {
-					// i32.add
-					int baseIndex = stackIndex - 2;
-					i32Stack[baseIndex] = i32Stack[baseIndex] + i32Stack[baseIndex + 1];
-					stackIndex = baseIndex + 1;
-					break;
-				}
+			int instruction = readByte();
+			switch (instruction) {
 				case 0x0b: {
 					// end
 					return;
+				}
+
+				case 0x20: {
+					// local.get
+					pushI32(i32Locals[readUnsignedLeb128()]);
+					break;
+				}
+
+				case 0x6a: {
+					// i32.add
+					pushI32(popI32() + popI32());
+					break;
+				}
+				case 0x6b: {
+					// i32.sub
+					pushI32(popI32() - popI32());
+					break;
+				}
+
+				default: {
+					throw new UnsupportedOperationException("not implemented instruction (0x" + Integer.toHexString(instruction) + ")");
 				}
 			}
 		}
@@ -71,5 +81,9 @@ final class Frame {
 
 	int popI32() {
 		return i32Stack[--stackIndex];
+	}
+
+	void pushI32(int value) {
+		i32Stack[stackIndex++] = value;
 	}
 }
