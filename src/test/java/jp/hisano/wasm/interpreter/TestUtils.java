@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 final class TestUtils {
 	static void calculate(String operatorName, long value, long expectedValue) throws IOException {
-		Interpreter interpreter = createInterpreter("spec/i32.0.wasm");
+		Interpreter interpreter = createInterpreter("spec/i32/i32.0.wasm");
 
 		int resultValue = (Integer) interpreter.getExportedFunction(operatorName).invoke((int)value);
 
@@ -15,7 +15,7 @@ final class TestUtils {
 	}
 
 	static void calculate(String operatorName, long first, long second, long expectedValue) throws IOException {
-		Interpreter interpreter = createInterpreter("spec/i32.0.wasm");
+		Interpreter interpreter = createInterpreter("spec/i32/i32.0.wasm");
 
 		int resultValue = (Integer) interpreter.getExportedFunction(operatorName).invoke((int)first, (int)second);
 
