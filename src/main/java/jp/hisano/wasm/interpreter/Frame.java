@@ -1,5 +1,7 @@
 package jp.hisano.wasm.interpreter;
 
+import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
+
 final class Frame {
 	private final int[] i32Locals;
 	private final byte[] instructions;
@@ -23,7 +25,7 @@ final class Frame {
 			switch (readByte()) {
 				case 0x20: {
 					// local.get
-					i32Stack[stackIndex++] = i32Locals[readByte()];
+					i32Stack[stackIndex++] = i32Locals[readUnsignedLeb128()];
 					break;
 				}
 				case 0x6a: {
@@ -43,6 +45,28 @@ final class Frame {
 
 	private byte readByte() {
 		return instructions[pc++];
+	}
+
+	private int readUnsignedByte() {
+		return readByte() & 0xff;
+	}
+
+	private int readUnsignedLeb128() {
+		int result = 0;
+
+		int value;
+		int index = 0;
+		do {
+			value = readUnsignedByte();
+			result |= (value & 0x7f) << (index * 7);
+			index++;
+		} while (((value & 0x80) != 0) && index < 5);
+
+		if ((value & 0x80) != 0) {
+			throw new InterpreterException(ILLEGAL_BINARY);
+		}
+
+		return result;
 	}
 
 	int popI32() {
