@@ -4,7 +4,7 @@ public final class Interpreter {
 	private final Module module;
 
 	public Interpreter(byte[] wasmBinary) {
-		module = new Parser(wasmBinary).parseModule();
+		module = new Parser(wasmBinary).parse();
 	}
 
 	public ExportedFunction getExportedFunction(String name) {

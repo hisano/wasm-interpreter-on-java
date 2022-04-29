@@ -1,91 +1,159 @@
 package jp.hisano.wasm.interpreter;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import static java.lang.Integer.*;
 import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
+import jp.hisano.wasm.interpreter.Module.End;
+import jp.hisano.wasm.interpreter.Module.Function;
+import jp.hisano.wasm.interpreter.Module.FunctionBlock;
+import jp.hisano.wasm.interpreter.Module.I32Add;
+import jp.hisano.wasm.interpreter.Module.I32DivS;
+import jp.hisano.wasm.interpreter.Module.I32Extend16S;
+import jp.hisano.wasm.interpreter.Module.I32Extend8S;
+import jp.hisano.wasm.interpreter.Module.I32Mul;
+import jp.hisano.wasm.interpreter.Module.I32Sub;
+import jp.hisano.wasm.interpreter.Module.I32Xor;
+import jp.hisano.wasm.interpreter.Module.Instruction;
+import jp.hisano.wasm.interpreter.Module.LocalGet;
 import jp.hisano.wasm.interpreter.Module.ValueType;
 
 final class Parser {
 	private static final int MAGIC = 0x6d736100; // = "\0asm"
 	private static final int VERSION = 1;
 
-	private final byte[] wasmBinary;
+	private final ByteBuffer wasmFileContent;
 
 	private final Module module = new Module();
 
-	private int readIndex;
-
-	Parser(byte[] wasmBinary) {
-		this.wasmBinary = wasmBinary;
+	Parser(byte[] wasmFileContent) {
+		this.wasmFileContent = new ByteBuffer(wasmFileContent);
 	}
 
-	Module parseModule() {
+	Module parse() {
 		checkInt(MAGIC);
 		checkInt(VERSION);
 
-		while (canRead()) {
-			int section = readByte();
-			int size = readUnsignedLeb128();
+		while (wasmFileContent.canRead()) {
+			int section = wasmFileContent.readByte();
+			int size = wasmFileContent.readUnsignedLeb128();
 			switch (section) {
 				case 0x00:
 					// ignore custom section
-					readIndex += size;
+					wasmFileContent.skipBytes(size);
 					break;
 				case 0x01:
-					readTypeSection();
+					parseTypeSection();
 					break;
 				case 0x03:
-					readFunctionSection();
+					parseFunctionSection();
 					break;
 				case 0x04:
 					// TODO Tableセクションの読み込み
-					readIndex += size;
+					wasmFileContent.skipBytes(size);
 					break;
 				case 0x05:
 					// TODO Memoryセクションの読み込み
-					readIndex += size;
+					wasmFileContent.skipBytes(size);
 					break;
 				case 0x06:
 					// TODO Globalセクションの読み込み
-					readIndex += size;
+					wasmFileContent.skipBytes(size);
 					break;
 				case 0x07:
-					readExportSection();
+					parseExportSection();
 					break;
 				case 0x09:
 					// TODO Elementセクションの読み込み
-					readIndex += size;
+					wasmFileContent.skipBytes(size);
 					break;
 				case 0x0A:
-					readCodeSection();
+					parseCodeSection();
 					break;
 				default:
-					throw new UnsupportedOperationException("not implemented section (0x" + toHexString(section) + "): readIndex = 0x" + toHexString(readIndex));
+					throw new UnsupportedOperationException("not implemented section (0x" + toHexString(section) + "): readIndex = 0x" + toHexString(wasmFileContent.getPosition()));
 			}
 		}
 
 		return module;
 	}
 
-	private void readCodeSection() {
-		int length = readUnsignedLeb128();
-		for (int i = 0; i < length; i++) {
-			int size = readUnsignedLeb128();
-			int baseIndex = readIndex;
-			ValueType[] localTypes = readValueTypes();
-			int instructionLength = size - (readIndex - baseIndex);
-			byte[] instructions = readBytes(instructionLength);
-			module.getFunction(i).setBody(localTypes, instructions);
+	private void checkInt(int expectedValue) {
+		if (wasmFileContent.readInt() != expectedValue) {
+			throw new InterpreterException(ILLEGAL_BINARY);
 		}
 	}
 
-	private void readExportSection() {
-		int length = readUnsignedLeb128();
+	private void parseCodeSection() {
+		int length = wasmFileContent.readUnsignedLeb128();
 		for (int i = 0; i < length; i++) {
-			String name = readUtf8();
-			int kind = readByte();
+			int size = wasmFileContent.readUnsignedLeb128();
+			int baseIndex = wasmFileContent.getPosition();
+			ValueType[] localTypes = parseValueTypes();
+			int instructionLength = size - (wasmFileContent.getPosition() - baseIndex);
+			byte[] instructions = wasmFileContent.readBytes(instructionLength);
+			Function function = module.getFunction(i);
+			function.setBody(localTypes, parseFunctionBlock(function, instructions));
+		}
+	}
+
+	private FunctionBlock parseFunctionBlock(Function function, byte[] instructions) {
+		FunctionBlock result = new FunctionBlock(function);
+		result.setInstructions(parseInstructions(new ByteBuffer(instructions)));
+		return result;
+	}
+
+	private List<Instruction> parseInstructions(ByteBuffer byteBuffer) {
+		List<Instruction> result = new LinkedList<>();
+		while (true) {
+			int instruction = byteBuffer.readUnsignedByte();
+			switch (instruction) {
+				case 0x0b:
+					result.add(new End());
+					return result;
+
+				case 0x20:
+					result.add(new LocalGet(byteBuffer.readUnsignedLeb128()));
+					break;
+
+				case 0x6a:
+					result.add(new I32Add());
+					break;
+				case 0x6b:
+					result.add(new I32Sub());
+					break;
+				case 0x6c:
+					result.add(new I32Mul());
+					break;
+				case 0x6d:
+					result.add(new I32DivS());
+					break;
+				case 0x73:
+					result.add(new I32Xor());
+					break;
+
+				case 0xC0:
+					result.add(new I32Extend8S());
+					break;
+				case 0xC1:
+					result.add(new I32Extend16S());
+					break;
+
+//				default:
+//					throw new UnsupportedOperationException("not implemented instruction: instruction = 0x" + toHexString(instruction) + ", readIndex = " + byteBuffer.getPosition());
+			}
+		}
+	}
+
+	private void parseExportSection() {
+		int length = wasmFileContent.readUnsignedLeb128();
+		for (int i = 0; i < length; i++) {
+			String name = wasmFileContent.readUtf8();
+			int kind = wasmFileContent.readByte();
 			switch (kind) {
 				case 0x00:
-					module.addExportedFunction(name, readUnsignedLeb128());
+					module.addExportedFunction(name, wasmFileContent.readUnsignedLeb128());
 					break;
 
 				default:
@@ -94,95 +162,40 @@ final class Parser {
 		}
 	}
 
-	private String readUtf8() {
-		return new String(readBytes());
-	}
-
-	private byte[] readBytes() {
-		return readBytes(readUnsignedLeb128());
-	}
-
-	private byte[] readBytes(int length) {
-		byte[] result = new byte[length];
-		System.arraycopy(wasmBinary, readIndex, result, 0, length);
-		readIndex += length;
-		return result;
-	}
-
-	private void readFunctionSection() {
-		int length = readUnsignedLeb128();
+	private void parseFunctionSection() {
+		int length = wasmFileContent.readUnsignedLeb128();
 		for (int i = 0; i < length; i++) {
-			module.addFunction(readUnsignedLeb128());
+			module.addFunction(wasmFileContent.readUnsignedLeb128());
 		}
 	}
 
-	private void readTypeSection() {
-		int length = readUnsignedLeb128();
+	private void parseTypeSection() {
+		int length = wasmFileContent.readUnsignedLeb128();
 		int index = 0;
 		while (index < length) {
-			switch (readByte()) {
+			switch (wasmFileContent.readByte()) {
 				case 0x60:
-					readFunctionType();
+					parseFunctionType();
 					break;
 			}
 			index++;
 		}
 	}
 
-	private void readFunctionType() {
-		module.addFunctionType(readValueTypes(), readValueTypes());
+	private void parseFunctionType() {
+		module.addFunctionType(parseValueTypes(), parseValueTypes());
 	}
 
-	private ValueType[] readValueTypes() {
-		int length = readUnsignedLeb128();
+	private ValueType[] parseValueTypes() {
+		int length = wasmFileContent.readUnsignedLeb128();
 		ValueType[] result = new ValueType[length];
 
 		for (int i = 0; i < length; i++) {
-			switch (readByte()) {
+			switch (wasmFileContent.readByte()) {
 				case 0x7f:
 					result[i] = ValueType.I32;
 					break;
 			}
-		}
-
-		return result;
-	}
-
-	private boolean canRead() {
-		return readIndex < wasmBinary.length; 
-	}
-
-	private void checkInt(int expectedValue) {
-		if (readInt() != expectedValue) {
-			throw new InterpreterException(ILLEGAL_BINARY);
-		}
-	}
-
-	private int readInt() {
-		return readUnsignedByte() | (readUnsignedByte() << 8) | (readUnsignedLeb128() << 16) | (readUnsignedByte() << 24);
-	}
-
-	private int readByte() {
-		return wasmBinary[readIndex++];
-	}
-
-	private int readUnsignedByte() {
-		return readByte() & 0xff;
-	}
-
-	private int readUnsignedLeb128() {
-		int result = 0;
-
-		int value;
-		int index = 0;
-		do {
-			value = readUnsignedByte();
-			result |= (value & 0x7f) << (index * 7);
-			index++;
-		} while (((value & 0x80) != 0) && index < 5);
-
-		if ((value & 0x80) != 0) {
-			throw new InterpreterException(ILLEGAL_BINARY);
 		}
 
 		return result;

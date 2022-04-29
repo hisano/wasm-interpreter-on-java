@@ -14,15 +14,15 @@ public final class ExportedFunction {
 		for (int i = 0; i < parameters.length; i++) {
 			Object parameter = parameters[i];
 			if (parameter instanceof Integer) {
-				frame.setLocal(i, (Integer)parameter);
+				frame.setLocalVariable(i, (Integer)parameter);
 			}
 		}
 
-		frame.invoke();
+		function.execute(frame);
 
 		switch (function.returnTypes[0]) {
 			case I32:
-				return frame.popI32();
+				return frame.pop();
 			default:
 				return null;
 		}
