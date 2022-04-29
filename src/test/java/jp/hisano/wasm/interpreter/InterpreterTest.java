@@ -36,11 +36,7 @@ class InterpreterTest {
 		"1073741823,1,1073741824",
 	})
 	void add(long first, long second, long expectedValue) throws IOException {
-		Interpreter interpreter = createInterpreter("spec/i32.0.wasm");
-
-		int resultValue = (Integer) interpreter.getExportedFunction("add").invoke((int)first, (int)second);
-
-		assertEquals((int)expectedValue, resultValue);
+		calculate("add", first, second, expectedValue);
 	}
 
 	@ParameterizedTest(name = "{0} - {1} = {2} (i32)")
@@ -49,11 +45,7 @@ class InterpreterTest {
 		"1,0,1",
 	})
 	void sub(long first, long second, long expectedValue) throws IOException {
-		Interpreter interpreter = createInterpreter("spec/i32.0.wasm");
-
-		int resultValue = (Integer) interpreter.getExportedFunction("sub").invoke((int)first, (int)second);
-
-		assertEquals((int)expectedValue, resultValue);
+		calculate("sub", first, second, expectedValue);
 	}
 
 	@ParameterizedTest(name = "{0} / {1} = {2} (i32.div_s)")
@@ -63,9 +55,13 @@ class InterpreterTest {
 		"2147483648,2,3221225472",
 	})
 	void div_s(long first, long second, long expectedValue) throws IOException {
+		calculate("div_s", first, second, expectedValue);
+	}
+
+	private void calculate(String operatorName, long first, long second, long expectedValue) throws IOException {
 		Interpreter interpreter = createInterpreter("spec/i32.0.wasm");
 
-		int resultValue = (Integer) interpreter.getExportedFunction("div_s").invoke((int)first, (int)second);
+		int resultValue = (Integer) interpreter.getExportedFunction(operatorName).invoke((int)first, (int)second);
 
 		assertEquals((int)expectedValue, resultValue);
 	}
