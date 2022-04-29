@@ -37,12 +37,16 @@ final class Frame {
 
 				case 0x6a: {
 					// i32.add
-					pushI32(popI32() + popI32());
+					int right = popI32();
+					int left = popI32();
+					pushI32(left + right);
 					break;
 				}
 				case 0x6b: {
 					// i32.sub
-					pushI32(popI32() - popI32());
+					int right = popI32();
+					int left = popI32();
+					pushI32(left - right);
 					break;
 				}
 
