@@ -63,6 +63,13 @@ final class Frame {
 					pushI32(left / right);
 					break;
 				}
+				case 0x73: {
+					// i32.xor
+					int right = popI32();
+					int left = popI32();
+					pushI32(left ^ right);
+					break;
+				}
 
 				default: {
 					throw new UnsupportedOperationException("not implemented instruction (0x" + Integer.toHexString(instruction) + ")");

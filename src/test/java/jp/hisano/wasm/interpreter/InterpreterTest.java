@@ -74,6 +74,23 @@ class InterpreterTest {
 		calculate("div_s", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "{0} ^ {1} = {2} (i32.xor)")
+	@CsvSource({
+		"1,0,1",
+		"0,1,1",
+		"1,1,0",
+		"0,0,0",
+		"2147483647,2147483648,4294967295",
+		"2147483648,0,2147483648",
+		"4294967295,2147483648,2147483647",
+		"4294967295,2147483647,2147483648",
+		"4042326015,4294963440,252645135",
+		"4294967295,4294967295,0",
+	})
+	void xor(long first, long second, long expectedValue) throws IOException {
+		calculate("xor", first, second, expectedValue);
+	}
+
 	private void calculate(String operatorName, long first, long second, long expectedValue) throws IOException {
 		Interpreter interpreter = createInterpreter("spec/i32.0.wasm");
 
