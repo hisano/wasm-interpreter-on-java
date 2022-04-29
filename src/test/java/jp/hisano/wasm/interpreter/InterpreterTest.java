@@ -45,12 +45,27 @@ class InterpreterTest {
 
 	@ParameterizedTest(name = "{0} - {1} = {2} (i32)")
 	@CsvSource({
-			"1,1,0",
+		"1,1,0",
+		"1,0,1",
 	})
 	void sub(long first, long second, long expectedValue) throws IOException {
 		Interpreter interpreter = createInterpreter("spec/i32.0.wasm");
 
 		int resultValue = (Integer) interpreter.getExportedFunction("sub").invoke((int)first, (int)second);
+
+		assertEquals((int)expectedValue, resultValue);
+	}
+
+	@ParameterizedTest(name = "{0} / {1} = {2} (i32.div_s)")
+	@CsvSource({
+		"1,1,1",
+		"0,1,0",
+		"2147483648,2,3221225472",
+	})
+	void div_s(long first, long second, long expectedValue) throws IOException {
+		Interpreter interpreter = createInterpreter("spec/i32.0.wasm");
+
+		int resultValue = (Integer) interpreter.getExportedFunction("div_s").invoke((int)first, (int)second);
 
 		assertEquals((int)expectedValue, resultValue);
 	}
