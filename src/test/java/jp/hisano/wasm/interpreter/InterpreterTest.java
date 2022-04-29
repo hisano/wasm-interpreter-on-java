@@ -48,6 +48,22 @@ class InterpreterTest {
 		calculate("sub", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "{0} * {1} = {2} (i32.mul)")
+	@CsvSource({
+		"1,1,1",
+		"1,0,0",
+		"4294967295,4294967295,1",
+		"268435456,4096,0",
+		"2147483648,0,0",
+		"2147483648,4294967295,2147483648",
+		"2147483647,4294967295,2147483649",
+		"19088743,1985229328,898528368",
+		"2147483647,2147483647,1",
+	})
+	void mul(long first, long second, long expectedValue) throws IOException {
+		calculate("mul", first, second, expectedValue);
+	}
+
 	@ParameterizedTest(name = "{0} / {1} = {2} (i32.div_s)")
 	@CsvSource({
 		"1,1,1",

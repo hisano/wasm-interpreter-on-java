@@ -49,6 +49,13 @@ final class Frame {
 					pushI32(left - right);
 					break;
 				}
+				case 0x6c: {
+					// i32.mul
+					int right = popI32();
+					int left = popI32();
+					pushI32(left * right);
+					break;
+				}
 				case 0x6d: {
 					// i32.div_s
 					int right = popI32();
