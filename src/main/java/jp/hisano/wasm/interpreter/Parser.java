@@ -1,5 +1,6 @@
 package jp.hisano.wasm.interpreter;
 
+import static java.lang.Integer.*;
 import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
 import jp.hisano.wasm.interpreter.Module.ValueType;
 
@@ -35,12 +36,30 @@ final class Parser {
 				case 0x03:
 					readFunctionSection();
 					break;
+				case 0x04:
+					// TODO Tableセクションの読み込み
+					readIndex += size;
+					break;
+				case 0x05:
+					// TODO Memoryセクションの読み込み
+					readIndex += size;
+					break;
+				case 0x06:
+					// TODO Globalセクションの読み込み
+					readIndex += size;
+					break;
 				case 0x07:
 					readExportSection();
+					break;
+				case 0x09:
+					// TODO Elementセクションの読み込み
+					readIndex += size;
 					break;
 				case 0x0A:
 					readCodeSection();
 					break;
+				default:
+					throw new UnsupportedOperationException("not implemented section (0x" + toHexString(section) + "): readIndex = 0x" + toHexString(readIndex));
 			}
 		}
 
@@ -63,10 +82,14 @@ final class Parser {
 		int length = readUnsignedLeb128();
 		for (int i = 0; i < length; i++) {
 			String name = readUtf8();
-			switch (readByte()) {
+			int kind = readByte();
+			switch (kind) {
 				case 0x00:
 					module.addExportedFunction(name, readUnsignedLeb128());
 					break;
+
+				default:
+					throw new UnsupportedOperationException("not implemented kind (0x" + toHexString(kind) + ")");
 			}
 		}
 	}
