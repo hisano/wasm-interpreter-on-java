@@ -10,6 +10,21 @@ public final class ExportedFunction {
 	}
 
 	public Object invoke(Object... parameters) {
-		return 0;
+		Frame frame = new Frame(function);
+		for (int i = 0; i < parameters.length; i++) {
+			Object parameter = parameters[i];
+			if (parameter instanceof Integer) {
+				frame.setLocal(i, (Integer)parameter);
+			}
+		}
+
+		frame.invoke();
+
+		switch (function.returnTypes[0]) {
+			case I32:
+				return frame.popI32();
+			default:
+				return null;
+		}
 	}
 }

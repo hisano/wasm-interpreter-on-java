@@ -25,7 +25,7 @@ final class Module {
 
 	void setFunctionBody(int functionIndex, ValueType[] locals, byte[] instructions) {
 		Function function = functions.get(functionIndex);
-		function.locals = locals;
+		function.localTypes = locals;
 		function.instructions = instructions;
 	}
 
@@ -38,11 +38,11 @@ final class Module {
 	}
 
 	class Function {
-		private final ValueType[] parameterTypes;
-		private final ValueType[] returnTypes;
+		final ValueType[] parameterTypes;
+		final ValueType[] returnTypes;
 
-		private ValueType[] locals;
-		private byte[] instructions;
+		ValueType[] localTypes;
+		byte[] instructions;
 
 		Function(ValueType[] parameterTypes, ValueType[] returnTypes) {
 			this.parameterTypes = parameterTypes;
