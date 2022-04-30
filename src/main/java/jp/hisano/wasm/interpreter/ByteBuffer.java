@@ -33,6 +33,22 @@ final class ByteBuffer {
 		return result;
 	}
 
+	byte readUint1() {
+		return bytes[readIndex++];
+	}
+
+	byte readVarsint7() {
+		return bytes[readIndex++];
+	}
+
+	int readVarsint32() {
+		return readUnsignedLeb128();
+	}
+
+	int readVaruint32() {
+		return readUnsignedLeb128();
+	}
+
 	int readUnsignedLeb128() {
 		int result = 0;
 

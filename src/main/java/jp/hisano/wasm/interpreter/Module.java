@@ -36,10 +36,10 @@ final class Module {
 	}
 
 	enum ValueType {
-		I32, I64, F32, F64, VOID
+		I32, I64, F32, F64, VOID,
 	}
 
-	static class Value {
+	static class Variable {
 		private final ValueType valueType;
 
 		private int i32Value;
@@ -47,7 +47,7 @@ final class Module {
 		private float f32Value;
 		private double f64Value;
 
-		Value(ValueType valueType) {
+		Variable(ValueType valueType) {
 			this.valueType = valueType;
 		}
 
@@ -123,7 +123,7 @@ final class Module {
 		void execute(Frame frame);
 	}
 
-	private abstract static class BlockEndMarker implements Instruction {
+	abstract static class BlockEndMarker implements Instruction {
 		@Override
 		public void execute(Frame frame) {
 		}
@@ -377,22 +377,22 @@ final class Module {
 		}
 	}
 
-	final static class LoopBlock extends OneChildBlock {
+	final static class Loop extends OneChildBlock {
 		private final ValueType resultValueType;
 
-		LoopBlock(AbstractBlock parent, ValueType resultValueType) {
+		Loop(AbstractBlock parent, ValueType resultValueType) {
 			super(parent, true);
 			this.resultValueType = resultValueType;
 		}
 	}
 
-	final static class IfBlock extends AbstractBlock {
+	final static class If extends AbstractBlock {
 		private List<Instruction> thenInstructions;
 		private List<Instruction> elseInstructions;
 
 		private final ValueType resultValueType;
 
-		IfBlock(AbstractBlock parent, ValueType resultValueType) {
+		If(AbstractBlock parent, ValueType resultValueType) {
 			super(parent);
 			this.resultValueType = resultValueType;
 		}
