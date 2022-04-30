@@ -242,7 +242,7 @@ class I32Test {
 	}
 
 	@DisplayName("i32.eqz")
-	@ParameterizedTest(name = "eqz({0}) = {1}")
+	@ParameterizedTest(name = "({0} == 0) = {1}")
 	@CsvSource({
 		"0,1",
 		"1,0",
@@ -250,6 +250,17 @@ class I32Test {
 	})
 	void eqz(long value, long expectedValue) throws IOException {
 		invoke("eqz", value, expectedValue);
+	}
+
+	@DisplayName("i32.eq")
+	@ParameterizedTest(name = "({0} == {1}) = {2}")
+	@CsvSource({
+		"0,0,1",
+		"1,1,1",
+		"4294967295,1,0"
+	})
+	void eq(long first, long second, long expectedValue) throws IOException {
+		invoke("eq", first, second, expectedValue);
 	}
 
 	private static void invoke(String operatorName, long value, long expectedValue) throws IOException {
