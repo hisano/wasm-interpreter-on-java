@@ -16,7 +16,7 @@ public final class ExportedFunction {
 		for (int i = 0; i < parameters.length; i++) {
 			Object parameter = parameters[i];
 			if (parameter instanceof Integer) {
-				frame.setLocalVariable(i, (Integer)parameter);
+				frame.getLocalVariable(i).setI32((Integer)parameter);
 			}
 		}
 

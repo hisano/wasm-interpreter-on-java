@@ -39,6 +39,27 @@ final class Module {
 		I32, I64, F32, F64, VOID
 	}
 
+	static class Value {
+		private final ValueType valueType;
+
+		private int i32Value;
+		private long i64Value;
+		private float f32Value;
+		private double f64Value;
+
+		Value(ValueType valueType) {
+			this.valueType = valueType;
+		}
+
+		void setI32(int newValue) {
+			i32Value = newValue;
+		}
+
+		int getI32() {
+			return i32Value;
+		}
+	}
+
 	class Function {
 		final ValueType[] parameterTypes;
 		final ValueType[] returnTypes;
@@ -70,7 +91,7 @@ final class Module {
 			for (int i = parameterTypes.length - 1; 0 <= i; i--) {
 				switch (parameterTypes[i]) {
 					case I32:
-						frame.setLocalVariable(i, parent.pop());
+						frame.getLocalVariable(i).setI32(parent.pop());
 						break;
 				}
 			}
@@ -198,7 +219,7 @@ final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			frame.push(frame.getLocalVariable(index));
+			frame.push(frame.getLocalVariable(index).getI32());
 		}
 	}
 

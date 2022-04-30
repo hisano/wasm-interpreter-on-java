@@ -1,17 +1,22 @@
 package jp.hisano.wasm.interpreter;
 
 import jp.hisano.wasm.interpreter.Module.Function;
+import jp.hisano.wasm.interpreter.Module.Value;
 
 final class Frame {
 	private final Module module;
-	private final int[] localVariables;
+	private final Value[] localVariables;
 
 	private final int[] stack = new int[256];
 	private int stackIndex = 0;
 
 	Frame(Module module, Function function) {
 		this.module = module;
-		localVariables = new int[function.parameterTypes.length];
+
+		localVariables = new Value[function.parameterTypes.length];
+		for (int i = 0; i < localVariables.length; i++) {
+			localVariables[i] = new Value(function.parameterTypes[i]);
+		}
 	}
 
 	Module getModule() {
@@ -26,11 +31,7 @@ final class Frame {
 		stack[stackIndex++] = value;
 	}
 
-	void setLocalVariable(int index, int value) {
-		localVariables[index] = value;
-	}
-
-	int getLocalVariable(int index) {
+	Value getLocalVariable(int index) {
 		return localVariables[index];
 	}
 
