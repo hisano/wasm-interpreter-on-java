@@ -352,6 +352,19 @@ class I32Test {
 		invoke("gt_u", first, second, expectedValue);
 	}
 
+	@DisplayName("i32.ge_s")
+	@ParameterizedTest(name = "({0} >= {1}) = {2}")
+	@CsvSource({
+		"0,0,1",
+		"1,1,1",
+		"4294967295,1,0",
+		"1,0,1",
+		"0,1,0",
+	})
+	void ge_s(long first, long second, long expectedValue) throws IOException {
+		invoke("ge_s", first, second, expectedValue);
+	}
+
 	private static void invoke(String operatorName, long value, long expectedValue) throws IOException {
 		int resultValue = createInterpreter("spec/i32/i32.0.wasm").invoke(operatorName, (int) value);
 		assertEquals((int)expectedValue, resultValue);
