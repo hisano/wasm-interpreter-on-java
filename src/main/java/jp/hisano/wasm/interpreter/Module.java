@@ -128,7 +128,10 @@ public final class Module {
 			for (int i = parameterTypes.length - 1; 0 <= i; i--) {
 				switch (parameterTypes[i]) {
 					case I32:
-						frame.getLocalVariable(i).getValue().setI32(parent.pop());
+						frame.getLocalVariable(i).getValue().setI32(parent.pop().getI32());
+						break;
+					case I64:
+						frame.getLocalVariable(i).getValue().setI64(parent.pop().getI64());
 						break;
 				}
 			}
@@ -141,7 +144,11 @@ public final class Module {
 
 			switch (returnTypes[0]) {
 				case I32:
-					parent.push(frame.pop());
+					parent.pushI32(frame.pop().getI32());
+					break;
+				case I64:
+					parent.pushI64(frame.pop().getI64());
+					break;
 			}
 		}
 	}
@@ -221,7 +228,7 @@ public final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			if (frame.pop() != 0) {
+			if (frame.pop().getI32() != 0) {
 				frame.throwExceptionToExitBlock(depth);
 			}
 		}
@@ -238,7 +245,7 @@ public final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			int index = frame.pop();
+			int index = frame.pop().getI32();
 			if (index < depths.length) {
 				frame.throwExceptionToExitBlock(depths[index]);
 			} else {
@@ -263,7 +270,15 @@ public final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			frame.push(frame.getLocalVariable(index).getValue().getI32());
+			Value value = frame.getLocalVariable(index).getValue();
+			switch (value.getType()) {
+				case I32:
+					frame.pushI32(value.getI32());
+					return;
+				case I64:
+					frame.pushI64(value.getI64());
+					return;
+			}
 		}
 	}
 
@@ -276,7 +291,7 @@ public final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			frame.push(frame.getInstance().getGlobalVariable(index).getValue().getI32());
+			frame.pushI32(frame.getInstance().getGlobalVariable(index).getValue().getI32());
 		}
 	}
 
@@ -289,7 +304,7 @@ public final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			frame.push(value);
+			frame.pushI32(value);
 		}
 	}
 
@@ -332,79 +347,97 @@ public final class Module {
 		}
 	}
 
-	private static abstract class TwoOperandNumericOperator implements Instruction {
+	private static abstract class I32TwoOperandsOperator implements Instruction {
 		@Override
 		public void execute(Frame frame) {
-			int second = frame.pop();
-			int first = frame.pop();
-			frame.push(calculate(first, second));
+			int second = frame.pop().getI32();
+			int first = frame.pop().getI32();
+			frame.pushI32(calculate(first, second));
 		}
 
 		abstract int calculate(int first, int second);
 	}
 
-	final static class I32Ctz extends NumericConverter {
+	final static class I32Ctz extends I32Converter {
 		@Override
 		int convert(int value) {
 			return numberOfTrailingZeros(value);
 		}
 	}
 
-	final static class I32Add extends TwoOperandNumericOperator {
+	final static class I32Add extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
 			return first + second;
 		}
 	}
 
-	final static class I32Sub extends TwoOperandNumericOperator {
+	final static class I32Sub extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
 			return first - second;
 		}
 	}
 
-	final static class I32Mul extends TwoOperandNumericOperator {
+	final static class I32Mul extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
 			return first * second;
 		}
 	}
 
-	final static class I32DivS extends TwoOperandNumericOperator {
+	final static class I32DivS extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
 			return first / second;
 		}
 	}
 
-	final static class I32Xor extends TwoOperandNumericOperator {
+	final static class I32Xor extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
 			return first ^ second;
 		}
 	}
 
-	private static abstract class NumericConverter implements Instruction {
+	private static abstract class I32Converter implements Instruction {
 		@Override
 		public void execute(Frame frame) {
-			frame.push(convert(frame.pop()));
+			frame.pushI32(convert(frame.pop().getI32()));
 		}
 
 		abstract int convert(int value);
 	}
 
-	final static class I32Extend8S extends NumericConverter {
+	final static class I32Extend8S extends I32Converter {
 		@Override
 		int convert(int value) {
 			return (byte)value;
 		}
 	}
 
-	final static class I32Extend16S extends NumericConverter {
+	final static class I32Extend16S extends I32Converter {
 		@Override
 		int convert(int value) {
 			return (short)value;
+		}
+	}
+
+	private static abstract class I64TwoOperandsOperator implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			long second = frame.pop().getI64();
+			long first = frame.pop().getI64();
+			frame.pushI64(calculate(first, second));
+		}
+
+		abstract long calculate(long first, long second);
+	}
+
+	final static class I64Add extends I64TwoOperandsOperator {
+		@Override
+		long calculate(long first, long second) {
+			return first + second;
 		}
 	}
 
@@ -514,7 +547,7 @@ public final class Module {
 		@Override
 		public void execute(Frame frame) {
 			try {
-				if (frame.pop() != 0) {
+				if (frame.pop().getI32() != 0) {
 					thenInstructions.forEach(instruction -> {
 						instruction.execute(frame);
 					});

@@ -28,7 +28,7 @@ public final class Instance {
 					instructions.forEach(instruction -> {
 						instruction.execute(frame);
 					});
-					globalVariable.getValue().setI32(frame.pop());
+					globalVariable.getValue().setI32(frame.pop().getI32());
 				}
 			}
 		});
@@ -48,11 +48,11 @@ public final class Instance {
 
 	static class GlobalVariable {
 		private final GlobalVariableType type;
-
-		private final Value value = new Value();
+		private final Value value;
 
 		GlobalVariable(GlobalVariableType type) {
 			this.type = type;
+			value = new Value(type.getType());
 		}
 
 		GlobalVariableType getType() {

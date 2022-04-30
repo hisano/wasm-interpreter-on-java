@@ -1,5 +1,7 @@
 package jp.hisano.wasm.interpreter;
 
+import java.util.Stack;
+
 import jp.hisano.wasm.interpreter.Module.Function;
 import jp.hisano.wasm.interpreter.Module.ValueType;
 
@@ -7,8 +9,7 @@ final class Frame {
 	private final Instance instance;
 	private final LocalVariable[] localVariables;
 
-	private final int[] stack = new int[256];
-	private int stackIndex = 0;
+	private final Stack<Value> stack = new Stack<>();
 
 	Frame(Instance instance, Function function) {
 		this.instance = instance;
@@ -27,12 +28,16 @@ final class Frame {
 		return instance;
 	}
 
-	int pop() {
-		return stack[--stackIndex];
+	Value pop() {
+		return stack.pop();
 	}
 
-	void push(int value) {
-		stack[stackIndex++] = value;
+	void pushI32(int value) {
+		stack.push(new Value(value));
+	}
+
+	void pushI64(long value) {
+		stack.push(new Value(value));
 	}
 
 	LocalVariable getLocalVariable(int index) {
@@ -69,12 +74,10 @@ final class Frame {
 	}
 
 	static class LocalVariable {
-		private final ValueType type;
-
-		private final Value value = new Value();
+		private final Value value;
 
 		LocalVariable(ValueType type) {
-			this.type = type;
+			value = new Value(type);
 		}
 
 		Value getValue() {

@@ -29,6 +29,7 @@ import jp.hisano.wasm.interpreter.Module.I32Extend8S;
 import jp.hisano.wasm.interpreter.Module.I32Mul;
 import jp.hisano.wasm.interpreter.Module.I32Sub;
 import jp.hisano.wasm.interpreter.Module.I32Xor;
+import jp.hisano.wasm.interpreter.Module.I64Add;
 import jp.hisano.wasm.interpreter.Module.I64Const;
 import jp.hisano.wasm.interpreter.Module.If;
 import jp.hisano.wasm.interpreter.Module.Instruction;
@@ -208,6 +209,9 @@ final class Parser {
 				return new I32DivS();
 			case 0x73:
 				return new I32Xor();
+
+			case 0x7c:
+				return new I64Add();
 
 			case 0xC0:
 				return new I32Extend8S();

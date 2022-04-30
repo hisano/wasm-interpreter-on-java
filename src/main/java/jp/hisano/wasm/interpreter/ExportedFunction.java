@@ -13,8 +13,16 @@ final class ExportedFunction {
 		Frame frame = new Frame(instance, function);
 		for (int i = 0; i < parameters.length; i++) {
 			Object parameter = parameters[i];
-			if (parameter instanceof Integer) {
-				frame.getLocalVariable(i).getValue().setI32((Integer)parameter);
+			if (parameter instanceof Number) {
+				Number number = (Number) parameter;
+				switch (function.parameterTypes[i]) {
+					case I32:
+						frame.getLocalVariable(i).getValue().setI32(number.intValue());
+						break;
+					case I64:
+						frame.getLocalVariable(i).getValue().setI64(number.longValue());
+						break;
+				}
 			}
 		}
 
@@ -26,7 +34,9 @@ final class ExportedFunction {
 
 		switch (function.returnTypes[0]) {
 			case I32:
-				return (T) (Integer)frame.pop();
+				return (T) (Integer)frame.pop().getI32();
+			case I64:
+				return (T) (Long)frame.pop().getI64();
 
 			default:
 				return null;
