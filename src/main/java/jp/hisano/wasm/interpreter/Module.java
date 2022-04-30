@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jp.hisano.wasm.interpreter.Frame.ExceptionToExitBlock;
+import jp.hisano.wasm.interpreter.Frame.ExceptionToReturn;
+
 final class Module {
 	private final List<FunctionType> functionTypes = new ArrayList<>();
 	private final List<Function> functions = new ArrayList<>();
@@ -32,7 +35,7 @@ final class Module {
 	}
 
 	enum ValueType {
-		I32, I64, F32, F64
+		I32, I64, F32, F64, VOID
 	}
 
 	class Function {
@@ -40,6 +43,7 @@ final class Module {
 		final ValueType[] returnTypes;
 
 		ValueType[] localTypes;
+		byte[] instructions;
 		FunctionBlock functionBlock;
 
 		Function(ValueType[] parameterTypes, ValueType[] returnTypes) {
@@ -47,12 +51,15 @@ final class Module {
 			this.returnTypes = returnTypes;
 		}
 
-		void setBody(ValueType[] localTypes, FunctionBlock functionBlock) {
+		void setBody(ValueType[] localTypes, byte[] instructions) {
 			this.localTypes = localTypes;
-			this.functionBlock = functionBlock;
+			this.instructions = instructions;
 		}
 
 		public void execute(Frame frame) {
+			if (functionBlock == null) {
+				functionBlock = Parser.parseFunctionBlock(this, instructions);
+			}
 			functionBlock.execute(frame);
 		}
 	}
@@ -77,6 +84,28 @@ final class Module {
 		}
 	}
 
+	static class Return implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			frame.throwExceptionToReturn();
+		}
+	}
+
+	static class BrIf implements Instruction {
+		private final int depth;
+
+		BrIf(int depth) {
+			this.depth = depth;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			if (frame.pop() != 0) {
+				frame.throwExceptionToExitBlock(depth);
+			}
+		}
+	}
+
 	static class LocalGet implements Instruction {
 		private final int index;
 
@@ -87,6 +116,19 @@ final class Module {
 		@Override
 		public void execute(Frame frame) {
 			frame.push(frame.getLocalVariable(index));
+		}
+	}
+
+	static class I32Const implements Instruction {
+		private final int value;
+
+		I32Const(int value) {
+			this.value = value;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			frame.push(value);
 		}
 	}
 
@@ -177,6 +219,20 @@ final class Module {
 		void setInstructions(List<Instruction> instructions) {
 			this.instructions = instructions;
 		}
+
+		@Override
+		public void execute(Frame frame) {
+			try {
+				instructions.forEach(instruction -> {
+					instruction.execute(frame);
+				});
+			} catch (ExceptionToExitBlock e) {
+				if (e.isMoreExitRequired()) {
+					e.decrementDepth();
+					throw e;
+				}
+			}
+		}
 	}
 
 	static class FunctionBlock extends SimpleBlock {
@@ -189,7 +245,19 @@ final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			instructions.forEach(instruction -> instruction.execute(frame));
+			try {
+				super.execute(frame);
+			} catch (ExceptionToReturn e) {
+			}
+		}
+	}
+
+	static class ValueBlock extends SimpleBlock {
+		private final ValueType resultValueType;
+
+		ValueBlock(Block parent, ValueType resultValueType) {
+			super(parent);
+			this.resultValueType = resultValueType;
 		}
 	}
 }

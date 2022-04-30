@@ -75,4 +75,13 @@ class CoreTest {
 	void xor(long first, long second, long expectedValue) throws IOException {
 		calculate("xor", first, second, expectedValue);
 	}
+
+	@ParameterizedTest(name = "{0} -> {1}")
+	@CsvSource({
+		"0,2",
+		"1,3",
+	})
+	void as_block_first(long value, long expectedValue) throws IOException {
+		branchIf("as-block-first", value, expectedValue);
+	}
 }

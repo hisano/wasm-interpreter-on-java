@@ -5,10 +5,13 @@ import java.util.List;
 
 import static java.lang.Integer.*;
 import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
+import jp.hisano.wasm.interpreter.Module.Block;
+import jp.hisano.wasm.interpreter.Module.BrIf;
 import jp.hisano.wasm.interpreter.Module.End;
 import jp.hisano.wasm.interpreter.Module.Function;
 import jp.hisano.wasm.interpreter.Module.FunctionBlock;
 import jp.hisano.wasm.interpreter.Module.I32Add;
+import jp.hisano.wasm.interpreter.Module.I32Const;
 import jp.hisano.wasm.interpreter.Module.I32DivS;
 import jp.hisano.wasm.interpreter.Module.I32Extend16S;
 import jp.hisano.wasm.interpreter.Module.I32Extend8S;
@@ -17,6 +20,8 @@ import jp.hisano.wasm.interpreter.Module.I32Sub;
 import jp.hisano.wasm.interpreter.Module.I32Xor;
 import jp.hisano.wasm.interpreter.Module.Instruction;
 import jp.hisano.wasm.interpreter.Module.LocalGet;
+import jp.hisano.wasm.interpreter.Module.Return;
+import jp.hisano.wasm.interpreter.Module.ValueBlock;
 import jp.hisano.wasm.interpreter.Module.ValueType;
 
 final class Parser {
@@ -94,27 +99,45 @@ final class Parser {
 			int instructionLength = size - (wasmFileContent.getPosition() - baseIndex);
 			byte[] instructions = wasmFileContent.readBytes(instructionLength);
 			Function function = module.getFunction(i);
-			function.setBody(localTypes, parseFunctionBlock(function, instructions));
+			function.setBody(localTypes, instructions);
 		}
 	}
 
-	private FunctionBlock parseFunctionBlock(Function function, byte[] instructions) {
+	static FunctionBlock parseFunctionBlock(Function function, byte[] instructions) {
 		FunctionBlock result = new FunctionBlock(function);
-		result.setInstructions(parseInstructions(new ByteBuffer(instructions)));
+		result.setInstructions(parseInstructions(result, new ByteBuffer(instructions)));
 		return result;
 	}
 
-	private List<Instruction> parseInstructions(ByteBuffer byteBuffer) {
+	private static List<Instruction> parseInstructions(Block parent, ByteBuffer byteBuffer) {
 		List<Instruction> result = new LinkedList<>();
 		while (true) {
 			int instruction = byteBuffer.readUnsignedByte();
 			switch (instruction) {
+				case 0x02: {
+					ValueBlock block = new ValueBlock(parent, parseValueType(byteBuffer));
+					block.setInstructions(parseInstructions(block, byteBuffer));
+					result.add(block);
+					break;
+				}
+
 				case 0x0b:
 					result.add(new End());
 					return result;
+				case 0x0f:
+					result.add(new Return());
+					break;
+
+				case 0x0d:
+					result.add(new BrIf(byteBuffer.readUnsignedLeb128()));
+					break;
 
 				case 0x20:
 					result.add(new LocalGet(byteBuffer.readUnsignedLeb128()));
+					break;
+
+				case 0x41:
+					result.add(new I32Const(byteBuffer.readUnsignedLeb128()));
 					break;
 
 				case 0x6a:
@@ -191,13 +214,21 @@ final class Parser {
 		ValueType[] result = new ValueType[length];
 
 		for (int i = 0; i < length; i++) {
-			switch (wasmFileContent.readByte()) {
-				case 0x7f:
-					result[i] = ValueType.I32;
-					break;
-			}
+			result[i] = parseValueType(wasmFileContent);
 		}
 
 		return result;
+	}
+
+	private static ValueType parseValueType(ByteBuffer byteBuffer) {
+		switch (byteBuffer.readByte()) {
+			case 0x40:
+				return ValueType.VOID;
+			case 0x7f:
+				return ValueType.I32;
+
+			default:
+				return null;
+		}
 	}
 }
