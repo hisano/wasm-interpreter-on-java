@@ -66,4 +66,13 @@ final class ByteBuffer {
 	boolean canRead() {
 		return readIndex < bytes.length;
 	}
+
+	public int[] readVarUInt32Array() {
+		int length = readUnsignedLeb128();
+		int[] result = new int[length];
+		for (int i = 0; i < length; i++) {
+			result[i] = readUnsignedLeb128();
+		}
+		return result;
+	}
 }

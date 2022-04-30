@@ -74,6 +74,16 @@ class BrIfTest {
 		assertEquals((int) expectedValue, resultValue);
 	}
 
+	@Test
+	void as_br_table_value() throws IOException {
+		invoke("as-br_table-value", 1);
+	}
+
+	@Test
+	void as_br_table_value_index() throws IOException {
+		invoke("as-br_table-value-index", 1);
+	}
+
 	private static Interpreter getInterpreter() throws IOException {
 		return createInterpreter("spec/br_if/br_if.0.wasm");
 	}

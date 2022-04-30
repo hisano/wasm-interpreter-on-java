@@ -159,6 +159,26 @@ final class Module {
 		}
 	}
 
+	static class BrTable extends ExitBlock {
+		private final int[] depths;
+		private final int defaultDepth;
+
+		BrTable(int[] depths, int defaultDepth) {
+			this.depths = depths;
+			this.defaultDepth = defaultDepth;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			int index = frame.pop();
+			if (index < depths.length) {
+				frame.throwExceptionToExitBlock(depths[index]);
+			} else {
+				frame.throwExceptionToExitBlock(defaultDepth);
+			}
+		}
+	}
+
 	static class Drop implements Instruction {
 		@Override
 		public void execute(Frame frame) {

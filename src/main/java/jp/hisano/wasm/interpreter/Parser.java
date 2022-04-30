@@ -8,6 +8,7 @@ import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
 import jp.hisano.wasm.interpreter.Module.AbstractBlock;
 import jp.hisano.wasm.interpreter.Module.Br;
 import jp.hisano.wasm.interpreter.Module.BrIf;
+import jp.hisano.wasm.interpreter.Module.BrTable;
 import jp.hisano.wasm.interpreter.Module.Call;
 import jp.hisano.wasm.interpreter.Module.Drop;
 import jp.hisano.wasm.interpreter.Module.End;
@@ -132,16 +133,20 @@ final class Parser {
 					break;
 				}
 
+				case 0x0b:
+					result.add(new End());
+					return result;
+
 				case 0x0c:
 					result.add(new Br(byteBuffer.readUnsignedLeb128()));
 					break;
 				case 0x0d:
 					result.add(new BrIf(byteBuffer.readUnsignedLeb128()));
 					break;
+				case 0x0e:
+					result.add(new BrTable(byteBuffer.readVarUInt32Array(), byteBuffer.readUnsignedLeb128()));
+					break;
 
-				case 0x0b:
-					result.add(new End());
-					return result;
 				case 0x0f:
 					result.add(new Return());
 					break;
