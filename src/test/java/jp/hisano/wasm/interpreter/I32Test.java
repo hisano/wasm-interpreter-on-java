@@ -149,6 +149,15 @@ class I32Test {
 		invoke("rotl", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "{0} rotr {1} = {2} (i32.rotr)")
+	@CsvSource({
+		"1,1,2147483648",
+		"1,0,1",
+	})
+	void rotr(long first, long second, long expectedValue) throws IOException {
+		invoke("rotr", first, second, expectedValue);
+	}
+
 	@ParameterizedTest(name = "{0} ^ {1} = {2} (i32.xor)")
 	@CsvSource({
 		"1,0,1",
