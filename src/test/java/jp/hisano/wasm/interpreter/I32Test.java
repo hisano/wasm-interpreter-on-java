@@ -75,11 +75,20 @@ class I32Test {
 
 	@ParameterizedTest(name = "{0} % {1} = {2} (i32.rem_s)")
 	@CsvSource({
-			"11,5,1",
-			"17,7,3",
+		"11,5,1",
+		"17,7,3",
 	})
 	void rem_s(long first, long second, long expectedValue) throws IOException {
 		invoke("rem_s", first, second, expectedValue);
+	}
+
+	@ParameterizedTest(name = "{0} % {1} = {2} (i32.rem_u)")
+	@CsvSource({
+		"11,5,1",
+		"17,7,3",
+	})
+	void rem_u(long first, long second, long expectedValue) throws IOException {
+		invoke("rem_u", first, second, expectedValue);
 	}
 
 	@ParameterizedTest(name = "{0} ^ {1} = {2} (i32.xor)")

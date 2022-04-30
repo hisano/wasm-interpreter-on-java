@@ -422,6 +422,13 @@ public final class Module {
 		}
 	}
 
+	final static class I32RemU extends I32TwoOperandsOperator {
+		@Override
+		int calculate(int first, int second) {
+			return remainderUnsigned(first, second);
+		}
+	}
+
 	final static class I32Xor extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
