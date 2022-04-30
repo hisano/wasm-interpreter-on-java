@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static jp.hisano.wasm.interpreter.TestUtils.*;
 
 // https://www.w3.org/TR/wasm-core-2/
-class CoreTest {
+class I32Test {
 	@ParameterizedTest(name = "{0} + {1} = {2} (i32.add)")
 	@CsvSource({
 		"1,1,2",
@@ -74,14 +74,5 @@ class CoreTest {
 	})
 	void xor(long first, long second, long expectedValue) throws IOException {
 		calculate("xor", first, second, expectedValue);
-	}
-
-	@ParameterizedTest(name = "{0} -> {1}")
-	@CsvSource({
-		"0,2",
-		"1,3",
-	})
-	void as_block_first(long value, long expectedValue) throws IOException {
-		branchIf("as-block-first", value, expectedValue);
 	}
 }

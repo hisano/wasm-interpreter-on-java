@@ -7,11 +7,13 @@ import static java.lang.Integer.*;
 import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
 import jp.hisano.wasm.interpreter.Module.Block;
 import jp.hisano.wasm.interpreter.Module.BrIf;
+import jp.hisano.wasm.interpreter.Module.Drop;
 import jp.hisano.wasm.interpreter.Module.End;
 import jp.hisano.wasm.interpreter.Module.Function;
 import jp.hisano.wasm.interpreter.Module.FunctionBlock;
 import jp.hisano.wasm.interpreter.Module.I32Add;
 import jp.hisano.wasm.interpreter.Module.I32Const;
+import jp.hisano.wasm.interpreter.Module.I32Ctz;
 import jp.hisano.wasm.interpreter.Module.I32DivS;
 import jp.hisano.wasm.interpreter.Module.I32Extend16S;
 import jp.hisano.wasm.interpreter.Module.I32Extend8S;
@@ -132,6 +134,10 @@ final class Parser {
 					result.add(new BrIf(byteBuffer.readUnsignedLeb128()));
 					break;
 
+				case 0x1a:
+					result.add(new Drop());
+					break;
+
 				case 0x20:
 					result.add(new LocalGet(byteBuffer.readUnsignedLeb128()));
 					break;
@@ -140,6 +146,9 @@ final class Parser {
 					result.add(new I32Const(byteBuffer.readUnsignedLeb128()));
 					break;
 
+				case 0x68:
+					result.add(new I32Ctz());
+					break;
 				case 0x6a:
 					result.add(new I32Add());
 					break;
@@ -163,8 +172,8 @@ final class Parser {
 					result.add(new I32Extend16S());
 					break;
 
-//				default:
-//					throw new UnsupportedOperationException("not implemented instruction: instruction = 0x" + toHexString(instruction) + ", readIndex = " + byteBuffer.getPosition());
+				default:
+					throw new UnsupportedOperationException("not implemented instruction: instruction = 0x" + toHexString(instruction) + ", readIndex = " + byteBuffer.getPosition());
 			}
 		}
 	}

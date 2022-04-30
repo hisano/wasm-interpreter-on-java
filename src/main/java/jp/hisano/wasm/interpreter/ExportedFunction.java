@@ -20,9 +20,14 @@ public final class ExportedFunction {
 
 		function.execute(frame);
 
+		if (function.returnTypes.length == 0) {
+			return null;
+		}
+
 		switch (function.returnTypes[0]) {
 			case I32:
 				return frame.pop();
+
 			default:
 				return null;
 		}

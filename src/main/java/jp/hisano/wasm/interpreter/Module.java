@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Integer.*;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToExitBlock;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToReturn;
 
@@ -106,6 +107,13 @@ final class Module {
 		}
 	}
 
+	static class Drop implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			frame.pop();
+		}
+	}
+
 	static class LocalGet implements Instruction {
 		private final int index;
 
@@ -141,6 +149,13 @@ final class Module {
 		}
 
 		abstract int calculate(int first, int second);
+	}
+
+	static class I32Ctz extends NumericConverter {
+		@Override
+		int convert(int value) {
+			return numberOfTrailingZeros(value);
+		}
 	}
 
 	static class I32Add extends TwoOperandNumericOperator {
