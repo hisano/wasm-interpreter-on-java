@@ -261,10 +261,13 @@ final class Module {
 	}
 
 	static abstract class SimpleBlock extends Block {
+		private final boolean isBackwardExit;
+
 		protected List<Instruction> instructions;
 
-		SimpleBlock(Block parent) {
+		SimpleBlock(Block parent, boolean isBackwardExit) {
 			super(parent);
+			this.isBackwardExit = isBackwardExit;
 		}
 
 		void setInstructions(List<Instruction> instructions) {
@@ -273,16 +276,18 @@ final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			try {
-				instructions.forEach(instruction -> {
-					instruction.execute(frame);
-				});
-			} catch (ExceptionToExitBlock e) {
-				if (e.isMoreExitRequired()) {
-					e.decrementDepth();
-					throw e;
+			do {
+				try {
+					instructions.forEach(instruction -> {
+						instruction.execute(frame);
+					});
+				} catch (ExceptionToExitBlock e) {
+					if (e.isMoreExitRequired()) {
+						e.decrementDepth();
+						throw e;
+					}
 				}
-			}
+			} while (isBackwardExit);
 		}
 	}
 
@@ -290,7 +295,7 @@ final class Module {
 		private final Function function;
 
 		FunctionBlock(Function function) {
-			super(null);
+			super(null, false);
 			this.function = function;
 		}
 
@@ -307,7 +312,16 @@ final class Module {
 		private final ValueType resultValueType;
 
 		ValueBlock(Block parent, ValueType resultValueType) {
-			super(parent);
+			super(parent, false);
+			this.resultValueType = resultValueType;
+		}
+	}
+
+	static class LoopBlock extends SimpleBlock {
+		private final ValueType resultValueType;
+
+		LoopBlock(Block parent, ValueType resultValueType) {
+			super(parent, true);
 			this.resultValueType = resultValueType;
 		}
 	}

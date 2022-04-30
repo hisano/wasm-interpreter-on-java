@@ -23,6 +23,7 @@ import jp.hisano.wasm.interpreter.Module.I32Sub;
 import jp.hisano.wasm.interpreter.Module.I32Xor;
 import jp.hisano.wasm.interpreter.Module.Instruction;
 import jp.hisano.wasm.interpreter.Module.LocalGet;
+import jp.hisano.wasm.interpreter.Module.LoopBlock;
 import jp.hisano.wasm.interpreter.Module.Return;
 import jp.hisano.wasm.interpreter.Module.ValueBlock;
 import jp.hisano.wasm.interpreter.Module.ValueType;
@@ -119,6 +120,12 @@ final class Parser {
 			switch (instruction) {
 				case 0x02: {
 					ValueBlock block = new ValueBlock(parent, parseValueType(byteBuffer));
+					block.setInstructions(parseInstructions(module, block, byteBuffer));
+					result.add(block);
+					break;
+				}
+				case 0x03: {
+					LoopBlock block = new LoopBlock(parent, parseValueType(byteBuffer));
 					block.setInstructions(parseInstructions(module, block, byteBuffer));
 					result.add(block);
 					break;

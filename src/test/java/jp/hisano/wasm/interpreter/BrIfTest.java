@@ -28,11 +28,20 @@ class BrIfTest {
 
 	@ParameterizedTest(name = "{0} -> {1}")
 	@CsvSource({
-			"0,2",
-			"1,3",
+		"0,2",
+		"1,3",
 	})
 	void as_block_mid(long value, long expectedValue) throws IOException {
 		invoke("as-block-mid", value, expectedValue);
+	}
+
+	@ParameterizedTest(name = "{0} -> {1}")
+	@CsvSource({
+		"0,2",
+		"1,4",
+	})
+	void as_loop_mid(long value, long expectedValue) throws IOException {
+		invoke("as-loop-mid", value, expectedValue);
 	}
 
 	private static void invoke(String functionName, long value, long expectedValue) throws IOException {
