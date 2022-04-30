@@ -429,6 +429,13 @@ public final class Module {
 		}
 	}
 
+	final static class I32And extends I32TwoOperandsOperator {
+		@Override
+		int calculate(int first, int second) {
+			return first & second;
+		}
+	}
+
 	final static class I32Xor extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {

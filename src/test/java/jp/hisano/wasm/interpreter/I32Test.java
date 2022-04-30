@@ -91,6 +91,17 @@ class I32Test {
 		invoke("rem_u", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "{0} & {1} = {2} (i32.and)")
+	@CsvSource({
+			"1,0,0",
+			"0,1,0",
+			"1,1,1",
+			"0,0,0",
+	})
+	void and(long first, long second, long expectedValue) throws IOException {
+		invoke("and", first, second, expectedValue);
+	}
+
 	@ParameterizedTest(name = "{0} ^ {1} = {2} (i32.xor)")
 	@CsvSource({
 		"1,0,1",
