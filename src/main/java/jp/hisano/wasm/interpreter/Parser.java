@@ -24,6 +24,7 @@ import jp.hisano.wasm.interpreter.Module.FunctionBlock;
 import jp.hisano.wasm.interpreter.Module.GlobalGet;
 import jp.hisano.wasm.interpreter.Module.I32Add;
 import jp.hisano.wasm.interpreter.Module.I32And;
+import jp.hisano.wasm.interpreter.Module.I32Clz;
 import jp.hisano.wasm.interpreter.Module.I32Const;
 import jp.hisano.wasm.interpreter.Module.I32Ctz;
 import jp.hisano.wasm.interpreter.Module.I32DivS;
@@ -209,6 +210,8 @@ final class Parser {
 			case 0x44:
 				return new F64Const(byteBuffer.readFloat64());
 
+			case 0x67:
+				return new I32Clz();
 			case 0x68:
 				return new I32Ctz();
 			case 0x6a:

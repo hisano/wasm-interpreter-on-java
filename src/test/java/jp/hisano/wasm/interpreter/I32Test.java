@@ -113,6 +113,23 @@ class I32Test {
 		invoke("or", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "{0} ^ {1} = {2} (i32.xor)")
+	@CsvSource({
+		"1,0,1",
+		"0,1,1",
+		"1,1,0",
+		"0,0,0",
+		"2147483647,2147483648,4294967295",
+		"2147483648,0,2147483648",
+		"4294967295,2147483648,2147483647",
+		"4294967295,2147483647,2147483648",
+		"4042326015,4294963440,252645135",
+		"4294967295,4294967295,0",
+	})
+	void xor(long first, long second, long expectedValue) throws IOException {
+		invoke("xor", first, second, expectedValue);
+	}
+
 	@ParameterizedTest(name = "{0} << {1} = {2} (i32.shl)")
 	@CsvSource({
 		"1,1,2",
@@ -158,21 +175,15 @@ class I32Test {
 		invoke("rotr", first, second, expectedValue);
 	}
 
-	@ParameterizedTest(name = "{0} ^ {1} = {2} (i32.xor)")
+	@DisplayName("i32.clz")
+	@ParameterizedTest(name = "clz({0}) = {1}")
 	@CsvSource({
-		"1,0,1",
-		"0,1,1",
-		"1,1,0",
-		"0,0,0",
-		"2147483647,2147483648,4294967295",
-		"2147483648,0,2147483648",
-		"4294967295,2147483648,2147483647",
-		"4294967295,2147483647,2147483648",
-		"4042326015,4294963440,252645135",
-		"4294967295,4294967295,0",
+		"4294967295,0",
+		"0,32",
+		"32768,16"
 	})
-	void xor(long first, long second, long expectedValue) throws IOException {
-		invoke("xor", first, second, expectedValue);
+	void clz(long value, long expectedValue) throws IOException {
+		invoke("clz", value, expectedValue);
 	}
 
 	// https://github.com/WebAssembly/sign-extension-ops

@@ -373,6 +373,13 @@ public final class Module {
 		abstract int calculate(int first, int second);
 	}
 
+	final static class I32Clz extends I32Converter {
+		@Override
+		int convert(int value) {
+			return numberOfLeadingZeros(value);
+		}
+	}
+
 	final static class I32Ctz extends I32Converter {
 		@Override
 		int convert(int value) {
