@@ -408,6 +408,13 @@ public final class Module {
 		}
 	}
 
+	final static class I32GtS extends I32TwoOperandsOperator {
+		@Override
+		int calculate(int first, int second) {
+			return first > second? 1: 0;
+		}
+	}
+
 	final static class I32Clz extends I32Converter {
 		@Override
 		int convert(int value) {
