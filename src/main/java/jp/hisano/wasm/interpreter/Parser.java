@@ -33,6 +33,7 @@ import jp.hisano.wasm.interpreter.Module.I32Eq;
 import jp.hisano.wasm.interpreter.Module.I32Eqz;
 import jp.hisano.wasm.interpreter.Module.I32Extend16S;
 import jp.hisano.wasm.interpreter.Module.I32Extend8S;
+import jp.hisano.wasm.interpreter.Module.I32LtS;
 import jp.hisano.wasm.interpreter.Module.I32Mul;
 import jp.hisano.wasm.interpreter.Module.I32Ne;
 import jp.hisano.wasm.interpreter.Module.I32Or;
@@ -220,6 +221,8 @@ final class Parser {
 				return new I32Eq();
 			case 0x47:
 				return new I32Ne();
+			case 0x48:
+				return new I32LtS();
 			case 0x67:
 				return new I32Clz();
 			case 0x68:

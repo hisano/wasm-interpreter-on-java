@@ -274,6 +274,19 @@ class I32Test {
 		invoke("ne", first, second, expectedValue);
 	}
 
+	@DisplayName("i32.lt_s")
+	@ParameterizedTest(name = "({0} < {1}) = {2}")
+	@CsvSource({
+		"0,0,0",
+		"1,1,0",
+		"4294967295,1,1",
+		"1,0,0",
+		"0,1,1",
+	})
+	void lt_s(long first, long second, long expectedValue) throws IOException {
+		invoke("lt_s", first, second, expectedValue);
+	}
+
 	private static void invoke(String operatorName, long value, long expectedValue) throws IOException {
 		int resultValue = createInterpreter("spec/i32/i32.0.wasm").invoke(operatorName, (int) value);
 		assertEquals((int)expectedValue, resultValue);
