@@ -62,6 +62,17 @@ class I32Test {
 		invoke("div_s", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "{0} / {1} = {2} (i32.div_u)")
+	@CsvSource({
+			"1,1,1",
+			"0,1,0",
+			"4294967295,4294967295,1",
+			"4294967291,2,2147483645"
+	})
+	void div_u(long first, long second, long expectedValue) throws IOException {
+		invoke("div_u", first, second, expectedValue);
+	}
+
 	@ParameterizedTest(name = "{0} ^ {1} = {2} (i32.xor)")
 	@CsvSource({
 		"1,0,1",

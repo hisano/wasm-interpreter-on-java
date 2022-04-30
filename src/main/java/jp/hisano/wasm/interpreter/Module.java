@@ -408,6 +408,13 @@ public final class Module {
 		}
 	}
 
+	final static class I32DivU extends I32TwoOperandsOperator {
+		@Override
+		int calculate(int first, int second) {
+			return divideUnsigned(first, second);
+		}
+	}
+
 	final static class I32Xor extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
