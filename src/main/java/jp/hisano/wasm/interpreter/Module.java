@@ -102,20 +102,23 @@ final class Module {
 		void execute(Frame frame);
 	}
 
-	static class End implements Instruction {
+	private abstract static class BlockEndMarker implements Instruction {
 		@Override
 		public void execute(Frame frame) {
 		}
+	} 
+
+	final static class End extends BlockEndMarker {
 	}
 
-	static class Return extends ExitBlock {
+	final static class Return extends ExitBlock {
 		@Override
 		public void execute(Frame frame) {
 			frame.throwExceptionToReturn();
 		}
 	}
 
-	static class Call implements Instruction {
+	final static class Call implements Instruction {
 		private final Function function;
 
 		Call(Function function) {
@@ -128,10 +131,10 @@ final class Module {
 		}
 	}
 
-	static abstract class ExitBlock implements Instruction {
+	private static abstract class ExitBlock implements Instruction {
 	}
 
-	static class Br extends ExitBlock {
+	final static class Br extends ExitBlock {
 		private final int depth;
 
 		Br(int depth) {
@@ -144,7 +147,7 @@ final class Module {
 		}
 	}
 
-	static class BrIf extends ExitBlock {
+	final static class BrIf extends ExitBlock {
 		private final int depth;
 
 		BrIf(int depth) {
@@ -159,7 +162,7 @@ final class Module {
 		}
 	}
 
-	static class BrTable extends ExitBlock {
+	final static class BrTable extends ExitBlock {
 		private final int[] depths;
 		private final int defaultDepth;
 
@@ -179,14 +182,14 @@ final class Module {
 		}
 	}
 
-	static class Drop implements Instruction {
+	final static class Drop implements Instruction {
 		@Override
 		public void execute(Frame frame) {
 			frame.pop();
 		}
 	}
 
-	static class LocalGet implements Instruction {
+	final static class LocalGet implements Instruction {
 		private final int index;
 
 		LocalGet(int index) {
@@ -199,7 +202,7 @@ final class Module {
 		}
 	}
 
-	static class I32Const implements Instruction {
+	final static class I32Const implements Instruction {
 		private final int value;
 
 		I32Const(int value) {
@@ -223,42 +226,42 @@ final class Module {
 		abstract int calculate(int first, int second);
 	}
 
-	static class I32Ctz extends NumericConverter {
+	final static class I32Ctz extends NumericConverter {
 		@Override
 		int convert(int value) {
 			return numberOfTrailingZeros(value);
 		}
 	}
 
-	static class I32Add extends TwoOperandNumericOperator {
+	final static class I32Add extends TwoOperandNumericOperator {
 		@Override
 		int calculate(int first, int second) {
 			return first + second;
 		}
 	}
 
-	static class I32Sub extends TwoOperandNumericOperator {
+	final static class I32Sub extends TwoOperandNumericOperator {
 		@Override
 		int calculate(int first, int second) {
 			return first - second;
 		}
 	}
 
-	static class I32Mul extends TwoOperandNumericOperator {
+	final static class I32Mul extends TwoOperandNumericOperator {
 		@Override
 		int calculate(int first, int second) {
 			return first * second;
 		}
 	}
 
-	static class I32DivS extends TwoOperandNumericOperator {
+	final static class I32DivS extends TwoOperandNumericOperator {
 		@Override
 		int calculate(int first, int second) {
 			return first / second;
 		}
 	}
 
-	static class I32Xor extends TwoOperandNumericOperator {
+	final static class I32Xor extends TwoOperandNumericOperator {
 		@Override
 		int calculate(int first, int second) {
 			return first ^ second;
@@ -274,14 +277,14 @@ final class Module {
 		abstract int convert(int value);
 	}
 
-	static class I32Extend8S extends NumericConverter {
+	final static class I32Extend8S extends NumericConverter {
 		@Override
 		int convert(int value) {
 			return (byte)value;
 		}
 	}
 
-	static class I32Extend16S extends NumericConverter {
+	final static class I32Extend16S extends NumericConverter {
 		@Override
 		int convert(int value) {
 			return (short)value;
@@ -296,7 +299,7 @@ final class Module {
 		}
 	}
 
-	static abstract class OneChildBlock extends AbstractBlock {
+	private static abstract class OneChildBlock extends AbstractBlock {
 		private final boolean isBackwardExit;
 
 		protected List<Instruction> instructions;
@@ -327,7 +330,7 @@ final class Module {
 		}
 	}
 
-	static class FunctionBlock extends OneChildBlock {
+	final static class FunctionBlock extends OneChildBlock {
 		private final Function function;
 
 		FunctionBlock(Function function) {
@@ -344,7 +347,7 @@ final class Module {
 		}
 	}
 
-	static class Block extends OneChildBlock {
+	final static class Block extends OneChildBlock {
 		private final ValueType resultValueType;
 
 		Block(AbstractBlock parent, ValueType resultValueType) {
@@ -353,7 +356,7 @@ final class Module {
 		}
 	}
 
-	static class LoopBlock extends OneChildBlock {
+	final static class LoopBlock extends OneChildBlock {
 		private final ValueType resultValueType;
 
 		LoopBlock(AbstractBlock parent, ValueType resultValueType) {
@@ -362,7 +365,7 @@ final class Module {
 		}
 	}
 
-	static class IfBlock extends AbstractBlock {
+	final static class IfBlock extends AbstractBlock {
 		private List<Instruction> thenInstructions;
 		private List<Instruction> elseInstructions;
 
@@ -402,9 +405,6 @@ final class Module {
 
 	}
 
-	static class Else implements Instruction {
-		@Override
-		public void execute(Frame frame) {
-		}
+	final static class Else extends BlockEndMarker {
 	}
 }

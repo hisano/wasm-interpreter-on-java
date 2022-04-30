@@ -8,7 +8,6 @@ final class Frame {
 
 	private final int[] stack = new int[256];
 	private int stackIndex = 0;
-	private int exitDepth;
 
 	Frame(Module module, Function function) {
 		this.module = module;
