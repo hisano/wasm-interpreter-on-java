@@ -10,6 +10,8 @@ mvnw install
 
 - [WebAssembly Reference Manual](https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md)
   - 非公式の読みやすい仕様解説ドキュメント
+- [MDN WebAssembly instructions](https://developer.mozilla.org/en-US/docs/WebAssembly/Reference)
+  - 豊富なWATサンプル
 
 
 - [WebAssembly Core Specification 1.0](https://www.w3.org/TR/wasm-core-1/)
