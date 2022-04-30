@@ -241,6 +241,17 @@ class I32Test {
 		}
 	}
 
+	@DisplayName("i32.eqz")
+	@ParameterizedTest(name = "eqz({0}) = {1}")
+	@CsvSource({
+		"0,1",
+		"1,0",
+		"2147483648,0"
+	})
+	void eqz(long value, long expectedValue) throws IOException {
+		invoke("eqz", value, expectedValue);
+	}
+
 	private static void invoke(String operatorName, long value, long expectedValue) throws IOException {
 		int resultValue = createInterpreter("spec/i32/i32.0.wasm").invoke(operatorName, (int) value);
 		assertEquals((int)expectedValue, resultValue);

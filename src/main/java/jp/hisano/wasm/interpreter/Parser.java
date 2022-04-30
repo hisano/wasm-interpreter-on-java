@@ -29,6 +29,7 @@ import jp.hisano.wasm.interpreter.Module.I32Const;
 import jp.hisano.wasm.interpreter.Module.I32Ctz;
 import jp.hisano.wasm.interpreter.Module.I32DivS;
 import jp.hisano.wasm.interpreter.Module.I32DivU;
+import jp.hisano.wasm.interpreter.Module.I32Eqz;
 import jp.hisano.wasm.interpreter.Module.I32Extend16S;
 import jp.hisano.wasm.interpreter.Module.I32Extend8S;
 import jp.hisano.wasm.interpreter.Module.I32Mul;
@@ -211,6 +212,8 @@ final class Parser {
 			case 0x44:
 				return new F64Const(byteBuffer.readFloat64());
 
+			case 0x45:
+				return new I32Eqz();
 			case 0x67:
 				return new I32Clz();
 			case 0x68:
