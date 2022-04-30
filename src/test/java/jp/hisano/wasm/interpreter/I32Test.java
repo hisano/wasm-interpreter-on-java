@@ -186,6 +186,17 @@ class I32Test {
 		invoke("clz", value, expectedValue);
 	}
 
+	@DisplayName("i32.ctz")
+	@ParameterizedTest(name = "ctz({0}) = {1}")
+	@CsvSource({
+		"4294967295,0",
+		"0,32",
+		"32768,15"
+	})
+	void ctz(long value, long expectedValue) throws IOException {
+		invoke("ctz", value, expectedValue);
+	}
+
 	// https://github.com/WebAssembly/sign-extension-ops
 	@Nested
 	@DisplayName("Sign Extension Operators")
