@@ -23,9 +23,22 @@ class BrIfTest {
 		"1,3",
 	})
 	void as_block_first(long value, long expectedValue) throws IOException {
+		invoke("as-block-first", value, expectedValue);
+	}
+
+	@ParameterizedTest(name = "{0} -> {1}")
+	@CsvSource({
+			"0,2",
+			"1,3",
+	})
+	void as_block_mid(long value, long expectedValue) throws IOException {
+		invoke("as-block-mid", value, expectedValue);
+	}
+
+	private static void invoke(String functionName, long value, long expectedValue) throws IOException {
 		Interpreter interpreter = getInterpreter();
 
-		int resultValue = (Integer) interpreter.getExportedFunction("as-block-first").invoke((int) value);
+		int resultValue = (Integer) interpreter.getExportedFunction(functionName).invoke((int) value);
 
 		assertEquals((int) expectedValue, resultValue);
 	}

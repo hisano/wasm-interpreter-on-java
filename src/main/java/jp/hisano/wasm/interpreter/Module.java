@@ -24,7 +24,7 @@ final class Module {
 	}
 
 	void addExportedFunction(String name, int functionIndex) {
-		exportedFunctions.put(name, new ExportedFunction(functions.get(functionIndex)));
+		exportedFunctions.put(name, new ExportedFunction(this, functions.get(functionIndex)));
 	}
 
 	Function getFunction(int functionIndex) {
@@ -57,11 +57,34 @@ final class Module {
 			this.instructions = instructions;
 		}
 
-		public void execute(Frame frame) {
+		void execute(Frame frame) {
 			if (functionBlock == null) {
-				functionBlock = Parser.parseFunctionBlock(this, instructions);
+				functionBlock = Parser.parseFunctionBlock(frame.getModule(), this, instructions);
 			}
 			functionBlock.execute(frame);
+		}
+
+		void executeWithNewFrame(Frame parent) {
+			Frame frame = new Frame(parent.getModule(), this);
+
+			for (int i = parameterTypes.length - 1; 0 <= i; i--) {
+				switch (parameterTypes[i]) {
+					case I32:
+						frame.setLocalVariable(i, parent.pop());
+						break;
+				}
+			}
+
+			execute(frame);
+
+			if (returnTypes.length == 0) {
+				return;
+			}
+
+			switch (returnTypes[0]) {
+				case I32:
+					parent.push(frame.pop());
+			}
 		}
 	}
 
@@ -89,6 +112,19 @@ final class Module {
 		@Override
 		public void execute(Frame frame) {
 			frame.throwExceptionToReturn();
+		}
+	}
+
+	static class Call implements Instruction {
+		private final Function function;
+
+		Call(Function function) {
+			this.function = function;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			function.executeWithNewFrame(frame);
 		}
 	}
 

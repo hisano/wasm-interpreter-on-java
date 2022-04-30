@@ -3,14 +3,20 @@ package jp.hisano.wasm.interpreter;
 import jp.hisano.wasm.interpreter.Module.Function;
 
 final class Frame {
+	private final Module module;
 	private final int[] localVariables;
 
 	private final int[] stack = new int[256];
 	private int stackIndex = 0;
 	private int exitDepth;
 
-	Frame(Function function) {
+	Frame(Module module, Function function) {
+		this.module = module;
 		localVariables = new int[function.parameterTypes.length];
+	}
+
+	Module getModule() {
+		return module;
 	}
 
 	int pop() {

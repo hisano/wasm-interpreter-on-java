@@ -3,14 +3,16 @@ package jp.hisano.wasm.interpreter;
 import jp.hisano.wasm.interpreter.Module.Function;
 
 public final class ExportedFunction {
+	private final Module module;
 	private final Function function;
 
-	ExportedFunction(Function function) {
+	ExportedFunction(Module module, Function function) {
+		this.module = module;
 		this.function = function;
 	}
 
 	public Object invoke(Object... parameters) {
-		Frame frame = new Frame(function);
+		Frame frame = new Frame(module, function);
 		for (int i = 0; i < parameters.length; i++) {
 			Object parameter = parameters[i];
 			if (parameter instanceof Integer) {
