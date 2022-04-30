@@ -5,7 +5,7 @@ import java.util.List;
 
 import static java.lang.Integer.*;
 import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
-import jp.hisano.wasm.interpreter.Module.Block;
+import jp.hisano.wasm.interpreter.Module.AbstractBlock;
 import jp.hisano.wasm.interpreter.Module.BrIf;
 import jp.hisano.wasm.interpreter.Module.Call;
 import jp.hisano.wasm.interpreter.Module.Drop;
@@ -25,7 +25,7 @@ import jp.hisano.wasm.interpreter.Module.Instruction;
 import jp.hisano.wasm.interpreter.Module.LocalGet;
 import jp.hisano.wasm.interpreter.Module.LoopBlock;
 import jp.hisano.wasm.interpreter.Module.Return;
-import jp.hisano.wasm.interpreter.Module.ValueBlock;
+import jp.hisano.wasm.interpreter.Module.Block;
 import jp.hisano.wasm.interpreter.Module.ValueType;
 
 final class Parser {
@@ -113,13 +113,13 @@ final class Parser {
 		return result;
 	}
 
-	private static List<Instruction> parseInstructions(Module module, Block parent, ByteBuffer byteBuffer) {
+	private static List<Instruction> parseInstructions(Module module, AbstractBlock parent, ByteBuffer byteBuffer) {
 		List<Instruction> result = new LinkedList<>();
 		while (true) {
 			int instruction = byteBuffer.readUnsignedByte();
 			switch (instruction) {
 				case 0x02: {
-					ValueBlock block = new ValueBlock(parent, parseValueType(byteBuffer));
+					Block block = new Block(parent, parseValueType(byteBuffer));
 					block.setInstructions(parseInstructions(module, block, byteBuffer));
 					result.add(block);
 					break;

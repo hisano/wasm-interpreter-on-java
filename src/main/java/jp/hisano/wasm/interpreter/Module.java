@@ -252,20 +252,20 @@ final class Module {
 		}
 	}
 
-	static abstract class Block implements Instruction {
-		private Block parent;
+	static abstract class AbstractBlock implements Instruction {
+		private AbstractBlock parent;
 
-		Block(Block parent) {
+		AbstractBlock(AbstractBlock parent) {
 			this.parent = parent;
 		}
 	}
 
-	static abstract class SimpleBlock extends Block {
+	static abstract class OneChildBlock extends AbstractBlock {
 		private final boolean isBackwardExit;
 
 		protected List<Instruction> instructions;
 
-		SimpleBlock(Block parent, boolean isBackwardExit) {
+		OneChildBlock(AbstractBlock parent, boolean isBackwardExit) {
 			super(parent);
 			this.isBackwardExit = isBackwardExit;
 		}
@@ -291,7 +291,7 @@ final class Module {
 		}
 	}
 
-	static class FunctionBlock extends SimpleBlock {
+	static class FunctionBlock extends OneChildBlock {
 		private final Function function;
 
 		FunctionBlock(Function function) {
@@ -308,19 +308,19 @@ final class Module {
 		}
 	}
 
-	static class ValueBlock extends SimpleBlock {
+	static class Block extends OneChildBlock {
 		private final ValueType resultValueType;
 
-		ValueBlock(Block parent, ValueType resultValueType) {
+		Block(AbstractBlock parent, ValueType resultValueType) {
 			super(parent, false);
 			this.resultValueType = resultValueType;
 		}
 	}
 
-	static class LoopBlock extends SimpleBlock {
+	static class LoopBlock extends OneChildBlock {
 		private final ValueType resultValueType;
 
-		LoopBlock(Block parent, ValueType resultValueType) {
+		LoopBlock(AbstractBlock parent, ValueType resultValueType) {
 			super(parent, true);
 			this.resultValueType = resultValueType;
 		}
