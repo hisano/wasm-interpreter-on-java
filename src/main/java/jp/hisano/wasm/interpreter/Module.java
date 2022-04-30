@@ -450,6 +450,13 @@ public final class Module {
 		}
 	}
 
+	final static class I32Shl extends I32TwoOperandsOperator {
+		@Override
+		int calculate(int first, int second) {
+			return first << second;
+		}
+	}
+
 	private static abstract class I32Converter implements Instruction {
 		@Override
 		public void execute(Frame frame) {
