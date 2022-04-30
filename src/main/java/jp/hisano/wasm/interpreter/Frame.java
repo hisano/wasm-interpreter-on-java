@@ -44,6 +44,10 @@ final class Frame {
 		stack.push(new Value(f32Value));
 	}
 
+	void pushF64(double f64Value) {
+		stack.push(new Value(f64Value));
+	}
+
 	LocalVariable getLocalVariable(int index) {
 		return localVariables[index];
 	}

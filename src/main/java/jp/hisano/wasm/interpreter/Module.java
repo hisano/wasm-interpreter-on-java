@@ -275,6 +275,9 @@ public final class Module {
 				case F32:
 					frame.pushF32(value.getF32());
 					return;
+				case F64:
+					frame.pushF64(value.getF64());
+					return;
 			}
 		}
 
@@ -467,6 +470,24 @@ public final class Module {
 	final static class F32Add extends F32TwoOperandsOperator {
 		@Override
 		float calculate(float first, float second) {
+			return first + second;
+		}
+	}
+
+	private static abstract class F64TwoOperandsOperator implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			double second = frame.pop().getF64();
+			double first = frame.pop().getF64();
+			frame.pushF64(calculate(first, second));
+		}
+
+		abstract double calculate(double first, double second);
+	}
+
+	final static class F64Add extends F64TwoOperandsOperator {
+		@Override
+		double calculate(double first, double second) {
 			return first + second;
 		}
 	}

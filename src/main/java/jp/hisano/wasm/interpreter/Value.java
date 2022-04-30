@@ -30,6 +30,11 @@ final class Value {
 		this.f32Value = f32Value;
 	}
 
+	Value(double f64Value) {
+		this(F64);
+		this.f64Value = f64Value;
+	}
+
 	ValueType getType() {
 		return type;
 	}
@@ -56,5 +61,13 @@ final class Value {
 
 	float getF32() {
 		return f32Value;
+	}
+
+	void setF64(double newValue) {
+		f64Value = newValue;
+	}
+
+	double getF64() {
+		return f64Value;
 	}
 }
