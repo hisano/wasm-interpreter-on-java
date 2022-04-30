@@ -115,10 +115,19 @@ class I32Test {
 
 	@ParameterizedTest(name = "{0} << {1} = {2} (i32.shl)")
 	@CsvSource({
-			"1,1,2",
+		"1,1,2",
 	})
 	void shl(long first, long second, long expectedValue) throws IOException {
 		invoke("shl", first, second, expectedValue);
+	}
+
+	@ParameterizedTest(name = "{0} >> {1} = {2} (i32.shr_s)")
+	@CsvSource({
+		"1,1,0",
+		"1,0,1",
+	})
+	void shr_s(long first, long second, long expectedValue) throws IOException {
+		invoke("shr_s", first, second, expectedValue);
 	}
 
 	@ParameterizedTest(name = "{0} ^ {1} = {2} (i32.xor)")
