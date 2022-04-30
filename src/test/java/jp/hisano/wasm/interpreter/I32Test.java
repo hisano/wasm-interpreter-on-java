@@ -197,6 +197,17 @@ class I32Test {
 		invoke("ctz", value, expectedValue);
 	}
 
+	@DisplayName("i32.popcnt")
+	@ParameterizedTest(name = "popcnt({0}) = {1}")
+	@CsvSource({
+		"4294967295,32",
+		"0,0",
+		"32768,1"
+	})
+	void popcnt(long value, long expectedValue) throws IOException {
+		invoke("popcnt", value, expectedValue);
+	}
+
 	// https://github.com/WebAssembly/sign-extension-ops
 	@Nested
 	@DisplayName("Sign Extension Operators")

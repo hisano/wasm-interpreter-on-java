@@ -387,6 +387,13 @@ public final class Module {
 		}
 	}
 
+	final static class I32PopCnt extends I32Converter {
+		@Override
+		int convert(int value) {
+			return bitCount(value);
+		}
+	}
+
 	final static class I32Add extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
