@@ -34,6 +34,7 @@ import jp.hisano.wasm.interpreter.Module.I32Mul;
 import jp.hisano.wasm.interpreter.Module.I32Or;
 import jp.hisano.wasm.interpreter.Module.I32RemS;
 import jp.hisano.wasm.interpreter.Module.I32RemU;
+import jp.hisano.wasm.interpreter.Module.I32RotL;
 import jp.hisano.wasm.interpreter.Module.I32Shl;
 import jp.hisano.wasm.interpreter.Module.I32ShrS;
 import jp.hisano.wasm.interpreter.Module.I32ShrU;
@@ -235,6 +236,8 @@ final class Parser {
 				return new I32ShrS();
 			case 0x76:
 				return new I32ShrU();
+			case 0x77:
+				return new I32RotL();
 
 			case 0x7c:
 				return new I64Add();
