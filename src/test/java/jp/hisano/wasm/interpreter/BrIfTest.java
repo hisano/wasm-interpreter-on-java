@@ -44,6 +44,15 @@ class BrIfTest {
 		invoke("as-loop-mid", value, expectedValue);
 	}
 
+	@ParameterizedTest(name = "{0} -> {1}")
+	@CsvSource({
+		"0,2",
+		"1,1",
+	})
+	void as_br_if_value_cond(long value, long expectedValue) throws IOException {
+		invoke("as-br_if-value-cond", value, expectedValue);
+	}
+
 	private static void invoke(String functionName, long value, long expectedValue) throws IOException {
 		Interpreter interpreter = getInterpreter();
 
