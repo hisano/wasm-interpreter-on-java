@@ -6,6 +6,7 @@ import java.util.List;
 import static java.lang.Integer.*;
 import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
 import jp.hisano.wasm.interpreter.Module.AbstractBlock;
+import jp.hisano.wasm.interpreter.Module.Br;
 import jp.hisano.wasm.interpreter.Module.BrIf;
 import jp.hisano.wasm.interpreter.Module.Call;
 import jp.hisano.wasm.interpreter.Module.Drop;
@@ -131,6 +132,13 @@ final class Parser {
 					break;
 				}
 
+				case 0x0c:
+					result.add(new Br(byteBuffer.readUnsignedLeb128()));
+					break;
+				case 0x0d:
+					result.add(new BrIf(byteBuffer.readUnsignedLeb128()));
+					break;
+
 				case 0x0b:
 					result.add(new End());
 					return result;
@@ -140,10 +148,6 @@ final class Parser {
 
 				case 0x10:
 					result.add(new Call(module.getFunction(byteBuffer.readUnsignedLeb128())));
-					break;
-
-				case 0x0d:
-					result.add(new BrIf(byteBuffer.readUnsignedLeb128()));
 					break;
 
 				case 0x1a:

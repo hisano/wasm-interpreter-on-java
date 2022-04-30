@@ -108,7 +108,7 @@ final class Module {
 		}
 	}
 
-	static class Return implements Instruction {
+	static class Return extends ExitBlock {
 		@Override
 		public void execute(Frame frame) {
 			frame.throwExceptionToReturn();
@@ -128,7 +128,23 @@ final class Module {
 		}
 	}
 
-	static class BrIf implements Instruction {
+	static abstract class ExitBlock implements Instruction {
+	}
+
+	static class Br extends ExitBlock {
+		private final int depth;
+
+		Br(int depth) {
+			this.depth = depth;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			frame.throwExceptionToExitBlock(depth);
+		}
+	}
+
+	static class BrIf extends ExitBlock {
 		private final int depth;
 
 		BrIf(int depth) {

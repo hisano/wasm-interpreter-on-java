@@ -44,6 +44,19 @@ class BrIfTest {
 		invoke("as-loop-mid", value, expectedValue);
 	}
 
+	@Test
+	void as_br_value() throws IOException {
+		invoke("as-br-value", 1);
+	}
+
+	private static void invoke(String functionName, long expectedValue) throws IOException {
+		Interpreter interpreter = getInterpreter();
+
+		int resultValue = (Integer) interpreter.getExportedFunction(functionName).invoke();
+
+		assertEquals((int) expectedValue, resultValue);
+	}
+
 	@ParameterizedTest(name = "{0} -> {1}")
 	@CsvSource({
 		"0,2",
