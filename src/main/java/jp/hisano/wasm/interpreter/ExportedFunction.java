@@ -12,6 +12,8 @@ public final class ExportedFunction {
 	}
 
 	public Object invoke(Object... parameters) {
+		module.prepareGlobalVariables();
+
 		Frame frame = new Frame(module, function);
 		for (int i = 0; i < parameters.length; i++) {
 			Object parameter = parameters[i];

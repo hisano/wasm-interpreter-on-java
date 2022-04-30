@@ -12,6 +12,6 @@ public final class InterpreterException extends RuntimeException {
 	}
 
 	public enum Type {
-		ILLEGAL_BINARY,
+		ILLEGAL_BINARY, UNREACHABLE,
 	}
 }

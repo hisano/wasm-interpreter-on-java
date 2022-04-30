@@ -8,11 +8,14 @@ import java.util.Map;
 import static java.lang.Integer.*;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToExitBlock;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToReturn;
+import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
 
 final class Module {
 	private final List<FunctionType> functionTypes = new ArrayList<>();
 	private final List<Function> functions = new ArrayList<>();
 	private final Map<String, ExportedFunction> exportedFunctions = new HashMap<>();
+
+	private final List<GlobalVariable> globalVariables = new ArrayList<>();
 
 	void addFunctionType(ValueType[] parameterTypes, ValueType[] returnTypes) {
 		functionTypes.add(new FunctionType(parameterTypes, returnTypes));
@@ -35,8 +38,33 @@ final class Module {
 		return exportedFunctions.get(name);
 	}
 
+	void addGlobalVariable(ValueType type, boolean isMutable, List<Instruction> instructions) {
+		globalVariables.add(new GlobalVariable(globalVariables.size() - 1, type, isMutable, instructions));
+	}
+
+	public void prepareGlobalVariables() {
+		globalVariables.stream().forEach(globalVariable -> {
+			if (globalVariable.getValueType() == ValueType.I32) {
+				// モジュールでインポートされたGlobal
+				if (globalVariable.instructions.isEmpty()) {
+					return;
+				}
+
+				Frame frame = new Frame(this, null);
+				globalVariable.instructions.forEach(instruction -> {
+					instruction.execute(frame);
+				});
+				globalVariable.setI32(frame.pop());
+			}
+		});
+	}
+
+	enum Kind {
+		FUNCTION, TABLE, MEMORY, GLOBAL,
+	}
+
 	enum ValueType {
-		I32, I64, F32, F64, VOID,
+		VOID, I32, I64, F32, F64, V128, FUNCREF, EXTERNREF,
 	}
 
 	static class Variable {
@@ -51,12 +79,39 @@ final class Module {
 			this.valueType = valueType;
 		}
 
+		ValueType getValueType() {
+			return valueType;
+		}
+
 		void setI32(int newValue) {
 			i32Value = newValue;
 		}
 
 		int getI32() {
 			return i32Value;
+		}
+	}
+
+	static class GlobalVariable extends Variable {
+		private final int index;
+		private final boolean isMutable;
+		private final List<Instruction> instructions;
+
+		GlobalVariable(int index, ValueType valueType, boolean isMutable, List<Instruction> instructions) {
+			super(valueType);
+			this.index = index;
+			this.isMutable = isMutable;
+			this.instructions = instructions;
+		}
+
+		@Override
+		public String toString() {
+			return "GlobalVariable{" +
+				"index=" + index +
+				", valueType=" + getValueType() +
+				", isMutable=" + isMutable + 
+				", instructions.length = " + instructions.size() +
+				'}';
 		}
 	}
 
@@ -121,6 +176,13 @@ final class Module {
 
 	interface Instruction {
 		void execute(Frame frame);
+	}
+
+	final static class Unreachable implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			throw new InterpreterException(UNREACHABLE);
+		}
 	}
 
 	abstract static class BlockEndMarker implements Instruction {
@@ -223,6 +285,23 @@ final class Module {
 		}
 	}
 
+	final static class GlobalGet implements Instruction {
+		private final int index;
+
+		GlobalGet(int index) {
+			this.index = index;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			frame.push(frame.getModule().getGlobalVariable(index).getI32());
+		}
+	}
+
+	private GlobalVariable getGlobalVariable(int index) {
+		return globalVariables.get(index);
+	}
+
 	final static class I32Const implements Instruction {
 		private final int value;
 
@@ -233,6 +312,45 @@ final class Module {
 		@Override
 		public void execute(Frame frame) {
 			frame.push(value);
+		}
+	}
+
+	final static class I64Const implements Instruction {
+		private final long value;
+
+		I64Const(long value) {
+			this.value = value;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	final static class F32Const implements Instruction {
+		private final float value;
+
+		F32Const(float value) {
+			this.value = value;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	final static class F64Const implements Instruction {
+		private final double value;
+
+		F64Const(double value) {
+			this.value = value;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			throw new UnsupportedOperationException();
 		}
 	}
 
@@ -309,6 +427,19 @@ final class Module {
 		@Override
 		int convert(int value) {
 			return (short)value;
+		}
+	}
+
+	final static class RefNull implements Instruction {
+		private final ValueType type;
+
+		public RefNull(ValueType type) {
+			this.type = type;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			throw new UnsupportedOperationException();
 		}
 	}
 

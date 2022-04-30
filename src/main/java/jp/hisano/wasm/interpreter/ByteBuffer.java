@@ -1,6 +1,8 @@
 package jp.hisano.wasm.interpreter;
 
-import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
+import static java.lang.Double.*;
+import static java.lang.Float.*;
+import static jp.hisano.wasm.interpreter.Leb128.*;
 
 final class ByteBuffer {
 	private final byte[] bytes;
@@ -23,7 +25,7 @@ final class ByteBuffer {
 	}
 
 	byte[] readBytes() {
-		return readBytes(readUnsignedLeb128());
+		return readBytes(readVaruint32());
 	}
 
 	byte[] readBytes(int length) {
@@ -41,34 +43,33 @@ final class ByteBuffer {
 		return bytes[readIndex++];
 	}
 
+	byte readVaruint7() {
+		return bytes[readIndex++];
+	}
+
 	int readVarsint32() {
-		return readUnsignedLeb128();
+		return readSignedLeb128(this);
 	}
 
 	int readVaruint32() {
-		return readUnsignedLeb128();
+		return readUnsignedLeb128(this);
 	}
 
-	int readUnsignedLeb128() {
-		int result = 0;
+	float readFloat32() {
+		return intBitsToFloat(readInt());
+	}
 
-		int value;
-		int index = 0;
-		do {
-			value = readUnsignedByte();
-			result |= (value & 0x7f) << (index * 7);
-			index++;
-		} while (((value & 0x80) != 0) && index < 5);
+	double readFloat64() {
+		// TODO -4が正しくデコードできない
+		return longBitsToDouble(readLong());
+	}
 
-		if ((value & 0x80) != 0) {
-			throw new InterpreterException(ILLEGAL_BINARY);
-		}
-
-		return result;
+	long readLong() {
+		return (long)readUnsignedByte() | (readUnsignedByte() << 8) | (readUnsignedByte() << 16) | (readUnsignedByte() << 24) | (readUnsignedByte() << 32) | (readUnsignedByte() << 40) | (readUnsignedByte() << 48) | (readUnsignedByte() << 56);
 	}
 
 	int readInt() {
-		return readUnsignedByte() | (readUnsignedByte() << 8) | (readUnsignedLeb128() << 16) | (readUnsignedByte() << 24);
+		return readUnsignedByte() | (readUnsignedByte() << 8) | (readUnsignedByte() << 16) | (readUnsignedByte() << 24);
 	}
 
 	int readUnsignedByte() {
@@ -83,12 +84,16 @@ final class ByteBuffer {
 		return readIndex < bytes.length;
 	}
 
-	public int[] readVarUInt32Array() {
-		int length = readUnsignedLeb128();
+	int[] readVarUInt32Array() {
+		int length = readVaruint32();
 		int[] result = new int[length];
 		for (int i = 0; i < length; i++) {
-			result[i] = readUnsignedLeb128();
+			result[i] = readVaruint32();
 		}
 		return result;
+	}
+
+	long readVarsint64() {
+		return readSignedLongLeb128(this);
 	}
 }

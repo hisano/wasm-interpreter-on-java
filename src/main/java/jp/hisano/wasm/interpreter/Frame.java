@@ -13,9 +13,13 @@ final class Frame {
 	Frame(Module module, Function function) {
 		this.module = module;
 
-		localVariables = new Variable[function.parameterTypes.length];
-		for (int i = 0; i < localVariables.length; i++) {
-			localVariables[i] = new Variable(function.parameterTypes[i]);
+		if (function == null) {
+			localVariables = new Variable[0];
+		} else {
+			localVariables = new Variable[function.parameterTypes.length];
+			for (int i = 0; i < localVariables.length; i++) {
+				localVariables[i] = new Variable(function.parameterTypes[i]);
+			}
 		}
 	}
 
