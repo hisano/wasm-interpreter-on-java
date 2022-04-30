@@ -11,6 +11,7 @@ import jp.hisano.wasm.interpreter.Module.BrIf;
 import jp.hisano.wasm.interpreter.Module.BrTable;
 import jp.hisano.wasm.interpreter.Module.Call;
 import jp.hisano.wasm.interpreter.Module.Drop;
+import jp.hisano.wasm.interpreter.Module.Else;
 import jp.hisano.wasm.interpreter.Module.End;
 import jp.hisano.wasm.interpreter.Module.Function;
 import jp.hisano.wasm.interpreter.Module.FunctionBlock;
@@ -23,6 +24,7 @@ import jp.hisano.wasm.interpreter.Module.I32Extend8S;
 import jp.hisano.wasm.interpreter.Module.I32Mul;
 import jp.hisano.wasm.interpreter.Module.I32Sub;
 import jp.hisano.wasm.interpreter.Module.I32Xor;
+import jp.hisano.wasm.interpreter.Module.IfBlock;
 import jp.hisano.wasm.interpreter.Module.Instruction;
 import jp.hisano.wasm.interpreter.Module.LocalGet;
 import jp.hisano.wasm.interpreter.Module.LoopBlock;
@@ -131,6 +133,21 @@ final class Parser {
 					block.setInstructions(parseInstructions(module, block, byteBuffer));
 					result.add(block);
 					break;
+				}
+				case 0x04: {
+					IfBlock block = new IfBlock(parent, parseValueType(byteBuffer));
+					List<Instruction> thenInstructions = parseInstructions(module, block, byteBuffer);
+					List<Instruction> elseInstructions = null;
+					if (thenInstructions.get(thenInstructions.size() - 1) instanceof Else) {
+						elseInstructions = parseInstructions(module, block, byteBuffer);
+					}
+					block.setInstructions(thenInstructions, elseInstructions);
+					result.add(block);
+					break;
+				}
+				case 0x05: {
+					result.add(new Else());
+					return result;
 				}
 
 				case 0x0b:

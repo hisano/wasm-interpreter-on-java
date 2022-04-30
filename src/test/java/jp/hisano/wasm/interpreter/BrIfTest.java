@@ -84,6 +84,15 @@ class BrIfTest {
 		invoke("as-br_table-value-index", 1);
 	}
 
+	@ParameterizedTest(name = "{0} -> {1}")
+	@CsvSource({
+		"0,2",
+		"1,1",
+	})
+	void as_if_cond(long value, long expectedValue) throws IOException {
+		invoke("as-if-cond", value, expectedValue);
+	}
+
 	private static Interpreter getInterpreter() throws IOException {
 		return createInterpreter("spec/br_if/br_if.0.wasm");
 	}

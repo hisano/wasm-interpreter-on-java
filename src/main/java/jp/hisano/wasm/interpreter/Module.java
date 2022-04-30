@@ -361,4 +361,50 @@ final class Module {
 			this.resultValueType = resultValueType;
 		}
 	}
+
+	static class IfBlock extends AbstractBlock {
+		private List<Instruction> thenInstructions;
+		private List<Instruction> elseInstructions;
+
+		private final ValueType resultValueType;
+
+		IfBlock(AbstractBlock parent, ValueType resultValueType) {
+			super(parent);
+			this.resultValueType = resultValueType;
+		}
+
+		void setInstructions(List<Instruction> thenInstructions, List<Instruction> elseInstructions) {
+			this.thenInstructions = thenInstructions;
+			this.elseInstructions = elseInstructions;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			try {
+				if (frame.pop() != 0) {
+					thenInstructions.forEach(instruction -> {
+						instruction.execute(frame);
+					});
+				} else {
+					if (elseInstructions != null) {
+						elseInstructions.forEach(instruction -> {
+							instruction.execute(frame);
+						});
+					}
+				}
+			} catch (ExceptionToExitBlock e) {
+				if (e.isMoreExitRequired()) {
+					e.decrementDepth();
+					throw e;
+				}
+			}
+		}
+
+	}
+
+	static class Else implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+		}
+	}
 }
