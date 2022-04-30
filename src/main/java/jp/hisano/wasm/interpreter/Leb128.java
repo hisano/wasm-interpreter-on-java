@@ -25,13 +25,10 @@ import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
  * section 7.6.
  */
 final class Leb128 {
-    private Leb128() {
-    }
-
     /**
      * Reads an signed integer from {@code in}.
      */
-    public static int readSignedLeb128(ByteBuffer in) {
+    static int readSignedLeb128(ByteBuffer in) {
         int result = 0;
         int cur;
         int count = 0;
@@ -84,7 +81,7 @@ final class Leb128 {
     /**
      * Reads an unsigned integer from {@code in}.
      */
-    public static int readUnsignedLeb128(ByteBuffer in) {
+    static int readUnsignedLeb128(ByteBuffer in) {
         int result = 0;
         int cur;
         int count = 0;
@@ -100,5 +97,8 @@ final class Leb128 {
         }
 
         return result;
+    }
+
+    private Leb128() {
     }
 }
