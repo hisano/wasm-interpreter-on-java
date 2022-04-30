@@ -15,7 +15,7 @@ public final class Module {
 	private final List<Function> functions = new ArrayList<>();
 	private final Map<String, ExportedFunction> exportedFunctions = new HashMap<>();
 
-	private final List<GlobalVariable> globalVariables = new ArrayList<>();
+	private final List<GlobalVariableType> globalVariableTypes = new ArrayList<>();
 
 	public Module(byte[] wasmFileContent) {
 		new Parser(wasmFileContent).parseModule(this);
@@ -31,7 +31,7 @@ public final class Module {
 	}
 
 	void addExportedFunction(String name, int functionIndex) {
-		exportedFunctions.put(name, new ExportedFunction(this, functions.get(functionIndex)));
+		exportedFunctions.put(name, new ExportedFunction(functions.get(functionIndex)));
 	}
 
 	Function getFunction(int functionIndex) {
@@ -42,25 +42,12 @@ public final class Module {
 		return exportedFunctions.get(name);
 	}
 
-	void addGlobalVariable(ValueType type, boolean isMutable, List<Instruction> instructions) {
-		globalVariables.add(new GlobalVariable(globalVariables.size() - 1, type, isMutable, instructions));
+	void addGlobalVariableType(ValueType type, boolean isMutable, List<Instruction> instructions) {
+		globalVariableTypes.add(new GlobalVariableType(globalVariableTypes.size() - 1, type, isMutable, instructions));
 	}
 
-	public void prepareGlobalVariables() {
-		globalVariables.stream().forEach(globalVariable -> {
-			if (globalVariable.getValueType() == ValueType.I32) {
-				// モジュールでインポートされたGlobal
-				if (globalVariable.instructions.isEmpty()) {
-					return;
-				}
-
-				Frame frame = new Frame(this, null);
-				globalVariable.instructions.forEach(instruction -> {
-					instruction.execute(frame);
-				});
-				globalVariable.setI32(frame.pop());
-			}
-		});
+	List<GlobalVariableType> getGlobalVariableTypes() {
+		return globalVariableTypes;
 	}
 
 	enum Kind {
@@ -71,48 +58,39 @@ public final class Module {
 		VOID, I32, I64, F32, F64, V128, FUNCREF, EXTERNREF,
 	}
 
-	static class Variable {
-		private final ValueType valueType;
+	static class VariableType {
+		private final ValueType type;
 
-		private int i32Value;
-		private long i64Value;
-		private float f32Value;
-		private double f64Value;
-
-		Variable(ValueType valueType) {
-			this.valueType = valueType;
+		VariableType(ValueType type) {
+			this.type = type;
 		}
 
-		ValueType getValueType() {
-			return valueType;
-		}
-
-		void setI32(int newValue) {
-			i32Value = newValue;
-		}
-
-		int getI32() {
-			return i32Value;
+		ValueType getType() {
+			return type;
 		}
 	}
 
-	static class GlobalVariable extends Variable {
+	static class GlobalVariableType extends VariableType {
 		private final int index;
 		private final boolean isMutable;
 		private final List<Instruction> instructions;
 
-		GlobalVariable(int index, ValueType valueType, boolean isMutable, List<Instruction> instructions) {
-			super(valueType);
+		GlobalVariableType(int index, ValueType type, boolean isMutable, List<Instruction> instructions) {
+			super(type);
 			this.index = index;
 			this.isMutable = isMutable;
 			this.instructions = instructions;
+		}
+
+		List<Instruction> getInstructions() {
+			return instructions;
 		}
 
 		@Override
 		public String toString() {
 			return "GlobalVariable{" +
 				"index=" + index +
-				", valueType=" + getValueType() +
+				", valueType=" + getType() +
 				", isMutable=" + isMutable + 
 				", instructions.length = " + instructions.size() +
 				'}';
@@ -137,25 +115,25 @@ public final class Module {
 			this.instructions = instructions;
 		}
 
-		void execute(Frame frame) {
+		void invoke(Frame frame) {
 			if (functionBlock == null) {
-				functionBlock = new Parser(instructions).parseFunctionBlock(frame.getModule(), this);
+				functionBlock = new Parser(instructions).parseFunctionBlock(frame.getInstance().getModule(), this);
 			}
 			functionBlock.execute(frame);
 		}
 
 		void executeWithNewFrame(Frame parent) {
-			Frame frame = new Frame(parent.getModule(), this);
+			Frame frame = new Frame(parent.getInstance(), this);
 
 			for (int i = parameterTypes.length - 1; 0 <= i; i--) {
 				switch (parameterTypes[i]) {
 					case I32:
-						frame.getLocalVariable(i).setI32(parent.pop());
+						frame.getLocalVariable(i).getValue().setI32(parent.pop());
 						break;
 				}
 			}
 
-			execute(frame);
+			invoke(frame);
 
 			if (returnTypes.length == 0) {
 				return;
@@ -285,7 +263,7 @@ public final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			frame.push(frame.getLocalVariable(index).getI32());
+			frame.push(frame.getLocalVariable(index).getValue().getI32());
 		}
 	}
 
@@ -298,12 +276,8 @@ public final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			frame.push(frame.getModule().getGlobalVariable(index).getI32());
+			frame.push(frame.getInstance().getGlobalVariable(index).getValue().getI32());
 		}
-	}
-
-	private GlobalVariable getGlobalVariable(int index) {
-		return globalVariables.get(index);
 	}
 
 	final static class I32Const implements Instruction {

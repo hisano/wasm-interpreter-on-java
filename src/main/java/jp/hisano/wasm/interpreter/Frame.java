@@ -1,30 +1,30 @@
 package jp.hisano.wasm.interpreter;
 
 import jp.hisano.wasm.interpreter.Module.Function;
-import jp.hisano.wasm.interpreter.Module.Variable;
+import jp.hisano.wasm.interpreter.Module.ValueType;
 
 final class Frame {
-	private final Module module;
-	private final Variable[] localVariables;
+	private final Instance instance;
+	private final LocalVariable[] localVariables;
 
 	private final int[] stack = new int[256];
 	private int stackIndex = 0;
 
-	Frame(Module module, Function function) {
-		this.module = module;
+	Frame(Instance instance, Function function) {
+		this.instance = instance;
 
 		if (function == null) {
-			localVariables = new Variable[0];
+			localVariables = new LocalVariable[0];
 		} else {
-			localVariables = new Variable[function.parameterTypes.length];
-			for (int i = 0; i < localVariables.length; i++) {
-				localVariables[i] = new Variable(function.parameterTypes[i]);
+			localVariables = new LocalVariable[function.parameterTypes.length];
+			for (int i = 0, length = localVariables.length; i < length; i++) {
+				localVariables[i] = new LocalVariable(function.parameterTypes[i]);
 			}
 		}
 	}
 
-	Module getModule() {
-		return module;
+	Instance getInstance() {
+		return instance;
 	}
 
 	int pop() {
@@ -35,7 +35,7 @@ final class Frame {
 		stack[stackIndex++] = value;
 	}
 
-	Variable getLocalVariable(int index) {
+	LocalVariable getLocalVariable(int index) {
 		return localVariables[index];
 	}
 
@@ -65,6 +65,20 @@ final class Frame {
 
 	static class ExceptionToReturn extends RuntimeException {
 		private ExceptionToReturn() {
+		}
+	}
+
+	static class LocalVariable {
+		private final ValueType type;
+
+		private final Value value = new Value();
+
+		LocalVariable(ValueType type) {
+			this.type = type;
+		}
+
+		Value getValue() {
+			return value;
 		}
 	}
 }

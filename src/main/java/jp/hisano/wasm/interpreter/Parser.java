@@ -240,7 +240,7 @@ final class Parser {
 				case GLOBAL:
 					ValueType type = toValueType(byteBuffer.readVarsint7());
 					boolean mutability = byteBuffer.readUint1() != 0;
-					module.addGlobalVariable(type, mutability, Collections.emptyList());
+					module.addGlobalVariableType(type, mutability, Collections.emptyList());
 					break;
 			}
 		}
@@ -251,7 +251,7 @@ final class Parser {
 			ValueType type = toValueType(byteBuffer.readVarsint7());
 			boolean mutability = byteBuffer.readUint1() != 0;
 			List<Instruction> instructions = parseInstructions(null, null);
-			module.addGlobalVariable(type, mutability, instructions);
+			module.addGlobalVariableType(type, mutability, instructions);
 		}
 	}
 

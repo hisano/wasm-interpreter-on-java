@@ -2,27 +2,23 @@ package jp.hisano.wasm.interpreter;
 
 import jp.hisano.wasm.interpreter.Module.Function;
 
-public final class ExportedFunction {
-	private final Module module;
+final class ExportedFunction {
 	private final Function function;
 
-	ExportedFunction(Module module, Function function) {
-		this.module = module;
+	ExportedFunction(Function function) {
 		this.function = function;
 	}
 
-	public <T> T invoke(Object... parameters) {
-		module.prepareGlobalVariables();
-
-		Frame frame = new Frame(module, function);
+	<T> T invoke(Instance instance, Object... parameters) {
+		Frame frame = new Frame(instance, function);
 		for (int i = 0; i < parameters.length; i++) {
 			Object parameter = parameters[i];
 			if (parameter instanceof Integer) {
-				frame.getLocalVariable(i).setI32((Integer)parameter);
+				frame.getLocalVariable(i).getValue().setI32((Integer)parameter);
 			}
 		}
 
-		function.execute(frame);
+		function.invoke(frame);
 
 		if (function.returnTypes.length == 0) {
 			return null;
