@@ -261,16 +261,10 @@ public final class Module {
 		}
 	}
 
-	final static class LocalGet implements Instruction {
-		private final int index;
-
-		LocalGet(int index) {
-			this.index = index;
-		}
-
+	private static abstract class PushValue implements Instruction {
 		@Override
 		public void execute(Frame frame) {
-			Value value = frame.getLocalVariable(index).getValue();
+			Value value = getValue(frame);
 			switch (value.getType()) {
 				case I32:
 					frame.pushI32(value.getI32());
@@ -278,11 +272,29 @@ public final class Module {
 				case I64:
 					frame.pushI64(value.getI64());
 					return;
+				case F32:
+					frame.pushF32(value.getF32());
+					return;
 			}
+		}
+
+		abstract Value getValue(Frame frame);
+	}
+
+	final static class LocalGet extends PushValue {
+		private final int index;
+
+		LocalGet(int index) {
+			this.index = index;
+		}
+
+		@Override
+		Value getValue(Frame frame) {
+			return frame.getLocalVariable(index).getValue();
 		}
 	}
 
-	final static class GlobalGet implements Instruction {
+	final static class GlobalGet extends PushValue {
 		private final int index;
 
 		GlobalGet(int index) {
@@ -290,8 +302,8 @@ public final class Module {
 		}
 
 		@Override
-		public void execute(Frame frame) {
-			frame.pushI32(frame.getInstance().getGlobalVariable(index).getValue().getI32());
+		Value getValue(Frame frame) {
+			return frame.getInstance().getGlobalVariable(index).getValue();
 		}
 	}
 
@@ -437,6 +449,24 @@ public final class Module {
 	final static class I64Add extends I64TwoOperandsOperator {
 		@Override
 		long calculate(long first, long second) {
+			return first + second;
+		}
+	}
+
+	private static abstract class F32TwoOperandsOperator implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			float second = frame.pop().getF32();
+			float first = frame.pop().getF32();
+			frame.pushF32(calculate(first, second));
+		}
+
+		abstract float calculate(float first, float second);
+	}
+
+	final static class F32Add extends F32TwoOperandsOperator {
+		@Override
+		float calculate(float first, float second) {
 			return first + second;
 		}
 	}

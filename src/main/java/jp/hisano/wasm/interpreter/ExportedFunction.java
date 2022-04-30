@@ -22,6 +22,9 @@ final class ExportedFunction {
 					case I64:
 						frame.getLocalVariable(i).getValue().setI64(number.longValue());
 						break;
+					case F32:
+						frame.getLocalVariable(i).getValue().setF32(number.floatValue());
+						break;
 				}
 			}
 		}
@@ -37,6 +40,8 @@ final class ExportedFunction {
 				return (T) (Integer)frame.pop().getI32();
 			case I64:
 				return (T) (Long)frame.pop().getI64();
+			case F32:
+				return (T) (Float)frame.pop().getF32();
 
 			default:
 				return null;

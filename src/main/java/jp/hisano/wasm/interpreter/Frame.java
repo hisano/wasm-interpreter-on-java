@@ -32,12 +32,16 @@ final class Frame {
 		return stack.pop();
 	}
 
-	void pushI32(int value) {
-		stack.push(new Value(value));
+	void pushI32(int i32Value) {
+		stack.push(new Value(i32Value));
 	}
 
-	void pushI64(long value) {
-		stack.push(new Value(value));
+	void pushI64(long i64Value) {
+		stack.push(new Value(i64Value));
+	}
+
+	void pushF32(float f32Value) {
+		stack.push(new Value(f32Value));
 	}
 
 	LocalVariable getLocalVariable(int index) {
