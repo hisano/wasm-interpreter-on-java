@@ -52,9 +52,7 @@ final class Parser {
 		this.byteBuffer = new ByteBuffer(byteBuffer);
 	}
 
-	Module parseModule() {
-		Module module = new Module();
-
+	void parseModule(Module module) {
 		checkInt(MAGIC);
 		checkInt(VERSION);
 
@@ -100,8 +98,6 @@ final class Parser {
 					throw new UnsupportedOperationException("not implemented section (0x" + toHexString(section) + "): readIndex = 0x" + toHexString(byteBuffer.getReadIndex()));
 			}
 		}
-
-		return module;
 	}
 
 	private void checkInt(int expectedValue) {

@@ -10,12 +10,16 @@ import jp.hisano.wasm.interpreter.Frame.ExceptionToExitBlock;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToReturn;
 import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
 
-final class Module {
+public final class Module {
 	private final List<FunctionType> functionTypes = new ArrayList<>();
 	private final List<Function> functions = new ArrayList<>();
 	private final Map<String, ExportedFunction> exportedFunctions = new HashMap<>();
 
 	private final List<GlobalVariable> globalVariables = new ArrayList<>();
+
+	public Module(byte[] wasmFileContent) {
+		new Parser(wasmFileContent).parseModule(this);
+	}
 
 	void addFunctionType(ValueType[] parameterTypes, ValueType[] returnTypes) {
 		functionTypes.add(new FunctionType(parameterTypes, returnTypes));

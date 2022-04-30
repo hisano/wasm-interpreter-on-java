@@ -11,7 +11,7 @@ public final class ExportedFunction {
 		this.function = function;
 	}
 
-	public Object invoke(Object... parameters) {
+	public <T> T invoke(Object... parameters) {
 		module.prepareGlobalVariables();
 
 		Frame frame = new Frame(module, function);
@@ -30,7 +30,7 @@ public final class ExportedFunction {
 
 		switch (function.returnTypes[0]) {
 			case I32:
-				return frame.pop();
+				return (T) (Integer)frame.pop();
 
 			default:
 				return null;
