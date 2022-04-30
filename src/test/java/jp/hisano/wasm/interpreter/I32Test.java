@@ -300,6 +300,19 @@ class I32Test {
 		invoke("lt_u", first, second, expectedValue);
 	}
 
+	@DisplayName("i32.le_s")
+	@ParameterizedTest(name = "({0} <= {1}) = {2}")
+	@CsvSource({
+		"0,0,1",
+		"1,1,1",
+		"4294967295,1,1",
+		"1,0,0",
+		"0,1,1",
+	})
+	void le_s(long first, long second, long expectedValue) throws IOException {
+		invoke("le_s", first, second, expectedValue);
+	}
+
 	@DisplayName("i32.gt_s")
 	@ParameterizedTest(name = "({0} > {1}) = {2}")
 	@CsvSource({
