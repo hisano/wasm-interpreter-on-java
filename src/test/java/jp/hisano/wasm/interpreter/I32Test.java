@@ -64,10 +64,10 @@ class I32Test {
 
 	@ParameterizedTest(name = "{0} / {1} = {2} (i32.div_u)")
 	@CsvSource({
-			"1,1,1",
-			"0,1,0",
-			"4294967295,4294967295,1",
-			"4294967291,2,2147483645"
+		"1,1,1",
+		"0,1,0",
+		"4294967295,4294967295,1",
+		"4294967291,2,2147483645"
 	})
 	void div_u(long first, long second, long expectedValue) throws IOException {
 		invoke("div_u", first, second, expectedValue);
@@ -93,10 +93,10 @@ class I32Test {
 
 	@ParameterizedTest(name = "{0} & {1} = {2} (i32.and)")
 	@CsvSource({
-			"1,0,0",
-			"0,1,0",
-			"1,1,1",
-			"0,0,0",
+		"1,0,0",
+		"0,1,0",
+		"1,1,1",
+		"0,0,0",
 	})
 	void and(long first, long second, long expectedValue) throws IOException {
 		invoke("and", first, second, expectedValue);
@@ -125,13 +125,13 @@ class I32Test {
 	class SignExtensionOperatorsTest {
 		@ParameterizedTest(name = "{0} -> {1} (i32.extend8_s)")
 		@CsvSource({
-				"0,0",
-				"127,127",
-				"128,4294967168",
-				"255,4294967295",
-				"19088640,0",
-				"4275878528,4294967168",
-				"4294967295,4294967295",
+			"0,0",
+			"127,127",
+			"128,4294967168",
+			"255,4294967295",
+			"19088640,0",
+			"4275878528,4294967168",
+			"4294967295,4294967295",
 		})
 		void extend8_s(long value, long expectedValue) throws IOException {
 			invoke("extend8_s", value, expectedValue);
@@ -139,13 +139,13 @@ class I32Test {
 
 		@ParameterizedTest(name = "{0} -> {1} (i32.extend16_s)")
 		@CsvSource({
-				"0,0",
-				"32767,32767",
-				"32768,4294934528",
-				"65535,4294967295",
-				"19070976,0",
-				"4275863552,4294934528",
-				"4294967295,4294967295",
+			"0,0",
+			"32767,32767",
+			"32768,4294934528",
+			"65535,4294967295",
+			"19070976,0",
+			"4275863552,4294934528",
+			"4294967295,4294967295",
 		})
 		void extend16_s(long value, long expectedValue) throws IOException {
 			invoke("extend16_s", value, expectedValue);
