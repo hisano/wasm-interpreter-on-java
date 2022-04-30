@@ -12,9 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BrIfTest {
 	@Test
 	void type_i32() throws IOException {
-		Interpreter interpreter = getInterpreter();
-
-		interpreter.getExportedFunction("type-i32").invoke();
+		getInterpreter().invoke("type-i32");
 	}
 
 	@ParameterizedTest(name = "{0} -> {1}")
@@ -49,14 +47,6 @@ class BrIfTest {
 		invoke("as-br-value", 1);
 	}
 
-	private static void invoke(String functionName, long expectedValue) throws IOException {
-		Interpreter interpreter = getInterpreter();
-
-		int resultValue = (Integer) interpreter.getExportedFunction(functionName).invoke();
-
-		assertEquals((int) expectedValue, resultValue);
-	}
-
 	@ParameterizedTest(name = "{0} -> {1}")
 	@CsvSource({
 		"0,2",
@@ -64,14 +54,6 @@ class BrIfTest {
 	})
 	void as_br_if_value_cond(long value, long expectedValue) throws IOException {
 		invoke("as-br_if-value-cond", value, expectedValue);
-	}
-
-	private static void invoke(String functionName, long value, long expectedValue) throws IOException {
-		Interpreter interpreter = getInterpreter();
-
-		int resultValue = (Integer) interpreter.getExportedFunction(functionName).invoke((int) value);
-
-		assertEquals((int) expectedValue, resultValue);
 	}
 
 	@Test
@@ -91,6 +73,16 @@ class BrIfTest {
 	})
 	void as_if_cond(long value, long expectedValue) throws IOException {
 		invoke("as-if-cond", value, expectedValue);
+	}
+
+	private static void invoke(String functionName, long expectedValue) throws IOException {
+		int resultValue = getInterpreter().invoke(functionName);
+		assertEquals((int) expectedValue, resultValue);
+	}
+
+	private static void invoke(String functionName, long value, long expectedValue) throws IOException {
+		int resultValue = getInterpreter().invoke(functionName, (int) value);
+		assertEquals((int) expectedValue, resultValue);
 	}
 
 	private static Interpreter getInterpreter() throws IOException {

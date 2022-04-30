@@ -10,10 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class InterpreterTest {
 	@Test
 	void addTwo() throws IOException {
-		Interpreter interpreter = createInterpreter("basic/addTwo.wasm");
-
-		int resultValue = (Integer) interpreter.getExportedFunction("addTwo").invoke(1, 1);
-
+		int resultValue = createInterpreter("basic/addTwo.wasm").invoke("addTwo", 1, 1);
 		assertEquals(2, resultValue);
 	}
 }

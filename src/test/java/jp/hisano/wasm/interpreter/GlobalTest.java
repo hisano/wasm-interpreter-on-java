@@ -10,10 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GlobalTest {
 	@Test
 	void get_a() throws IOException {
-		Interpreter interpreter = getInterpreter();
-
-		int resultValue = (Integer) interpreter.getExportedFunction("get-a").invoke();
-
+		int resultValue = getInterpreter().invoke("get-a");
 		assertEquals(-2, resultValue);
 	}
 

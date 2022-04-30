@@ -3,11 +3,11 @@ package jp.hisano.wasm.interpreter;
 public final class Interpreter {
 	private final Module module;
 
-	public Interpreter(byte[] wasmBinary) {
-		module = new Parser(wasmBinary).parseModule();
+	public Interpreter(byte[] wasmFileContent) {
+		module = new Parser(wasmFileContent).parseModule();
 	}
 
-	public ExportedFunction getExportedFunction(String name) {
-		return module.getExportedFunction(name);
+	public <T> T invoke(String name, Object... parameters) {
+		return (T) module.getExportedFunction(name).invoke(parameters);
 	}
 }

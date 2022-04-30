@@ -10,10 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CallTest {
 	@Test
 	void type_i32() throws IOException {
-		Interpreter interpreter = getInterpreter();
-
-		int resultValue = (Integer) interpreter.getExportedFunction("type-i32").invoke();
-
+		int resultValue = getInterpreter().invoke("type-i32");
 		assertEquals(306, resultValue);
 	}
 
