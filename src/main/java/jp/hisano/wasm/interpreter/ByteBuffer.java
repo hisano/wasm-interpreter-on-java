@@ -12,6 +12,10 @@ final class ByteBuffer {
 		this.bytes = bytes;
 	}
 
+	boolean canRead() {
+		return readIndex < bytes.length;
+	}
+
 	void skipBytes(int count) {
 		readIndex += count;
 	}
@@ -21,14 +25,14 @@ final class ByteBuffer {
 	}
 
 	String readUtf8() {
-		return new String(readBytes());
+		return new String(readInt8Array());
 	}
 
-	byte[] readBytes() {
-		return readBytes(readVaruint32());
+	private byte[] readInt8Array() {
+		return readInt8Array(readVaruint32());
 	}
 
-	byte[] readBytes(int length) {
+	byte[] readInt8Array(int length) {
 		byte[] result = new byte[length];
 		System.arraycopy(bytes, readIndex, result, 0, length);
 		readIndex += length;
@@ -36,15 +40,15 @@ final class ByteBuffer {
 	}
 
 	byte readUint1() {
-		return bytes[readIndex++];
+		return readByte();
 	}
 
 	byte readVarsint7() {
-		return bytes[readIndex++];
+		return readByte();
 	}
 
 	byte readVaruint7() {
-		return bytes[readIndex++];
+		return readByte();
 	}
 
 	int readVarsint32() {
@@ -55,40 +59,7 @@ final class ByteBuffer {
 		return readUnsignedLeb128(this);
 	}
 
-	float readFloat32() {
-		return intBitsToFloat(readInt());
-	}
-
-	double readFloat64() {
-		// TODO -4が正しくデコードできない
-		return longBitsToDouble(readLong());
-	}
-
-	long readLong() {
-		return (long)readUnsignedByte() | (readUnsignedByte() << 8) | (readUnsignedByte() << 16) | (readUnsignedByte() << 24) | (readUnsignedByte() << 32) | (readUnsignedByte() << 40) | (readUnsignedByte() << 48) | (readUnsignedByte() << 56);
-	}
-
-	int readUint32() {
-		return readInt();
-	}
-
-	int readInt() {
-		return readUnsignedByte() | (readUnsignedByte() << 8) | (readUnsignedByte() << 16) | (readUnsignedByte() << 24);
-	}
-
-	int readUnsignedByte() {
-		return readByte() & 0xff;
-	}
-
-	int readByte() {
-		return bytes[readIndex++];
-	}
-
-	boolean canRead() {
-		return readIndex < bytes.length;
-	}
-
-	int[] readVarUInt32Array() {
+	int[] readVaruint32Array() {
 		int length = readVaruint32();
 		int[] result = new int[length];
 		for (int i = 0; i < length; i++) {
@@ -99,5 +70,34 @@ final class ByteBuffer {
 
 	long readVarsint64() {
 		return readSignedLongLeb128(this);
+	}
+
+	float readFloat32() {
+		return intBitsToFloat(readInt32());
+	}
+
+	double readFloat64() {
+		// TODO -4が正しくデコードできない
+		return longBitsToDouble(readInt64());
+	}
+
+	int readUint32() {
+		return readInt32();
+	}
+
+	int readInt32() {
+		return readUint8AsInt() | (readUint8AsInt() << 8) | (readUint8AsInt() << 16) | (readUint8AsInt() << 24);
+	}
+
+	long readInt64() {
+		return (long) readUint8AsInt() | (readUint8AsInt() << 8) | (readUint8AsInt() << 16) | (readUint8AsInt() << 24) | (readUint8AsInt() << 32) | (readUint8AsInt() << 40) | (readUint8AsInt() << 48) | (readUint8AsInt() << 56);
+	}
+
+	int readUint8AsInt() {
+		return readByte() & 0xff;
+	}
+
+	byte readByte() {
+		return bytes[readIndex++];
 	}
 }

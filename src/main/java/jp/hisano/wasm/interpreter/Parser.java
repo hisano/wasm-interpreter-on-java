@@ -116,7 +116,7 @@ final class Parser {
 			int baseIndex = byteBuffer.getReadIndex();
 			ValueType[] localTypes = parseValueTypes();
 			int instructionLength = size - (byteBuffer.getReadIndex() - baseIndex);
-			byte[] instructions = byteBuffer.readBytes(instructionLength);
+			byte[] instructions = byteBuffer.readInt8Array(instructionLength);
 			Function function = module.getFunction(i);
 			function.setBody(localTypes, instructions);
 		}
@@ -140,7 +140,7 @@ final class Parser {
 	}
 
 	private Instruction parseInstruction(Module module, AbstractBlock parent) {
-		int instruction = byteBuffer.readUnsignedByte();
+		int instruction = byteBuffer.readUint8AsInt();
 		switch (instruction) {
 			case 0x00:
 				return new Unreachable();
@@ -175,7 +175,7 @@ final class Parser {
 			case 0x0d:
 				return new BrIf(byteBuffer.readVaruint32());
 			case 0x0e:
-				return new BrTable(byteBuffer.readVarUInt32Array(), byteBuffer.readVaruint32());
+				return new BrTable(byteBuffer.readVaruint32Array(), byteBuffer.readVaruint32());
 
 			case 0x0f:
 				return new Return();
@@ -262,7 +262,7 @@ final class Parser {
 	private void parseExportSection(Module module) {
 		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
 			String name = byteBuffer.readUtf8();
-			int kind = byteBuffer.readByte();
+			int kind = byteBuffer.readVaruint7();
 			switch (kind) {
 				case 0x00:
 					module.addExportedFunction(name, byteBuffer.readVaruint32());
@@ -282,7 +282,7 @@ final class Parser {
 
 	private void parseTypeSection(Module module) {
 		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
-			switch (byteBuffer.readByte()) {
+			switch (byteBuffer.readVaruint7()) {
 				case 0x60:
 					parseFunctionType(module);
 					break;
