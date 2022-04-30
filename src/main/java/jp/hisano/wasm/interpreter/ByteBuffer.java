@@ -16,7 +16,7 @@ final class ByteBuffer {
 		readIndex += count;
 	}
 
-	int getPosition() {
+	int getReadIndex() {
 		return readIndex;
 	}
 
@@ -66,6 +66,10 @@ final class ByteBuffer {
 
 	long readLong() {
 		return (long)readUnsignedByte() | (readUnsignedByte() << 8) | (readUnsignedByte() << 16) | (readUnsignedByte() << 24) | (readUnsignedByte() << 32) | (readUnsignedByte() << 40) | (readUnsignedByte() << 48) | (readUnsignedByte() << 56);
+	}
+
+	int readUint32() {
+		return readInt();
 	}
 
 	int readInt() {

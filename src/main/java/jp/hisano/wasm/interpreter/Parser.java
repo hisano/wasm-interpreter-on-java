@@ -46,58 +46,58 @@ final class Parser {
 	private static final int MAGIC = 0x6d736100; // = "\0asm"
 	private static final int VERSION = 1;
 
-	private final ByteBuffer wasmFileContent;
+	private final ByteBuffer byteBuffer;
 
-	private final Module module = new Module();
-
-	Parser(byte[] wasmFileContent) {
-		this.wasmFileContent = new ByteBuffer(wasmFileContent);
+	Parser(byte[] byteBuffer) {
+		this.byteBuffer = new ByteBuffer(byteBuffer);
 	}
 
 	Module parseModule() {
+		Module module = new Module();
+
 		checkInt(MAGIC);
 		checkInt(VERSION);
 
-		while (wasmFileContent.canRead()) {
-			int section = wasmFileContent.readByte();
-			int size = wasmFileContent.readVaruint32();
+		while (byteBuffer.canRead()) {
+			int section = byteBuffer.readVaruint7();
+			int size = byteBuffer.readVaruint32();
 			switch (section) {
 				case 0x00:
 					// ignore custom section
-					wasmFileContent.skipBytes(size);
+					byteBuffer.skipBytes(size);
 					break;
 				case 0x01:
-					parseTypeSection();
+					parseTypeSection(module);
 					break;
 				case 0x02:
-					parseImportSection();
+					parseImportSection(module);
 					break;
 				case 0x03:
-					parseFunctionSection();
+					parseFunctionSection(module);
 					break;
 				case 0x04:
 					// TODO Tableセクションの読み込み
-					wasmFileContent.skipBytes(size);
+					byteBuffer.skipBytes(size);
 					break;
 				case 0x05:
 					// TODO Memoryセクションの読み込み
-					wasmFileContent.skipBytes(size);
+					byteBuffer.skipBytes(size);
 					break;
 				case 0x06:
-					parseGlobalSection();
+					parseGlobalSection(module);
 					break;
 				case 0x07:
-					parseExportSection();
+					parseExportSection(module);
 					break;
 				case 0x09:
 					// TODO Elementセクションの読み込み
-					wasmFileContent.skipBytes(size);
+					byteBuffer.skipBytes(size);
 					break;
 				case 0x0A:
-					parseCodeSection();
+					parseCodeSection(module);
 					break;
 				default:
-					throw new UnsupportedOperationException("not implemented section (0x" + toHexString(section) + "): readIndex = 0x" + toHexString(wasmFileContent.getPosition()));
+					throw new UnsupportedOperationException("not implemented section (0x" + toHexString(section) + "): readIndex = 0x" + toHexString(byteBuffer.getReadIndex()));
 			}
 		}
 
@@ -105,34 +105,33 @@ final class Parser {
 	}
 
 	private void checkInt(int expectedValue) {
-		if (wasmFileContent.readInt() != expectedValue) {
+		if (byteBuffer.readUint32() != expectedValue) {
 			throw new InterpreterException(ILLEGAL_BINARY);
 		}
 	}
 
-	private void parseCodeSection() {
-		int length = wasmFileContent.readVaruint32();
-		for (int i = 0; i < length; i++) {
-			int size = wasmFileContent.readVaruint32();
-			int baseIndex = wasmFileContent.getPosition();
+	private void parseCodeSection(Module module) {
+		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
+			int size = byteBuffer.readVaruint32();
+			int baseIndex = byteBuffer.getReadIndex();
 			ValueType[] localTypes = parseValueTypes();
-			int instructionLength = size - (wasmFileContent.getPosition() - baseIndex);
-			byte[] instructions = wasmFileContent.readBytes(instructionLength);
+			int instructionLength = size - (byteBuffer.getReadIndex() - baseIndex);
+			byte[] instructions = byteBuffer.readBytes(instructionLength);
 			Function function = module.getFunction(i);
 			function.setBody(localTypes, instructions);
 		}
 	}
 
-	static FunctionBlock parseFunctionBlock(Module module, Function function, byte[] instructions) {
-		FunctionBlock result = new FunctionBlock(function);
-		result.setInstructions(parseInstructions(module, result, new ByteBuffer(instructions)));
-		return result;
+	FunctionBlock parseFunctionBlock(Module module, Function function) {
+		FunctionBlock functionBlock = new FunctionBlock(function);
+		functionBlock.setInstructions(parseInstructions(module, functionBlock));
+		return functionBlock;
 	}
 
-	private static List<Instruction> parseInstructions(Module module, AbstractBlock parent, ByteBuffer byteBuffer) {
+	private List<Instruction> parseInstructions(Module module, AbstractBlock parent) {
 		List<Instruction> result = new LinkedList<>();
 		while (true) {
-			Instruction instruction = parseInstruction(module, parent, byteBuffer);
+			Instruction instruction = parseInstruction(module, parent);
 			result.add(instruction);
 			if (instruction instanceof BlockEndMarker) {
 				return result;
@@ -140,27 +139,27 @@ final class Parser {
 		}
 	}
 
-	private static Instruction parseInstruction(Module module, AbstractBlock parent, ByteBuffer byteBuffer) {
+	private Instruction parseInstruction(Module module, AbstractBlock parent) {
 		int instruction = byteBuffer.readUnsignedByte();
 		switch (instruction) {
 			case 0x00:
 				return new Unreachable();
 			case 0x02: {
 				Block block = new Block(parent, toValueType(byteBuffer.readVarsint7()));
-				block.setInstructions(parseInstructions(module, block, byteBuffer));
+				block.setInstructions(parseInstructions(module, block));
 				return block;
 			}
 			case 0x03: {
 				Loop block = new Loop(parent, toValueType(byteBuffer.readVarsint7()));
-				block.setInstructions(parseInstructions(module, block, byteBuffer));
+				block.setInstructions(parseInstructions(module, block));
 				return block;
 			}
 			case 0x04: {
 				If block = new If(parent, toValueType(byteBuffer.readVarsint7()));
-				List<Instruction> thenInstructions = parseInstructions(module, block, byteBuffer);
+				List<Instruction> thenInstructions = parseInstructions(module, block);
 				List<Instruction> elseInstructions = null;
 				if (thenInstructions.get(thenInstructions.size() - 1) instanceof Else) {
-					elseInstructions = parseInstructions(module, block, byteBuffer);
+					elseInstructions = parseInstructions(module, block);
 				}
 				block.setInstructions(thenInstructions, elseInstructions);
 				return block;
@@ -222,20 +221,19 @@ final class Parser {
 			case 0xD0:
 				return new RefNull(toValueType(byteBuffer.readVarsint7()));
 			default:
-				throw new UnsupportedOperationException("not implemented instruction: instruction = 0x" + toHexString(instruction) + ", readIndex = " + byteBuffer.getPosition());
+				throw new UnsupportedOperationException("not implemented instruction: instruction = 0x" + toHexString(instruction) + ", readIndex = " + byteBuffer.getReadIndex());
 		}
 	}
 
-	private void parseImportSection() {
-		int length = wasmFileContent.readVaruint32();
-		for (int i = 0; i < length; i++) {
-			String moduleName = wasmFileContent.readUtf8();
-			String exportName = wasmFileContent.readUtf8();
-			Kind kind = toKind(wasmFileContent.readVaruint7());
+	private void parseImportSection(Module module) {
+		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
+			String moduleName = byteBuffer.readUtf8();
+			String exportName = byteBuffer.readUtf8();
+			Kind kind = toKind(byteBuffer.readVaruint7());
 			switch (kind) {
 				case FUNCTION:
 					// TODO Function対応を実装
-					int index = wasmFileContent.readVaruint32();
+					int index = byteBuffer.readVaruint32();
 					break;
 				case TABLE:
 					// TODO Table対応を実装
@@ -244,32 +242,30 @@ final class Parser {
 					// TODO Memory対応を実装
 					throw new UnsupportedOperationException();
 				case GLOBAL:
-					ValueType type = toValueType(wasmFileContent.readVarsint7());
-					boolean mutability = wasmFileContent.readUint1() != 0;
+					ValueType type = toValueType(byteBuffer.readVarsint7());
+					boolean mutability = byteBuffer.readUint1() != 0;
 					module.addGlobalVariable(type, mutability, Collections.emptyList());
 					break;
 			}
 		}
 	}
 
-	private void parseGlobalSection() {
-		int length = wasmFileContent.readVaruint32();
-		for (int i = 0; i < length; i++) {
-			ValueType type = toValueType(wasmFileContent.readVarsint7());
-			boolean mutability = wasmFileContent.readUint1() != 0;
-			List<Instruction> instructions = parseInstructions(null, null, wasmFileContent);
+	private void parseGlobalSection(Module module) {
+		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
+			ValueType type = toValueType(byteBuffer.readVarsint7());
+			boolean mutability = byteBuffer.readUint1() != 0;
+			List<Instruction> instructions = parseInstructions(null, null);
 			module.addGlobalVariable(type, mutability, instructions);
 		}
 	}
 
-	private void parseExportSection() {
-		int length = wasmFileContent.readVaruint32();
-		for (int i = 0; i < length; i++) {
-			String name = wasmFileContent.readUtf8();
-			int kind = wasmFileContent.readByte();
+	private void parseExportSection(Module module) {
+		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
+			String name = byteBuffer.readUtf8();
+			int kind = byteBuffer.readByte();
 			switch (kind) {
 				case 0x00:
-					module.addExportedFunction(name, wasmFileContent.readVaruint32());
+					module.addExportedFunction(name, byteBuffer.readVaruint32());
 					break;
 
 				default:
@@ -278,39 +274,32 @@ final class Parser {
 		}
 	}
 
-	private void parseFunctionSection() {
-		int length = wasmFileContent.readVaruint32();
-		for (int i = 0; i < length; i++) {
-			module.addFunction(wasmFileContent.readVaruint32());
+	private void parseFunctionSection(Module module) {
+		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
+			module.addFunction(byteBuffer.readVaruint32());
 		}
 	}
 
-	private void parseTypeSection() {
-		int length = wasmFileContent.readVaruint32();
-		int index = 0;
-		while (index < length) {
-			switch (wasmFileContent.readByte()) {
+	private void parseTypeSection(Module module) {
+		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
+			switch (byteBuffer.readByte()) {
 				case 0x60:
-					parseFunctionType();
+					parseFunctionType(module);
 					break;
 			}
-			index++;
 		}
 	}
 
-	private void parseFunctionType() {
+	private void parseFunctionType(Module module) {
 		module.addFunctionType(parseValueTypes(), parseValueTypes());
 	}
 
 	private ValueType[] parseValueTypes() {
-		int length = wasmFileContent.readVaruint32();
-		ValueType[] result = new ValueType[length];
-
-		for (int i = 0; i < length; i++) {
-			result[i] = toValueType(wasmFileContent.readVarsint7());
+		ValueType[] valueTypes = new ValueType[byteBuffer.readVaruint32()];
+		for (int i = 0, length = valueTypes.length; i < length; i++) {
+			valueTypes[i] = toValueType(byteBuffer.readVarsint7());
 		}
-
-		return result;
+		return valueTypes;
 	}
 
 	private static Kind toKind(byte valueOfVaruint7) {

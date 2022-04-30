@@ -135,7 +135,7 @@ final class Module {
 
 		void execute(Frame frame) {
 			if (functionBlock == null) {
-				functionBlock = Parser.parseFunctionBlock(frame.getModule(), this, instructions);
+				functionBlock = new Parser(instructions).parseFunctionBlock(frame.getModule(), this);
 			}
 			functionBlock.execute(frame);
 		}
