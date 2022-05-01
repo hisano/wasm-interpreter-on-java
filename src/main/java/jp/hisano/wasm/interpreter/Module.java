@@ -316,11 +316,11 @@ public final class Module {
 	}
 
 	final static class I32Load8U extends PushValue {
-		private final int alignment;
+		private final int align;
 		private final int offset;
 
-		I32Load8U(int alignment, int offset) {
-			this.alignment = alignment;
+		I32Load8U(int align, int offset) {
+			this.align = align;
 			this.offset = offset;
 		}
 
