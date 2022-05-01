@@ -1,36 +1,31 @@
 # WebAssembly Interpreter on Java
 
-## ビルド方法
+WebAssembly Interpreter written in Java (Java 8, Pure Java, No library dependencies)
 
-```shell
-mvnw install
+## Features (under development)
+
+* Pure Java
+* No library dependencies
+* `wasm` file support
+* Integer operations
+* Control flow
+* Functions
+* Linear memory
+ 
+## Example
+
+```java
+    byte[] wasmFileContent = Files.toByteArray(new File("add.wasm"));
+    int result = new Interpreter(wasmFileContent).invoke("add", 1, 2);
+    System.out.println("1 + 2 = " + result);
 ```
 
-## 仕様書
+## How to build
 
-- [WebAssembly Reference Manual](https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md)
-  - 非公式の読みやすい仕様解説ドキュメント
-- [WEBASSEMBLY USUI BOOK](https://ukyo.github.io/wasm-usui-book/webroot/binary-format.html)
-  - 日本語の仕様解説
+```sh
+$ ./mvnw install
+```
 
+## License
 
-- [MDN WebAssembly JavaScript API](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly)
-- [MDN WebAssembly instructions](https://developer.mozilla.org/en-US/docs/WebAssembly/Reference)
-  - 豊富なWATサンプル
-
-
-- [WebAssembly Core Specification 1.0](https://www.w3.org/TR/wasm-core-1/)
-- [WebAssembly Core Specification 2.0](https://www.w3.org/TR/wasm-core-2/)
-- [WebAssembly Core Specification (Draft)](https://webassembly.github.io/spec/core/)
-
-## テストスイート
-
-- [本家テストスイート](https://github.com/WebAssembly/spec/tree/main/test/core)
-  - [WABTのwast2jsonコマンドでwasmファイルを生成](https://github.com/WebAssembly/wabt)
-- [各種仕様を集約したテストスイート](https://github.com/WebAssembly/testsuite)
-
-## 変換ツール
-
-- [WABT: The WebAssembly Binary Toolkit](https://github.com/WebAssembly/wabt)
-  - [Webでwatからwasmに変換(実装が古めでサポートしていない命令あり)](https://webassembly.github.io/wabt/demo/wat2wasm/)
-  - [Webでwasmからwatに変換](https://webassembly.github.io/wabt/demo/wasm2wat/)
+Apache License Version 2.0
