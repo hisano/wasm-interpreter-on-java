@@ -16,4 +16,8 @@ public final class Memory {
 	int readUint8AsInt(int address) {
 		return data[address] & 0xff;
 	}
+
+	byte readInt8(int address) {
+		return data[address];
+	}
 }

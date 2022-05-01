@@ -16,6 +16,11 @@ class AddressTest {
 		"8u_good3,0,98",
 		"8u_good4,0,99",
 		"8u_good5,0,122",
+		"8s_good1,0,97",
+		"8s_good2,0,97",
+		"8s_good3,0,98",
+		"8s_good4,0,99",
+		"8s_good5,0,122",
 	})
 	void readMemory(String functionName, int address, int expectedValue) throws IOException {
 		int resultValue = createInterpreter("spec/address/address.0.wasm").invoke(functionName, address);

@@ -315,19 +315,44 @@ public final class Module {
 		}
 	}
 
-	final static class I32Load8U extends PushValue {
+	static abstract class MemoryAccess extends PushValue {
 		private final int align;
 		private final int offset;
 
-		I32Load8U(int align, int offset) {
+		MemoryAccess(int align, int offset) {
 			this.align = align;
 			this.offset = offset;
 		}
 
 		@Override
-		Value getValue(Frame frame) {
+		final Value getValue(Frame frame) {
 			int address = offset + frame.pop().getI32();
-			return new Value(frame.getInstance().getMemory().readUint8AsInt(address));
+			Memory memory = frame.getInstance().getMemory();
+			return readMemory(memory, address);
+		}
+
+		abstract Value readMemory(Memory memory, int address);
+	}
+
+	final static class I32Load8S extends MemoryAccess {
+		I32Load8S(int align, int offset) {
+			super(align, offset);
+		}
+
+		@Override
+		Value readMemory(Memory memory, int address) {
+			return new Value(memory.readInt8(address));
+		}
+	}
+
+	final static class I32Load8U extends MemoryAccess {
+		I32Load8U(int align, int offset) {
+			super(align, offset);
+		}
+
+		@Override
+		Value readMemory(Memory memory, int address) {
+			return new Value(memory.readUint8AsInt(address));
 		}
 	}
 
@@ -340,7 +365,7 @@ public final class Module {
 
 	private static abstract class PushValue implements Instruction {
 		@Override
-		public void execute(Frame frame) {
+		public final void execute(Frame frame) {
 			Value value = getValue(frame);
 			switch (value.getType()) {
 				case I32:

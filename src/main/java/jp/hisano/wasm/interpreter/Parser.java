@@ -39,6 +39,7 @@ import jp.hisano.wasm.interpreter.Module.I32GtS;
 import jp.hisano.wasm.interpreter.Module.I32GtU;
 import jp.hisano.wasm.interpreter.Module.I32LeS;
 import jp.hisano.wasm.interpreter.Module.I32LeU;
+import jp.hisano.wasm.interpreter.Module.I32Load8S;
 import jp.hisano.wasm.interpreter.Module.I32Load8U;
 import jp.hisano.wasm.interpreter.Module.I32LtS;
 import jp.hisano.wasm.interpreter.Module.I32LtU;
@@ -217,6 +218,8 @@ final class Parser {
 			case 0x10:
 				return new Call(module.getFunction(byteBuffer.readVaruint32()));
 
+			case 0x2c:
+				return new I32Load8S(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
 			case 0x2d:
 				return new I32Load8U(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
 
