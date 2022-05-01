@@ -39,6 +39,7 @@ import jp.hisano.wasm.interpreter.Module.I32GtS;
 import jp.hisano.wasm.interpreter.Module.I32GtU;
 import jp.hisano.wasm.interpreter.Module.I32LeS;
 import jp.hisano.wasm.interpreter.Module.I32LeU;
+import jp.hisano.wasm.interpreter.Module.I32Load8U;
 import jp.hisano.wasm.interpreter.Module.I32LtS;
 import jp.hisano.wasm.interpreter.Module.I32LtU;
 import jp.hisano.wasm.interpreter.Module.I32Mul;
@@ -104,8 +105,7 @@ final class Parser {
 					byteBuffer.skipBytes(size);
 					break;
 				case 0x05:
-					// TODO Memoryセクションの読み込み
-					byteBuffer.skipBytes(size);
+					parseMemorySection(module);
 					break;
 				case 0x06:
 					parseGlobalSection(module);
@@ -119,6 +119,9 @@ final class Parser {
 					break;
 				case 0x0A:
 					parseCodeSection(module);
+					break;
+				case 0x0B:
+					parseDataSection(module);
 					break;
 				default:
 					throw new UnsupportedOperationException("not implemented section (0x" + toHexString(section) + "): readIndex = 0x" + toHexString(byteBuffer.getReadIndex()));
@@ -141,6 +144,15 @@ final class Parser {
 			byte[] instructions = byteBuffer.readInt8Array(instructionLength);
 			Function function = module.getFunction(i);
 			function.setBody(localTypes, instructions);
+		}
+	}
+
+	private void parseDataSection(Module module) {
+		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
+			int memoryIndex = byteBuffer.readVaruint32();
+			List<Instruction> offsetInstructions = parseInstructions(null, null);
+			byte[] data = byteBuffer.readInt8Array();
+			module.addMemoryData(memoryIndex, offsetInstructions, data);
 		}
 	}
 
@@ -204,6 +216,9 @@ final class Parser {
 
 			case 0x10:
 				return new Call(module.getFunction(byteBuffer.readVaruint32()));
+
+			case 0x2d:
+				return new I32Load8U(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
 
 			case 0x1a:
 				return new Drop();
@@ -354,6 +369,17 @@ final class Parser {
 	private void parseFunctionSection(Module module) {
 		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
 			module.addFunction(byteBuffer.readVaruint32());
+		}
+	}
+
+	private void parseMemorySection(Module module) {
+		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
+			int flags = byteBuffer.readVaruint32();
+			if ((flags & 0x01) != 0) {
+				module.addMemoryType(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
+			} else {
+				module.addMemoryType(byteBuffer.readVaruint32(), MAX_VALUE / 64 / 1024);
+			}
 		}
 	}
 

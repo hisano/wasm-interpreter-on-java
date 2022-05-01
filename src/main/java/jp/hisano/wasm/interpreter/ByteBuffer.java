@@ -28,7 +28,7 @@ final class ByteBuffer {
 		return new String(readInt8Array());
 	}
 
-	private byte[] readInt8Array() {
+	byte[] readInt8Array() {
 		return readInt8Array(readVaruint32());
 	}
 

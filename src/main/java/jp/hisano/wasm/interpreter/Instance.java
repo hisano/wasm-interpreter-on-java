@@ -8,13 +8,32 @@ import jp.hisano.wasm.interpreter.Module.Instruction;
 
 public final class Instance {
 	private final Module module;
+
+	private final List<Memory> memories;
 	private final List<GlobalVariable> globalVariables;
 
 	public Instance(Module module) {
 		this.module = module;
-		globalVariables = module.getGlobalVariableTypes().stream().map(GlobalVariable::new).collect(Collectors.toList());
 
+		memories = createMemories();
+
+		globalVariables = module.getGlobalVariableTypes().stream().map(GlobalVariable::new).collect(Collectors.toList());
 		prepareGlobalVariables();
+	}
+
+	private List<Memory> createMemories() {
+		return module.getMemoryTypes().stream().map(memoryType -> {
+			Memory memory = new Memory(memoryType.getMinimumPageLength(), memoryType.getMaximumPageLength());
+			memoryType.getData().stream().forEach(data -> {
+				Frame frame = new Frame(Instance.this, null);
+				data.getOffsetInstructions().forEach(instruction -> {
+					instruction.execute(frame);
+				});
+				int offset = frame.pop().getI32();
+				memory.setData(offset, data.getData());
+			});
+			return memory;
+		}).collect(Collectors.toList());
 	}
 
 	private void prepareGlobalVariables() {
@@ -40,6 +59,10 @@ public final class Instance {
 
 	Module getModule() {
 		return module;
+	}
+
+	Memory getMemory() {
+		return memories.get(0);
 	}
 
 	GlobalVariable getGlobalVariable(int index) {

@@ -2,6 +2,7 @@ package jp.hisano.wasm.interpreter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,9 @@ public final class Module {
 	private final List<Function> functions = new ArrayList<>();
 	private final Map<String, ExportedFunction> exportedFunctions = new HashMap<>();
 
-	private final List<GlobalVariableType> globalVariableTypes = new ArrayList<>();
+	private final List<MemoryType> memoryTypes = new LinkedList<>();
+
+	private final List<GlobalVariableType> globalVariableTypes = new LinkedList<>();
 
 	public Module(byte[] wasmFileContent) {
 		new Parser(wasmFileContent).parseModule(this);
@@ -40,6 +43,18 @@ public final class Module {
 
 	ExportedFunction getExportedFunction(String name) {
 		return exportedFunctions.get(name);
+	}
+
+	void addMemoryType(int minimumPageLength, int maximumPageLength) {
+		memoryTypes.add(new MemoryType(minimumPageLength, maximumPageLength));
+	}
+
+	void addMemoryData(int memoryIndex, List<Instruction> offsetInstructions, byte[] data) {
+		memoryTypes.get(memoryIndex).addData(offsetInstructions, data);
+	}
+
+	List<MemoryType> getMemoryTypes() {
+		return memoryTypes;
 	}
 
 	void addGlobalVariableType(ValueType type, boolean isMutable, List<Instruction> instructions) {
@@ -67,6 +82,52 @@ public final class Module {
 
 		ValueType getType() {
 			return type;
+		}
+	}
+
+	static class MemoryType {
+		private final int minimumPageLength;
+		private final int maximumPageLength;
+
+		private final List<Data> data = new LinkedList<>();
+
+		MemoryType(int minimumPageLength, int maximumPageLength) {
+			this.minimumPageLength = minimumPageLength;
+			this.maximumPageLength = maximumPageLength;
+		}
+
+		int getMinimumPageLength() {
+			return minimumPageLength;
+		}
+
+		int getMaximumPageLength() {
+			return maximumPageLength;
+		}
+
+		void addData(List<Instruction> offsetInstructions, byte[] data) {
+			this.data.add(new Data(offsetInstructions, data));
+		}
+
+		List<Data> getData() {
+			return data;
+		}
+
+		static class Data {
+			private final List<Instruction> offsetInstructions;
+			private final byte[] data;
+
+			Data(List<Instruction> offsetInstructions, byte[] data) {
+				this.offsetInstructions = offsetInstructions;
+				this.data = data;
+			}
+
+			List<Instruction> getOffsetInstructions() {
+				return offsetInstructions;
+			}
+
+			byte[] getData() {
+				return data;
+			}
 		}
 	}
 
@@ -251,6 +312,22 @@ public final class Module {
 			} else {
 				frame.throwExceptionToExitBlock(defaultDepth);
 			}
+		}
+	}
+
+	final static class I32Load8U extends PushValue {
+		private final int alignment;
+		private final int offset;
+
+		I32Load8U(int alignment, int offset) {
+			this.alignment = alignment;
+			this.offset = offset;
+		}
+
+		@Override
+		Value getValue(Frame frame) {
+			int address = offset + frame.pop().getI32();
+			return new Value(frame.getInstance().getMemory().readUint8AsInt(address));
 		}
 	}
 
