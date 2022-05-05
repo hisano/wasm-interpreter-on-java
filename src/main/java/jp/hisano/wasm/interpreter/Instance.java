@@ -9,11 +9,14 @@ import jp.hisano.wasm.interpreter.Module.Instruction;
 public final class Instance {
 	private final Module module;
 
+	private final List<Table> tables;
 	private final List<Memory> memories;
 	private final List<GlobalVariable> globalVariables;
 
 	public Instance(Module module) {
 		this.module = module;
+
+		tables = createTables();
 
 		memories = createMemories();
 
@@ -21,19 +24,34 @@ public final class Instance {
 		prepareGlobalVariables();
 	}
 
+	private List<Table> createTables() {
+		List<Table> tables = module.getTableTypes().stream().map(tableType -> new Table(module, tableType)).collect(Collectors.toList());
+		module.getElementTypes().stream().forEach(elementType -> {
+			Table table = tables.get(elementType.getTableIndex());
+			int offset = getOffset(elementType.getOffsetInstructions());
+			table.setElements(offset, elementType.getElements());
+		});
+		return tables;
+	}
+
 	private List<Memory> createMemories() {
 		return module.getMemoryTypes().stream().map(memoryType -> {
 			Memory memory = new Memory(memoryType.getMinimumPageLength(), memoryType.getMaximumPageLength());
 			memoryType.getData().stream().forEach(data -> {
-				Frame frame = new Frame(Instance.this, null);
-				data.getOffsetInstructions().forEach(instruction -> {
-					instruction.execute(frame);
-				});
-				int offset = frame.pop().getI32();
+				int offset = getOffset(data.getOffsetInstructions());
 				memory.setData(offset, data.getData());
 			});
 			return memory;
 		}).collect(Collectors.toList());
+	}
+
+	private int getOffset(List<Instruction> offsetInstructions) {
+		Frame frame = new Frame(Instance.this, null);
+		offsetInstructions.forEach(instruction -> {
+			instruction.execute(frame);
+		});
+		int offset = frame.pop().getI32();
+		return offset;
 	}
 
 	private void prepareGlobalVariables() {
@@ -59,6 +77,10 @@ public final class Instance {
 
 	Module getModule() {
 		return module;
+	}
+
+	Table getTable(int index) {
+		return tables.get(index);
 	}
 
 	Memory getMemory() {

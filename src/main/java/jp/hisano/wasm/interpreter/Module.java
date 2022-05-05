@@ -16,6 +16,9 @@ public final class Module {
 	private final List<Function> functions = new ArrayList<>();
 	private final Map<String, ExportedFunction> exportedFunctions = new HashMap<>();
 
+	private final List<TableType> tableTypes = new LinkedList<>();
+	private final List<ElementType> elementTypes = new LinkedList<>();
+
 	private final List<MemoryType> memoryTypes = new LinkedList<>();
 
 	private final List<GlobalVariableType> globalVariableTypes = new LinkedList<>();
@@ -26,6 +29,10 @@ public final class Module {
 
 	void addFunctionType(ValueType[] parameterTypes, ValueType[] returnTypes) {
 		functionTypes.add(new FunctionType(parameterTypes, returnTypes));
+	}
+
+	FunctionType getFunctionType(int index) {
+		return functionTypes.get(index);
 	}
 
 	void addFunction(int typeIndex) {
@@ -43,6 +50,26 @@ public final class Module {
 
 	ExportedFunction getExportedFunction(String name) {
 		return exportedFunctions.get(name);
+	}
+
+	void addTableType(ValueType elementType, int minimumElementLength, int maximumElementLength) {
+		tableTypes.add(new TableType(elementType, minimumElementLength, maximumElementLength));
+	}
+
+	TableType getTableType(int index) {
+		return tableTypes.get(index);
+	}
+
+	List<TableType> getTableTypes() {
+		return tableTypes;
+	}
+
+	void addElementType(int tableIndex, List<Instruction> offsetInstructions, int[] elements) {
+		elementTypes.add(new ElementType(tableIndex, offsetInstructions, elements));
+	}
+
+	List<ElementType> getElementTypes() {
+		return elementTypes;
 	}
 
 	void addMemoryType(int minimumPageLength, int maximumPageLength) {
@@ -82,6 +109,54 @@ public final class Module {
 
 		ValueType getType() {
 			return type;
+		}
+	}
+
+	static class TableType {
+		private final ValueType elementType;
+		private final int minimumElementLength;
+		private final int maximumElementLength;
+
+		TableType(ValueType elementType, int minimumElementLength, int maximumElementLength) {
+			this.elementType = elementType;
+			this.minimumElementLength = minimumElementLength;
+			this.maximumElementLength = maximumElementLength;
+		}
+
+		ValueType getElementType() {
+			return elementType;
+		}
+
+		int getMinimumElementLength() {
+			return minimumElementLength;
+		}
+
+		int getMaximumElementLength() {
+			return maximumElementLength;
+		}
+	}
+
+	static class ElementType {
+		private final int tableIndex;
+		private final List<Instruction> offsetInstructions;
+		private final int[] elements;
+
+		ElementType(int tableIndex, List<Instruction> offsetInstructions, int[] elements) {
+			this.tableIndex = tableIndex;
+			this.offsetInstructions = offsetInstructions;
+			this.elements = elements;
+		}
+
+		int getTableIndex() {
+			return tableIndex;
+		}
+
+		List<Instruction> getOffsetInstructions() {
+			return offsetInstructions;
+		}
+
+		int[] getElements() {
+			return elements;
 		}
 	}
 
@@ -260,6 +335,23 @@ public final class Module {
 
 		@Override
 		public void execute(Frame frame) {
+			function.executeWithNewFrame(frame);
+		}
+	}
+
+	final static class CallIndirect implements Instruction {
+		private final FunctionType functionType;
+		private final int tableIndex;
+
+		CallIndirect(Module module, int typeIndex, int tableIndex) {
+			functionType = module.getFunctionType(typeIndex);
+			this.tableIndex = tableIndex;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			int functionIndex = frame.pop().getI32();
+			Function function = frame.getInstance().getTable(tableIndex).getFunction(functionIndex);
 			function.executeWithNewFrame(frame);
 		}
 	}

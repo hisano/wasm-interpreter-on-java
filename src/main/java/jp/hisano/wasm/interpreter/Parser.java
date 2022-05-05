@@ -12,6 +12,7 @@ import jp.hisano.wasm.interpreter.Module.Br;
 import jp.hisano.wasm.interpreter.Module.BrIf;
 import jp.hisano.wasm.interpreter.Module.BrTable;
 import jp.hisano.wasm.interpreter.Module.Call;
+import jp.hisano.wasm.interpreter.Module.CallIndirect;
 import jp.hisano.wasm.interpreter.Module.Drop;
 import jp.hisano.wasm.interpreter.Module.Else;
 import jp.hisano.wasm.interpreter.Module.End;
@@ -102,8 +103,7 @@ final class Parser {
 					parseFunctionSection(module);
 					break;
 				case 0x04:
-					// TODO Tableセクションの読み込み
-					byteBuffer.skipBytes(size);
+					parseTableSection(module);
 					break;
 				case 0x05:
 					parseMemorySection(module);
@@ -115,8 +115,7 @@ final class Parser {
 					parseExportSection(module);
 					break;
 				case 0x09:
-					// TODO Elementセクションの読み込み
-					byteBuffer.skipBytes(size);
+					parseElementSection(module);
 					break;
 				case 0x0A:
 					parseCodeSection(module);
@@ -217,6 +216,8 @@ final class Parser {
 
 			case 0x10:
 				return new Call(module.getFunction(byteBuffer.readVaruint32()));
+			case 0x11:
+				return new CallIndirect(module, byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
 
 			case 0x2c:
 				return new I32Load8S(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
@@ -369,9 +370,32 @@ final class Parser {
 		}
 	}
 
+	private void parseElementSection(Module module) {
+		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
+			int tableIndex = byteBuffer.readVaruint32();
+			List<Instruction> offsetInstructions = parseInstructions(null, null);
+			if (module.getTableType(tableIndex).getElementType() == FUNCREF) {
+				int[] elements = byteBuffer.readVaruint32Array();
+				module.addElementType(tableIndex, offsetInstructions, elements);
+			}
+		}
+	}
+
 	private void parseFunctionSection(Module module) {
 		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
 			module.addFunction(byteBuffer.readVaruint32());
+		}
+	}
+
+	private void parseTableSection(Module module) {
+		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
+			ValueType elementType = toValueType(byteBuffer.readVaruint7());
+			int flags = byteBuffer.readVaruint32();
+			if ((flags & 0x01) != 0) {
+				module.addTableType(elementType, byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
+			} else {
+				module.addTableType(elementType, byteBuffer.readVaruint32(), MAX_VALUE);
+			}
 		}
 	}
 
