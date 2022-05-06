@@ -26,7 +26,7 @@ final class ExportedFunction {
 						frame.getLocalVariable(i).getValue().setF32(number.floatValue());
 						break;
 					case F64:
-						frame.getLocalVariable(i).getValue().setF64(number.longValue());
+						frame.getLocalVariable(i).getValue().setF64(number.doubleValue());
 						break;
 				}
 			}

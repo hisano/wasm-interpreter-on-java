@@ -6,7 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.Float.*;
+import static java.lang.Double.isInfinite;
+import static java.lang.Double.isNaN;
 import static java.lang.Integer.*;
 import static java.lang.Math.*;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToExitBlock;
@@ -917,7 +918,7 @@ public final class Module {
 	final static class F32Trunc extends F32OneOperandsOperator {
 		@Override
 		float calculate(float value) {
-			if (isNaN(value) || isInfinite(value)) {
+			if (Float.isNaN(value) || Float.isInfinite(value)) {
 				return value;
 			}
 			if (0 < value) {
@@ -931,7 +932,7 @@ public final class Module {
 	final static class F32Nearest extends F32OneOperandsOperator {
 		@Override
 		float calculate(float value) {
-			return (float) Math.rint(value);
+			return (float) rint(value);
 		}
 	}
 
@@ -991,6 +992,15 @@ public final class Module {
 		}
 	}
 
+	private static abstract class F64OneOperandsOperator implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			frame.pushF64(calculate(frame.pop().getF64()));
+		}
+
+		abstract double calculate(double value);
+	}
+
 	private static abstract class F64TwoOperandsOperator implements Instruction {
 		@Override
 		public void execute(Frame frame) {
@@ -1002,10 +1012,108 @@ public final class Module {
 		abstract double calculate(double first, double second);
 	}
 
+	final static class F64Abs extends F64OneOperandsOperator {
+		@Override
+		double calculate(double value) {
+			return abs(value);
+		}
+	}
+
+	final static class F64Neg extends F64OneOperandsOperator {
+		@Override
+		double calculate(double value) {
+			return -value;
+		}
+	}
+
+	final static class F64Ceil extends F64OneOperandsOperator {
+		@Override
+		double calculate(double value) {
+			return ceil(value);
+		}
+	}
+
+	final static class F64Floor extends F64OneOperandsOperator {
+		@Override
+		double calculate(double value) {
+			return floor(value);
+		}
+	}
+
+	final static class F64Trunc extends F64OneOperandsOperator {
+		@Override
+		double calculate(double value) {
+			if (isNaN(value) || isInfinite(value)) {
+				return value;
+			}
+			if (0 < value) {
+				return floor(value);
+			} else {
+				return ceil(value);
+			}
+		}
+	}
+
+	final static class F64Nearest extends F64OneOperandsOperator {
+		@Override
+		double calculate(double value) {
+			return rint(value);
+		}
+	}
+
+	final static class F64Sqrt extends F64OneOperandsOperator {
+		@Override
+		double calculate(double value) {
+			return sqrt(value);
+		}
+	}
+
 	final static class F64Add extends F64TwoOperandsOperator {
 		@Override
 		double calculate(double first, double second) {
 			return first + second;
+		}
+	}
+
+	final static class F64Sub extends F64TwoOperandsOperator {
+		@Override
+		double calculate(double first, double second) {
+			return first - second;
+		}
+	}
+
+	final static class F64Mul extends F64TwoOperandsOperator {
+		@Override
+		double calculate(double first, double second) {
+			return first * second;
+		}
+	}
+
+	final static class F64Div extends F64TwoOperandsOperator {
+		@Override
+		double calculate(double first, double second) {
+			return first / second;
+		}
+	}
+
+	final static class F64Min extends F64TwoOperandsOperator {
+		@Override
+		double calculate(double first, double second) {
+			return Math.min(first, second);
+		}
+	}
+
+	final static class F64Max extends F64TwoOperandsOperator {
+		@Override
+		double calculate(double first, double second) {
+			return Math.max(first, second);
+		}
+	}
+
+	final static class F64Copysign extends F64TwoOperandsOperator {
+		@Override
+		double calculate(double first, double second) {
+			return copySign(first, second);
 		}
 	}
 

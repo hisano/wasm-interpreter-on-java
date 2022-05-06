@@ -7,6 +7,7 @@ import java.util.List;
 import static java.lang.Integer.*;
 import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
 import jp.hisano.wasm.interpreter.Module.AbstractBlock;
+import jp.hisano.wasm.interpreter.Module.Block;
 import jp.hisano.wasm.interpreter.Module.BlockEndMarker;
 import jp.hisano.wasm.interpreter.Module.Br;
 import jp.hisano.wasm.interpreter.Module.BrIf;
@@ -37,8 +38,21 @@ import jp.hisano.wasm.interpreter.Module.F32Neg;
 import jp.hisano.wasm.interpreter.Module.F32Sqrt;
 import jp.hisano.wasm.interpreter.Module.F32Sub;
 import jp.hisano.wasm.interpreter.Module.F32Trunc;
+import jp.hisano.wasm.interpreter.Module.F64Abs;
 import jp.hisano.wasm.interpreter.Module.F64Add;
+import jp.hisano.wasm.interpreter.Module.F64Ceil;
 import jp.hisano.wasm.interpreter.Module.F64Const;
+import jp.hisano.wasm.interpreter.Module.F64Copysign;
+import jp.hisano.wasm.interpreter.Module.F64Div;
+import jp.hisano.wasm.interpreter.Module.F64Floor;
+import jp.hisano.wasm.interpreter.Module.F64Max;
+import jp.hisano.wasm.interpreter.Module.F64Min;
+import jp.hisano.wasm.interpreter.Module.F64Mul;
+import jp.hisano.wasm.interpreter.Module.F64Nearest;
+import jp.hisano.wasm.interpreter.Module.F64Neg;
+import jp.hisano.wasm.interpreter.Module.F64Sqrt;
+import jp.hisano.wasm.interpreter.Module.F64Sub;
+import jp.hisano.wasm.interpreter.Module.F64Trunc;
 import jp.hisano.wasm.interpreter.Module.Function;
 import jp.hisano.wasm.interpreter.Module.FunctionBlock;
 import jp.hisano.wasm.interpreter.Module.GlobalGet;
@@ -85,7 +99,6 @@ import jp.hisano.wasm.interpreter.Module.LocalGet;
 import jp.hisano.wasm.interpreter.Module.Loop;
 import jp.hisano.wasm.interpreter.Module.RefNull;
 import jp.hisano.wasm.interpreter.Module.Return;
-import jp.hisano.wasm.interpreter.Module.Block;
 import jp.hisano.wasm.interpreter.Module.Unreachable;
 import jp.hisano.wasm.interpreter.Module.ValueType;
 import static jp.hisano.wasm.interpreter.Module.ValueType.*;
@@ -366,8 +379,35 @@ final class Parser {
 			case 0x98:
 				return new F32Copysign();
 
+			case 0x99:
+				return new F64Abs();
+			case 0x9a:
+				return new F64Neg();
+			case 0x9b:
+				return new F64Ceil();
+			case 0x9c:
+				return new F64Floor();
+			case 0x9d:
+				return new F64Trunc();
+			case 0x9e:
+				return new F64Nearest();
+			case 0x9f:
+				return new F64Sqrt();
+
 			case 0xa0:
 				return new F64Add();
+			case 0xa1:
+				return new F64Sub();
+			case 0xa2:
+				return new F64Mul();
+			case 0xa3:
+				return new F64Div();
+			case 0xa4:
+				return new F64Min();
+			case 0xa5:
+				return new F64Max();
+			case 0xa6:
+				return new F64Copysign();
 
 			case 0xC0:
 				return new I32Extend8S();
