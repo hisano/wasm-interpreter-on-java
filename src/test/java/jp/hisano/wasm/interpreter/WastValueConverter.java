@@ -3,6 +3,9 @@ package jp.hisano.wasm.interpreter;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.SimpleArgumentConverter;
 
+import static java.lang.Float.*;
+import static java.lang.Long.*;
+
 class WastValueConverter extends SimpleArgumentConverter {
 	@Override
 	protected Object convert(Object source, Class<?> targetType) throws ArgumentConversionException {
@@ -17,9 +20,15 @@ class WastValueConverter extends SimpleArgumentConverter {
 					return Float.NaN; 
 				case "-nan":
 					// Suppress canonical NaN
-					return Float.intBitsToFloat(0xffc0_0000);
+					return intBitsToFloat(0xffc0_0000);
 				default:
-					return Float.valueOf(value);
+					return parseFloat(value);
+			}
+		} else if (targetType == long.class) {
+			if (value.startsWith("0x")) {
+				return parseUnsignedLong(value.substring(2), 16);
+			} else {
+				return parseLong(value);
 			}
 		}
 		throw new ArgumentConversionException("not supported type: " + targetType.getSimpleName());
