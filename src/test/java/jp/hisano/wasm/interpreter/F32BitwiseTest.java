@@ -17,6 +17,19 @@ class F32BitwiseTest {
 		invoke("copysign", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "abs({0}) = {1} (f32.abs)")
+	@CsvSource({
+			"-1,1",
+	})
+	void abs(float value, float expectedValue) throws IOException {
+		invoke("abs", value,expectedValue);
+	}
+
+	private static void invoke(String operatorName, float value, float expectedValue) throws IOException {
+		float resultValue = createInterpreter("spec/f32_bitwise/f32_bitwise.0.wasm").invoke(operatorName, value);
+		assertEquals(expectedValue, resultValue);
+	}
+
 	private static void invoke(String operatorName, float first, float second, float expectedValue) throws IOException {
 		float resultValue = createInterpreter("spec/f32_bitwise/f32_bitwise.0.wasm").invoke(operatorName, first, second);
 		assertEquals(expectedValue, resultValue);

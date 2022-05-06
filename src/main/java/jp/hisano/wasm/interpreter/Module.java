@@ -833,6 +833,13 @@ public final class Module {
 		abstract float calculate(float value);
 	}
 
+	final static class F32Abs extends F32OneOperandsOperator {
+		@Override
+		float calculate(float value) {
+			return abs(value);
+		}
+	}
+
 	final static class F32Ceil extends F32OneOperandsOperator {
 		@Override
 		float calculate(float value) {
