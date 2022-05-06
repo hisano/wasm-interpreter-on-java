@@ -898,6 +898,13 @@ public final class Module {
 		}
 	}
 
+	final static class I64Sub extends I64TwoOperandsOperator {
+		@Override
+		long calculate(long first, long second) {
+			return first - second;
+		}
+	}
+
 	private static abstract class F32TwoOperandsOperator implements Instruction {
 		@Override
 		public void execute(Frame frame) {
