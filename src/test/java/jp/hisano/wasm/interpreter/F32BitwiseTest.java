@@ -2,14 +2,17 @@ package jp.hisano.wasm.interpreter;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static jp.hisano.wasm.interpreter.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("f32_bitwise.wast")
 class F32BitwiseTest {
-	@ParameterizedTest(name = "copysign({0},{1}) = {2} (f32.copysign)")
+	@DisplayName("f32.copysign")
+	@ParameterizedTest(name = "f32.copysign({0},{1}) = {2}")
 	@CsvSource({
 		"-0x0p+0,-0x0p+0,-0x0p+0",
 		"-0x0p+0,0x0p+0,0x0p+0",
@@ -340,7 +343,8 @@ class F32BitwiseTest {
 		invoke("copysign", first, second, expectedValue);
 	}
 
-	@ParameterizedTest(name = "abs({0}) = {1} (f32.abs)")
+	@DisplayName("f32.abs")
+	@ParameterizedTest(name = "f32.abs({0}) = {1}")
 	@CsvSource({
 		"-0x0p+0,0x0p+0",
 		"0x0p+0,0x0p+0",
@@ -365,7 +369,8 @@ class F32BitwiseTest {
 		invoke("abs", value,expectedValue);
 	}
 
-	@ParameterizedTest(name = "neg({0}) = {1} (f32.neg)")
+	@DisplayName("f32.neg")
+	@ParameterizedTest(name = "f32.neg({0}) = {1}")
 	@CsvSource({
 		"-0x0p+0,0x0p+0",
 		"0x0p+0,-0x0p+0",
