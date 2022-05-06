@@ -49,6 +49,14 @@ class F32Test {
 		invoke("min", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "max({0},{1}) = {2} (f32.max)")
+	@CsvSource({
+			"1,0,1",
+	})
+	void max(float first, float second, float expectedValue) throws IOException {
+		invoke("max", first, second, expectedValue);
+	}
+
 	private static void invoke(String operatorName, float first, float second, float expectedValue) throws IOException {
 		float resultValue = createInterpreter("spec/f32/f32.0.wasm").invoke(operatorName, first, second);
 		assertEquals(expectedValue, resultValue);
