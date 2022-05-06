@@ -27,6 +27,7 @@ import jp.hisano.wasm.interpreter.Module.F32Floor;
 import jp.hisano.wasm.interpreter.Module.F32Max;
 import jp.hisano.wasm.interpreter.Module.F32Min;
 import jp.hisano.wasm.interpreter.Module.F32Mul;
+import jp.hisano.wasm.interpreter.Module.F32Ne;
 import jp.hisano.wasm.interpreter.Module.F32Nearest;
 import jp.hisano.wasm.interpreter.Module.F32Neg;
 import jp.hisano.wasm.interpreter.Module.F32Sqrt;
@@ -280,6 +281,8 @@ final class Parser {
 
 			case 0x5b:
 				return new F32Eq();
+			case 0x5c:
+				return new F32Ne();
 
 			case 0x67:
 				return new I32Clz();

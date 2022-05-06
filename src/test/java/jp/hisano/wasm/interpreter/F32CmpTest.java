@@ -17,6 +17,14 @@ class F32CmpTest {
 		invoke("eq", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "{0} != {1} = {2} (f32.ne)")
+	@CsvSource({
+			"-0x0p+0,-0x0p+0,0",
+	})
+	void ne(float first, float second, int expectedValue) throws IOException {
+		invoke("ne", first, second, expectedValue);
+	}
+
 	private static void invoke(String operatorName, float first, float second, int expectedValue) throws IOException {
 		int resultValue = createInterpreter("spec/f32_cmp/f32_cmp.0.wasm").invoke(operatorName, first, second);
 		assertEquals(expectedValue, resultValue);
