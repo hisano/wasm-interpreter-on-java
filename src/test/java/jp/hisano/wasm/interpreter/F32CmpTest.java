@@ -53,6 +53,16 @@ class F32CmpTest {
 		invoke("gt", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "({0} >= {1}) = {2} (f32.ge)")
+	@CsvSource({
+		"-0x1p-149,-0x1p-149,1",
+		"-0x1p-149,0x1p-149,0",
+		"0x1p-149,-0x1p-149,1",
+	})
+	void ge(float first, float second, int expectedValue) throws IOException {
+		invoke("ge", first, second, expectedValue);
+	}
+
 	private static void invoke(String operatorName, float first, float second, int expectedValue) throws IOException {
 		int resultValue = createInterpreter("spec/f32_cmp/f32_cmp.0.wasm").invoke(operatorName, first, second);
 		assertEquals(expectedValue, resultValue);

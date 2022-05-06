@@ -24,6 +24,7 @@ import jp.hisano.wasm.interpreter.Module.F32Copysign;
 import jp.hisano.wasm.interpreter.Module.F32Div;
 import jp.hisano.wasm.interpreter.Module.F32Eq;
 import jp.hisano.wasm.interpreter.Module.F32Floor;
+import jp.hisano.wasm.interpreter.Module.F32Ge;
 import jp.hisano.wasm.interpreter.Module.F32Gt;
 import jp.hisano.wasm.interpreter.Module.F32Le;
 import jp.hisano.wasm.interpreter.Module.F32Lt;
@@ -292,6 +293,8 @@ final class Parser {
 				return new F32Gt();
 			case 0x5f:
 				return new F32Le();
+			case 0x60:
+				return new F32Ge();
 
 			case 0x67:
 				return new I32Clz();
