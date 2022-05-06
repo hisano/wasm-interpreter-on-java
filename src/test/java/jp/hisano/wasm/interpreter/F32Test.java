@@ -90,6 +90,16 @@ class F32Test {
 		invoke("trunc", value,expectedValue);
 	}
 
+	@ParameterizedTest(name = "nearest({0}) = {1} (f32.nearest)")
+	@CsvSource({
+		"5.2,5",
+		"5.5,6",
+		"4.5,4",
+	})
+	void nearest(float value, float expectedValue) throws IOException {
+		invoke("nearest", value,expectedValue);
+	}
+
 	private static void invoke(String operatorName, float value, float expectedValue) throws IOException {
 		float resultValue = createInterpreter("spec/f32/f32.0.wasm").invoke(operatorName, value);
 		assertEquals(expectedValue, resultValue);

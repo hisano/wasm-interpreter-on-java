@@ -861,6 +861,13 @@ public final class Module {
 		}
 	}
 
+	final static class F32Nearest extends F32OneOperandsOperator {
+		@Override
+		float calculate(float value) {
+			return (float) Math.rint(value);
+		}
+	}
+
 	final static class F32Sqrt extends F32OneOperandsOperator {
 		@Override
 		float calculate(float value) {
