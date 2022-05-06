@@ -73,6 +73,14 @@ class F32Test {
 		invoke("floor", value,expectedValue);
 	}
 
+	@ParameterizedTest(name = "ceil({0}) = {1} (f32.ceil)")
+	@CsvSource({
+		"1.1,2",
+	})
+	void ceil(float value, float expectedValue) throws IOException {
+		invoke("ceil", value,expectedValue);
+	}
+
 	private static void invoke(String operatorName, float value, float expectedValue) throws IOException {
 		float resultValue = createInterpreter("spec/f32/f32.0.wasm").invoke(operatorName, value);
 		assertEquals(expectedValue, resultValue);
