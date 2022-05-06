@@ -689,6 +689,48 @@ public final class Module {
 		}
 	}
 
+	final static class F64Eq extends F64TwoOperandsCmpOperator {
+		@Override
+		boolean calculate(double first, double second) {
+			return first == second;
+		}
+	}
+
+	final static class F64Ne extends F64TwoOperandsCmpOperator {
+		@Override
+		boolean calculate(double first, double second) {
+			return first != second;
+		}
+	}
+
+	final static class F64Lt extends F64TwoOperandsCmpOperator {
+		@Override
+		boolean calculate(double first, double second) {
+			return first < second;
+		}
+	}
+
+	final static class F64Gt extends F64TwoOperandsCmpOperator {
+		@Override
+		boolean calculate(double first, double second) {
+			return first > second;
+		}
+	}
+
+	final static class F64Le extends F64TwoOperandsCmpOperator {
+		@Override
+		boolean calculate(double first, double second) {
+			return first <= second;
+		}
+	}
+
+	final static class F64Ge extends F64TwoOperandsCmpOperator {
+		@Override
+		boolean calculate(double first, double second) {
+			return first >= second;
+		}
+	}
+
 	final static class I32Clz extends I32Converter {
 		@Override
 		int convert(int value) {
@@ -1010,6 +1052,17 @@ public final class Module {
 		}
 
 		abstract double calculate(double first, double second);
+	}
+
+	private static abstract class F64TwoOperandsCmpOperator implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			double second = frame.pop().getF64();
+			double first = frame.pop().getF64();
+			frame.pushI32(calculate(first, second)? 1: 0);
+		}
+
+		abstract boolean calculate(double first, double second);
 	}
 
 	final static class F64Abs extends F64OneOperandsOperator {

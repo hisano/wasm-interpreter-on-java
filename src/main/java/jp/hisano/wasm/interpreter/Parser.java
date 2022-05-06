@@ -44,10 +44,16 @@ import jp.hisano.wasm.interpreter.Module.F64Ceil;
 import jp.hisano.wasm.interpreter.Module.F64Const;
 import jp.hisano.wasm.interpreter.Module.F64Copysign;
 import jp.hisano.wasm.interpreter.Module.F64Div;
+import jp.hisano.wasm.interpreter.Module.F64Eq;
 import jp.hisano.wasm.interpreter.Module.F64Floor;
+import jp.hisano.wasm.interpreter.Module.F64Ge;
+import jp.hisano.wasm.interpreter.Module.F64Gt;
+import jp.hisano.wasm.interpreter.Module.F64Le;
+import jp.hisano.wasm.interpreter.Module.F64Lt;
 import jp.hisano.wasm.interpreter.Module.F64Max;
 import jp.hisano.wasm.interpreter.Module.F64Min;
 import jp.hisano.wasm.interpreter.Module.F64Mul;
+import jp.hisano.wasm.interpreter.Module.F64Ne;
 import jp.hisano.wasm.interpreter.Module.F64Nearest;
 import jp.hisano.wasm.interpreter.Module.F64Neg;
 import jp.hisano.wasm.interpreter.Module.F64Sqrt;
@@ -308,6 +314,19 @@ final class Parser {
 				return new F32Le();
 			case 0x60:
 				return new F32Ge();
+
+			case 0x61:
+				return new F64Eq();
+			case 0x62:
+				return new F64Ne();
+			case 0x63:
+				return new F64Lt();
+			case 0x64:
+				return new F64Gt();
+			case 0x65:
+				return new F64Le();
+			case 0x66:
+				return new F64Ge();
 
 			case 0x67:
 				return new I32Clz();
