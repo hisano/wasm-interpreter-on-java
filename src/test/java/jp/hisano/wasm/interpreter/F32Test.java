@@ -19,10 +19,18 @@ class F32Test {
 
 	@ParameterizedTest(name = "{0} - {1} = {2} (f32.sub)")
 	@CsvSource({
-			"-0x0p+0,-0x0p+0,0x0p+0",
+			"1,1,0",
 	})
 	void sub(float first, float second, float expectedValue) throws IOException {
 		invoke("sub", first, second, expectedValue);
+	}
+
+	@ParameterizedTest(name = "{0} * {1} = {2} (f32.mul)")
+	@CsvSource({
+			"1,2,2",
+	})
+	void mul(float first, float second, float expectedValue) throws IOException {
+		invoke("mul", first, second, expectedValue);
 	}
 
 	private static void invoke(String operatorName, float first, float second, float expectedValue) throws IOException {
