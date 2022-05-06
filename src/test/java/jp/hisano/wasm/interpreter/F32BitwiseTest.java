@@ -367,9 +367,26 @@ class F32BitwiseTest {
 
 	@ParameterizedTest(name = "neg({0}) = {1} (f32.neg)")
 	@CsvSource({
-			"-1,1",
+		"-0x0p+0,0x0p+0",
+		"0x0p+0,-0x0p+0",
+		"-0x1p-149,0x1p-149",
+		"0x1p-149,-0x1p-149",
+		"-0x1p-126,0x1p-126",
+		"0x1p-126,-0x1p-126",
+		"-0x1p-1,0x1p-1",
+		"0x1p-1,-0x1p-1",
+		"-0x1p+0,0x1p+0",
+		"0x1p+0,-0x1p+0",
+		"-0x1.921fb6p+2,0x1.921fb6p+2",
+		"0x1.921fb6p+2,-0x1.921fb6p+2",
+		"-0x1.fffffep+127,0x1.fffffep+127",
+		"0x1.fffffep+127,-0x1.fffffep+127",
+		"-inf,inf",
+		"inf,-inf",
+		"-nan,nan",
+		"nan,-nan",
 	})
-	void neg(float value, float expectedValue) throws IOException {
+	void neg(@WastValue float value, @WastValue float expectedValue) throws IOException {
 		invoke("neg", value,expectedValue);
 	}
 
