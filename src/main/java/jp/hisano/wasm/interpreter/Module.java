@@ -646,6 +646,13 @@ public final class Module {
 		}
 	}
 
+	final static class F32Eq extends F32TwoOperandsCmpOperator {
+		@Override
+		boolean calculate(float first, float second) {
+			return first == second;
+		}
+	}
+
 	final static class I32Clz extends I32Converter {
 		@Override
 		int convert(int value) {
@@ -822,6 +829,17 @@ public final class Module {
 		}
 
 		abstract float calculate(float first, float second);
+	}
+
+	private static abstract class F32TwoOperandsCmpOperator implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			float second = frame.pop().getF32();
+			float first = frame.pop().getF32();
+			frame.pushI32(calculate(first, second)? 1: 0);
+		}
+
+		abstract boolean calculate(float first, float second);
 	}
 
 	private static abstract class F32OneOperandsOperator implements Instruction {

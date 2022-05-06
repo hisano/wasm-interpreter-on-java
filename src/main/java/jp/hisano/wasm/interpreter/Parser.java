@@ -22,6 +22,7 @@ import jp.hisano.wasm.interpreter.Module.F32Ceil;
 import jp.hisano.wasm.interpreter.Module.F32Const;
 import jp.hisano.wasm.interpreter.Module.F32Copysign;
 import jp.hisano.wasm.interpreter.Module.F32Div;
+import jp.hisano.wasm.interpreter.Module.F32Eq;
 import jp.hisano.wasm.interpreter.Module.F32Floor;
 import jp.hisano.wasm.interpreter.Module.F32Max;
 import jp.hisano.wasm.interpreter.Module.F32Min;
@@ -276,6 +277,10 @@ final class Parser {
 				return new I32GeS();
 			case 0x4f:
 				return new I32GeU();
+
+			case 0x5b:
+				return new F32Eq();
+
 			case 0x67:
 				return new I32Clz();
 			case 0x68:
