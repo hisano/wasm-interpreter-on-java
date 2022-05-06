@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Float.*;
 import static java.lang.Integer.*;
 import static java.lang.Math.*;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToExitBlock;
@@ -843,6 +844,20 @@ public final class Module {
 		@Override
 		float calculate(float value) {
 			return (float) floor(value);
+		}
+	}
+
+	final static class F32Trunc extends F32OneOperandsOperator {
+		@Override
+		float calculate(float value) {
+			if (isNaN(value) || isInfinite(value)) {
+				return value;
+			}
+			if (0 < value) {
+				return (float) floor(value);
+			} else {
+				return (float) ceil(value);
+			}
 		}
 	}
 

@@ -81,6 +81,15 @@ class F32Test {
 		invoke("ceil", value,expectedValue);
 	}
 
+	@ParameterizedTest(name = "trunc({0}) = {1} (f32.trunc)")
+	@CsvSource({
+		"1.1,1", 
+		"-1.1,-1",
+	})
+	void trunc(float value, float expectedValue) throws IOException {
+		invoke("trunc", value,expectedValue);
+	}
+
 	private static void invoke(String operatorName, float value, float expectedValue) throws IOException {
 		float resultValue = createInterpreter("spec/f32/f32.0.wasm").invoke(operatorName, value);
 		assertEquals(expectedValue, resultValue);
