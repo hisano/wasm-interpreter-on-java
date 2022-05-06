@@ -9,7 +9,7 @@ import static jp.hisano.wasm.interpreter.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class F32CmpTest {
-	@ParameterizedTest(name = "{0} == {1} = {2} (f32.eq)")
+	@ParameterizedTest(name = "({0} == {1}) = {2} (f32.eq)")
 	@CsvSource({
 		"-0x0p+0,-0x0p+0,1",
 	})
@@ -17,12 +17,20 @@ class F32CmpTest {
 		invoke("eq", first, second, expectedValue);
 	}
 
-	@ParameterizedTest(name = "{0} != {1} = {2} (f32.ne)")
+	@ParameterizedTest(name = "({0} != {1}) = {2} (f32.ne)")
 	@CsvSource({
-			"-0x0p+0,-0x0p+0,0",
+		"-0x0p+0,-0x0p+0,0",
 	})
 	void ne(float first, float second, int expectedValue) throws IOException {
 		invoke("ne", first, second, expectedValue);
+	}
+
+	@ParameterizedTest(name = "({0} < {1}) = {2} (f32.lt)")
+	@CsvSource({
+		"0x1p-149,-0x1p-126,0",
+	})
+	void lt(float first, float second, int expectedValue) throws IOException {
+		invoke("lt", first, second, expectedValue);
 	}
 
 	private static void invoke(String operatorName, float first, float second, int expectedValue) throws IOException {

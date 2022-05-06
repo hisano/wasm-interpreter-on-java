@@ -660,6 +660,13 @@ public final class Module {
 		}
 	}
 
+	final static class F32Lt extends F32TwoOperandsCmpOperator {
+		@Override
+		boolean calculate(float first, float second) {
+			return first < second;
+		}
+	}
+
 	final static class I32Clz extends I32Converter {
 		@Override
 		int convert(int value) {
