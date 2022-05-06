@@ -59,6 +59,30 @@ class I64Test {
 		invoke("mul", first, second, expectedValue);
 	}
 
+	@DisplayName("i64.div_s")
+	@ParameterizedTest(name = "i64.div_s({0}, {1}) = {2}")
+	@CsvSource({
+		"1,1,1",
+		"0,1,0",
+		"0,-1,0",
+		"-1,-1,1",
+		"0x8000000000000000,2,0xc000000000000000",
+		"0x8000000000000001,1000,0xffdf3b645a1cac09",
+		"5,2,2",
+		"-5,2,-2",
+		"5,-2,-2",
+		"-5,-2,2",
+		"7,3,2",
+		"-7,3,-2",
+		"7,-3,-2",
+		"-7,-3,2",
+		"11,5,2",
+		"17,7,2",
+	})
+	void div_s(@WastValue long first, @WastValue long second, @WastValue long expectedValue) throws IOException {
+		invoke("div_s", first, second, expectedValue);
+	}
+
 	private static void invoke(String functionName, long firstParameter, long secondParameter, long expectedResult) throws IOException {
 		assertEquals(expectedResult, createInterpreter("spec/i64/i64.0.wasm").<Long>invoke(functionName, firstParameter, secondParameter));
 	}
