@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.Float.*;
 import static java.lang.Integer.*;
+import static java.lang.Math.*;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToExitBlock;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToReturn;
 import static jp.hisano.wasm.interpreter.InterpreterException.Type.*;
@@ -832,10 +832,17 @@ public final class Module {
 		abstract float calculate(float value);
 	}
 
+	final static class F32Floor extends F32OneOperandsOperator {
+		@Override
+		float calculate(float value) {
+			return (float) floor(value);
+		}
+	}
+
 	final static class F32Sqrt extends F32OneOperandsOperator {
 		@Override
 		float calculate(float value) {
-			return (float) Math.sqrt(value);
+			return (float) sqrt(value);
 		}
 	}
 
@@ -870,14 +877,14 @@ public final class Module {
 	final static class F32Min extends F32TwoOperandsOperator {
 		@Override
 		float calculate(float first, float second) {
-			return min(first, second);
+			return Math.min(first, second);
 		}
 	}
 
 	final static class F32Max extends F32TwoOperandsOperator {
 		@Override
 		float calculate(float first, float second) {
-			return max(first, second);
+			return Math.max(first, second);
 		}
 	}
 
