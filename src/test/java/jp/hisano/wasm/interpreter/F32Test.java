@@ -17,6 +17,14 @@ class F32Test {
 		invoke("add", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "{0} - {1} = {2} (f32.sub)")
+	@CsvSource({
+			"-0x0p+0,-0x0p+0,0x0p+0",
+	})
+	void sub(float first, float second, float expectedValue) throws IOException {
+		invoke("sub", first, second, expectedValue);
+	}
+
 	private static void invoke(String operatorName, float first, float second, float expectedValue) throws IOException {
 		float resultValue = createInterpreter("spec/f32/f32.0.wasm").invoke(operatorName, first, second);
 		assertEquals(expectedValue, resultValue);

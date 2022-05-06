@@ -829,6 +829,13 @@ public final class Module {
 		}
 	}
 
+	final static class F32Sub extends F32TwoOperandsOperator {
+		@Override
+		float calculate(float first, float second) {
+			return first - second;
+		}
+	}
+
 	private static abstract class F64TwoOperandsOperator implements Instruction {
 		@Override
 		public void execute(Frame frame) {
