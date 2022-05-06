@@ -41,6 +41,14 @@ class F32Test {
 		invoke("div", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "min({0},{1}) = {2} (f32.min)")
+	@CsvSource({
+			"1,0,0",
+	})
+	void min(float first, float second, float expectedValue) throws IOException {
+		invoke("min", first, second, expectedValue);
+	}
+
 	private static void invoke(String operatorName, float first, float second, float expectedValue) throws IOException {
 		float resultValue = createInterpreter("spec/f32/f32.0.wasm").invoke(operatorName, first, second);
 		assertEquals(expectedValue, resultValue);

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Float.*;
 import static java.lang.Integer.*;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToExitBlock;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToReturn;
@@ -847,6 +848,13 @@ public final class Module {
 		@Override
 		float calculate(float first, float second) {
 			return first / second;
+		}
+	}
+
+	final static class F32Min extends F32TwoOperandsOperator {
+		@Override
+		float calculate(float first, float second) {
+			return min(first, second);
 		}
 	}
 
