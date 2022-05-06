@@ -840,6 +840,13 @@ public final class Module {
 		}
 	}
 
+	final static class F32Neg extends F32OneOperandsOperator {
+		@Override
+		float calculate(float value) {
+			return -value;
+		}
+	}
+
 	final static class F32Ceil extends F32OneOperandsOperator {
 		@Override
 		float calculate(float value) {

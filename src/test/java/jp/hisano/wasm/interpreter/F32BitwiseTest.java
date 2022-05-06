@@ -25,6 +25,14 @@ class F32BitwiseTest {
 		invoke("abs", value,expectedValue);
 	}
 
+	@ParameterizedTest(name = "neg({0}) = {1} (f32.neg)")
+	@CsvSource({
+			"-1,1",
+	})
+	void neg(float value, float expectedValue) throws IOException {
+		invoke("neg", value,expectedValue);
+	}
+
 	private static void invoke(String operatorName, float value, float expectedValue) throws IOException {
 		float resultValue = createInterpreter("spec/f32_bitwise/f32_bitwise.0.wasm").invoke(operatorName, value);
 		assertEquals(expectedValue, resultValue);
