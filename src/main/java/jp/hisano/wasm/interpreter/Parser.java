@@ -19,6 +19,7 @@ import jp.hisano.wasm.interpreter.Module.End;
 import jp.hisano.wasm.interpreter.Module.F32Add;
 import jp.hisano.wasm.interpreter.Module.F32Ceil;
 import jp.hisano.wasm.interpreter.Module.F32Const;
+import jp.hisano.wasm.interpreter.Module.F32Copysign;
 import jp.hisano.wasm.interpreter.Module.F32Div;
 import jp.hisano.wasm.interpreter.Module.F32Floor;
 import jp.hisano.wasm.interpreter.Module.F32Max;
@@ -336,6 +337,8 @@ final class Parser {
 				return new F32Min();
 			case 0x97:
 				return new F32Max();
+			case 0x98:
+				return new F32Copysign();
 
 			case 0xa0:
 				return new F64Add();

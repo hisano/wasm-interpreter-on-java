@@ -917,6 +917,13 @@ public final class Module {
 		}
 	}
 
+	final static class F32Copysign extends F32TwoOperandsOperator {
+		@Override
+		float calculate(float first, float second) {
+			return copySign(first, second);
+		}
+	}
+
 	private static abstract class F64TwoOperandsOperator implements Instruction {
 		@Override
 		public void execute(Frame frame) {
