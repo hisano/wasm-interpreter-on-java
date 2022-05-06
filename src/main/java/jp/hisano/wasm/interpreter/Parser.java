@@ -18,6 +18,7 @@ import jp.hisano.wasm.interpreter.Module.Else;
 import jp.hisano.wasm.interpreter.Module.End;
 import jp.hisano.wasm.interpreter.Module.F32Add;
 import jp.hisano.wasm.interpreter.Module.F32Const;
+import jp.hisano.wasm.interpreter.Module.F32Div;
 import jp.hisano.wasm.interpreter.Module.F32Mul;
 import jp.hisano.wasm.interpreter.Module.F32Sub;
 import jp.hisano.wasm.interpreter.Module.F64Add;
@@ -311,6 +312,8 @@ final class Parser {
 				return new F32Sub();
 			case 0x94:
 				return new F32Mul();
+			case 0x95:
+				return new F32Div();
 
 			case 0xa0:
 				return new F64Add();

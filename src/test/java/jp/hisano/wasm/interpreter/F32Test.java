@@ -33,6 +33,14 @@ class F32Test {
 		invoke("mul", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "{0} / {1} = {2} (f32.div)")
+	@CsvSource({
+			"6,3,2",
+	})
+	void div(float first, float second, float expectedValue) throws IOException {
+		invoke("div", first, second, expectedValue);
+	}
+
 	private static void invoke(String operatorName, float first, float second, float expectedValue) throws IOException {
 		float resultValue = createInterpreter("spec/f32/f32.0.wasm").invoke(operatorName, first, second);
 		assertEquals(expectedValue, resultValue);
