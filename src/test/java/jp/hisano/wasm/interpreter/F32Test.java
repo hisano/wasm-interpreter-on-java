@@ -57,6 +57,19 @@ class F32Test {
 		invoke("max", first, second, expectedValue);
 	}
 
+	@ParameterizedTest(name = "sqrt({0}) = {1} (f32.sqrt)")
+	@CsvSource({
+		"4,2",
+	})
+	void sqrt(float value, float expectedValue) throws IOException {
+		invoke("sqrt", value,expectedValue);
+	}
+
+	private static void invoke(String operatorName, float value, float expectedValue) throws IOException {
+		float resultValue = createInterpreter("spec/f32/f32.0.wasm").invoke(operatorName, value);
+		assertEquals(expectedValue, resultValue);
+	}
+
 	private static void invoke(String operatorName, float first, float second, float expectedValue) throws IOException {
 		float resultValue = createInterpreter("spec/f32/f32.0.wasm").invoke(operatorName, first, second);
 		assertEquals(expectedValue, resultValue);

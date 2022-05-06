@@ -823,6 +823,22 @@ public final class Module {
 		abstract float calculate(float first, float second);
 	}
 
+	private static abstract class F32OneOperandsOperator implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			frame.pushF32(calculate(frame.pop().getF32()));
+		}
+
+		abstract float calculate(float value);
+	}
+
+	final static class F32Sqrt extends F32OneOperandsOperator {
+		@Override
+		float calculate(float value) {
+			return (float) Math.sqrt(value);
+		}
+	}
+
 	final static class F32Add extends F32TwoOperandsOperator {
 		@Override
 		float calculate(float first, float second) {
