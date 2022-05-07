@@ -664,6 +664,23 @@ public final class Module {
 		}
 	}
 
+	private static abstract class I64TwoOperandsCmpOperator implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			long second = frame.pop().getI64();
+			long first = frame.pop().getI64();
+			frame.pushI32(calculate(first, second)? 1: 0);
+		}
+
+		abstract boolean calculate(long first, long second);
+	}
+
+	final static class I64Eq extends I64TwoOperandsCmpOperator {
+		boolean calculate(long first, long second) {
+			return first == second;
+		}
+	}
+
 	final static class F32Eq extends F32TwoOperandsCmpOperator {
 		@Override
 		boolean calculate(float first, float second) {

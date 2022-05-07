@@ -460,7 +460,29 @@ class I64Test {
 		"0xffffffffffffffff,0",
 	})
 	void eqz(@WastValue long parameter, @WastValue int expectedResult) throws IOException {
-		invokeCompare("eqz", parameter, expectedResult);
+		invokeComparator("eqz", parameter, expectedResult);
+	}
+
+	@DisplayName("i64.eq")
+	@ParameterizedTest(name = "i64.eq({0}) = {1}")
+	@CsvSource({
+		"0,0,1",
+		"1,1,1",
+		"-1,1,0",
+		"0x8000000000000000,0x8000000000000000,1",
+		"0x7fffffffffffffff,0x7fffffffffffffff,1",
+		"-1,-1,1",
+		"1,0,0",
+		"0,1,0",
+		"0x8000000000000000,0,0",
+		"0,0x8000000000000000,0",
+		"0x8000000000000000,-1,0",
+		"-1,0x8000000000000000,0",
+		"0x8000000000000000,0x7fffffffffffffff,0",
+		"0x7fffffffffffffff,0x8000000000000000,0",
+	})
+	void eq(@WastValue long firstParameter, @WastValue long secondParameter, @WastValue int expectedResult) throws IOException {
+		invokeComparator("eq", firstParameter, secondParameter, expectedResult);
 	}
 
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
@@ -470,8 +492,12 @@ class I64Test {
 		assertEquals(expectedTrapMessage, trapException.getMessage());
 	}
 
-	private static void invokeCompare(String functionName, long parameter, int expectedResult) throws IOException {
+	private static void invokeComparator(String functionName, long parameter, int expectedResult) throws IOException {
 		assertEquals(expectedResult, (int)invokeFunction(functionName, parameter));
+	}
+
+	private static void invokeComparator(String functionName, long firstParameter, long secondParameter, int expectedResult) throws IOException {
+		assertEquals(expectedResult, (int)invokeFunction(functionName, firstParameter, secondParameter));
 	}
 
 	private static void invoke(String functionName, long parameter, long expectedResult) throws IOException {
