@@ -83,7 +83,30 @@ class I64Test {
 		invoke("div_s", first, second, expectedValue);
 	}
 
+	@DisplayName("i64.div_s (trap)")
+	@ParameterizedTest(name = "i64.div_s({0}, {1}) = \"{2}\"")
+	@CsvSource({
+		"1,0,integer divide by zero",
+		"0,0,integer divide by zero",
+		"0x8000000000000000,-1,integer overflow",
+		"0x8000000000000000,0,integer divide by zero",
+	})
+	void div_s_trap(@WastValue long first, @WastValue long second, String expectedTrapMessage) throws IOException {
+		invokeTrap("div_s", first, second, expectedTrapMessage);
+	}
+
 	private static void invoke(String functionName, long firstParameter, long secondParameter, long expectedResult) throws IOException {
-		assertEquals(expectedResult, createInterpreter("spec/i64/i64.0.wasm").<Long>invoke(functionName, firstParameter, secondParameter));
+		assertEquals(expectedResult, invoke(functionName, firstParameter, secondParameter));
+	}
+
+	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
+		TrapException trapException = assertThrows(TrapException.class, () -> {
+			invoke(functionName, firstParameter, secondParameter);
+		});
+		assertEquals(expectedTrapMessage, trapException.getMessage());
+	}
+
+	private static long invoke(String functionName, long firstParameter, long secondParameter) throws IOException {
+		return createInterpreter("spec/i64/i64.0.wasm").invoke(functionName, firstParameter, secondParameter);
 	}
 }

@@ -915,7 +915,14 @@ public final class Module {
 	final static class I64DivS extends I64TwoOperandsOperator {
 		@Override
 		long calculate(long first, long second) {
-			return first / second;
+			try {
+				if (first == Long.MIN_VALUE && second == -1) {
+					throw new TrapException("integer overflow");
+				}
+				return first / second;
+			} catch (ArithmeticException e) {
+				throw new TrapException("integer divide by zero", e);
+			}
 		}
 	}
 
