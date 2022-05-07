@@ -1,5 +1,7 @@
 package jp.hisano.wasm.interpreter;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 
 import jp.hisano.wasm.interpreter.Module.Function;
@@ -17,10 +19,16 @@ final class Frame {
 		if (function == null) {
 			localVariables = new LocalVariable[0];
 		} else {
-			localVariables = new LocalVariable[function.parameterTypes.length];
-			for (int i = 0, length = localVariables.length; i < length; i++) {
-				localVariables[i] = new LocalVariable(function.parameterTypes[i]);
+			List<LocalVariable> localVariables = new LinkedList<>();
+			for (int i = 0, length = function.parameterTypes.length; i < length; i++) {
+				localVariables.add(new LocalVariable(function.parameterTypes[i]));
 			}
+			for (int i = 0, length = function.locals.length; i < length; i++) {
+				for (int j = 0; j < function.locals[i].getCount(); j++) {
+					localVariables.add(new LocalVariable(function.locals[i].getType()));
+				}
+			}
+			this.localVariables = localVariables.toArray(new LocalVariable[localVariables.size()]);
 		}
 	}
 

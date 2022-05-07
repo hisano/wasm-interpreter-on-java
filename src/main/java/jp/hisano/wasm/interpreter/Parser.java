@@ -135,6 +135,7 @@ import jp.hisano.wasm.interpreter.Module.I64Xor;
 import jp.hisano.wasm.interpreter.Module.If;
 import jp.hisano.wasm.interpreter.Module.Instruction;
 import jp.hisano.wasm.interpreter.Module.Kind;
+import jp.hisano.wasm.interpreter.Module.Local;
 import jp.hisano.wasm.interpreter.Module.LocalGet;
 import jp.hisano.wasm.interpreter.Module.Loop;
 import jp.hisano.wasm.interpreter.Module.Nop;
@@ -212,11 +213,11 @@ final class Parser {
 		for (int i = 0, length = byteBuffer.readVaruint32(); i < length; i++) {
 			int size = byteBuffer.readVaruint32();
 			int baseIndex = byteBuffer.getReadIndex();
-			ValueType[] localTypes = parseValueTypes();
+			Local[] locals = parseLocals();
 			int instructionLength = size - (byteBuffer.getReadIndex() - baseIndex);
 			byte[] instructions = byteBuffer.readInt8Array(instructionLength);
 			Function function = module.getFunction(i);
-			function.setBody(localTypes, instructions);
+			function.setBody(locals, instructions);
 		}
 	}
 
@@ -799,6 +800,14 @@ final class Parser {
 
 	private void parseFunctionType(Module module) {
 		module.addFunctionType(parseValueTypes(), parseValueTypes());
+	}
+
+	private Local[] parseLocals() {
+		Local[] locals = new Local[byteBuffer.readVaruint32()];
+		for (int i = 0, length = locals.length; i < length; i++) {
+			locals[i] = new Local(byteBuffer.readVaruint32(), toValueType(byteBuffer.readVarsint7()));
+		}
+		return locals;
 	}
 
 	private ValueType[] parseValueTypes() {

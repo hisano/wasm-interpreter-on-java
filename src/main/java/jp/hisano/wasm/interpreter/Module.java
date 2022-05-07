@@ -251,7 +251,7 @@ public final class Module {
 		final ValueType[] parameterTypes;
 		final ValueType[] returnTypes;
 
-		ValueType[] localTypes;
+		Local[] locals;
 		byte[] instructions;
 		FunctionBlock functionBlock;
 
@@ -260,8 +260,8 @@ public final class Module {
 			this.returnTypes = returnTypes;
 		}
 
-		void setBody(ValueType[] localTypes, byte[] instructions) {
-			this.localTypes = localTypes;
+		void setBody(Local[] locals, byte[] instructions) {
+			this.locals = locals;
 			this.instructions = instructions;
 		}
 
@@ -300,6 +300,24 @@ public final class Module {
 					parent.pushI64(frame.pop().getI64());
 					break;
 			}
+		}
+	}
+
+	static class Local {
+		private final int count;
+		private final ValueType type;
+
+		Local(int count, ValueType type) {
+			this.count = count;
+			this.type = type;
+		}
+
+		int getCount() {
+			return count;
+		}
+
+		ValueType getType() {
+			return type;
 		}
 	}
 
