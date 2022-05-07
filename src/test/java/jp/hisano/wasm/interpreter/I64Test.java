@@ -485,6 +485,28 @@ class I64Test {
 		invokeComparator("eq", firstParameter, secondParameter, expectedResult);
 	}
 
+	@DisplayName("i64.ne")
+	@ParameterizedTest(name = "i64.ne({0}) = {1}")
+	@CsvSource({
+		"0,0,0",
+		"1,1,0",
+		"-1,1,1",
+		"0x8000000000000000,0x8000000000000000,0",
+		"0x7fffffffffffffff,0x7fffffffffffffff,0",
+		"-1,-1,0",
+		"1,0,1",
+		"0,1,1",
+		"0x8000000000000000,0,1",
+		"0,0x8000000000000000,1",
+		"0x8000000000000000,-1,1",
+		"-1,0x8000000000000000,1",
+		"0x8000000000000000,0x7fffffffffffffff,1",
+		"0x7fffffffffffffff,0x8000000000000000,1",
+	})
+	void ne(@WastValue long firstParameter, @WastValue long secondParameter, @WastValue int expectedResult) throws IOException {
+		invokeComparator("ne", firstParameter, secondParameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invokeFunction(functionName, firstParameter, secondParameter);
