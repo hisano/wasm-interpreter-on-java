@@ -163,6 +163,38 @@ class I64Test {
 		invoke("rem_s", firstParameter, secondParameter, expectedResult);
 	}
 
+	@DisplayName("i64.rem_u (trap)")
+	@ParameterizedTest(name = "i64.rem_u({0}, {1}) = \"{2}\"")
+	@CsvSource({
+		"1,0,integer divide by zero",
+		"0,0,integer divide by zero",
+	})
+	void rem_u_trap(@WastValue long firstParameter, @WastValue long secondParameter, String expectedTrapMessage) throws IOException {
+		invokeTrap("rem_u", firstParameter, secondParameter, expectedTrapMessage);
+	}
+
+	@DisplayName("i64.rem_u")
+	@ParameterizedTest(name = "i64.rem_u({0}, {1}) = {2}")
+	@CsvSource({
+		"1,1,0",
+		"0,1,0",
+		"-1,-1,0",
+		"0x8000000000000000,-1,0x8000000000000000",
+		"0x8000000000000000,2,0",
+		"0x8ff00ff00ff00ff0,0x100000001,0x80000001",
+		"0x8000000000000001,1000,809",
+		"5,2,1",
+		"-5,2,1",
+		"5,-2,5",
+		"-5,-2,-5",
+		"7,3,1",
+		"11,5,1",
+		"17,7,3",
+	})
+	void rem_u(@WastValue long firstParameter, @WastValue long secondParameter, @WastValue long expectedResult) throws IOException {
+		invoke("rem_u", firstParameter, secondParameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invoke(functionName, firstParameter, secondParameter);

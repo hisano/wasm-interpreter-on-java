@@ -102,6 +102,7 @@ import jp.hisano.wasm.interpreter.Module.I64DivS;
 import jp.hisano.wasm.interpreter.Module.I64DivU;
 import jp.hisano.wasm.interpreter.Module.I64Mul;
 import jp.hisano.wasm.interpreter.Module.I64RemS;
+import jp.hisano.wasm.interpreter.Module.I64RemU;
 import jp.hisano.wasm.interpreter.Module.I64Sub;
 import jp.hisano.wasm.interpreter.Module.If;
 import jp.hisano.wasm.interpreter.Module.Instruction;
@@ -382,6 +383,8 @@ final class Parser {
 				return new I64DivU();
 			case 0x81:
 				return new I64RemS();
+			case 0x82:
+				return new I64RemU();
 
 			case 0x8b:
 				return new F32Abs();

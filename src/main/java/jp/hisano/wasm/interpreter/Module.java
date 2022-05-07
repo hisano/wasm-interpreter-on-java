@@ -10,6 +10,7 @@ import static java.lang.Double.isInfinite;
 import static java.lang.Double.isNaN;
 import static java.lang.Integer.*;
 import static java.lang.Long.divideUnsigned;
+import static java.lang.Long.remainderUnsigned;
 import static java.lang.Math.*;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToExitBlock;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToReturn;
@@ -798,7 +799,7 @@ public final class Module {
 	final static class I32RemU extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
-			return remainderUnsigned(first, second);
+			return Integer.remainderUnsigned(first, second);
 		}
 	}
 
@@ -943,6 +944,17 @@ public final class Module {
 		long calculate(long first, long second) {
 			try {
 				return first % second;
+			} catch (ArithmeticException e) {
+				throw new TrapException("integer divide by zero", e);
+			}
+		}
+	}
+
+	final static class I64RemU extends I64TwoOperandsOperator {
+		@Override
+		long calculate(long first, long second) {
+			try {
+				return remainderUnsigned(first, second);
 			} catch (ArithmeticException e) {
 				throw new TrapException("integer divide by zero", e);
 			}
