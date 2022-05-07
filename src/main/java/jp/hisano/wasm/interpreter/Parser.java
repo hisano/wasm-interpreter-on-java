@@ -105,6 +105,7 @@ import jp.hisano.wasm.interpreter.Module.I64Mul;
 import jp.hisano.wasm.interpreter.Module.I64Or;
 import jp.hisano.wasm.interpreter.Module.I64RemS;
 import jp.hisano.wasm.interpreter.Module.I64RemU;
+import jp.hisano.wasm.interpreter.Module.I64Shl;
 import jp.hisano.wasm.interpreter.Module.I64Sub;
 import jp.hisano.wasm.interpreter.Module.I64Xor;
 import jp.hisano.wasm.interpreter.Module.If;
@@ -394,6 +395,8 @@ final class Parser {
 				return new I64Or();
 			case 0x85:
 				return new I64Xor();
+			case 0x86:
+				return new I64Shl();
 
 			case 0x8b:
 				return new F32Abs();

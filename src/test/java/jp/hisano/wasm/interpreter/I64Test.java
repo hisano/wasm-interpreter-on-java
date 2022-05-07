@@ -245,6 +245,25 @@ class I64Test {
 		invoke("xor", firstParameter, secondParameter, expectedResult);
 	}
 
+	@DisplayName("i64.shl")
+	@ParameterizedTest(name = "i64.shl({0}, {1}) = {2}")
+	@CsvSource({
+		"1,1,2",
+		"1,0,1",
+		"0x7fffffffffffffff,1,0xfffffffffffffffe",
+		"0xffffffffffffffff,1,0xfffffffffffffffe",
+		"0x8000000000000000,1,0",
+		"0x4000000000000000,1,0x8000000000000000",
+		"1,63,0x8000000000000000",
+		"1,64,1",
+		"1,65,2",
+		"1,-1,0x8000000000000000",
+		"1,0x7fffffffffffffff,0x8000000000000000",
+	})
+	void shl(@WastValue long firstParameter, @WastValue long secondParameter, @WastValue long expectedResult) throws IOException {
+		invoke("shl", firstParameter, secondParameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invoke(functionName, firstParameter, secondParameter);
