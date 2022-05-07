@@ -289,6 +289,31 @@ class I64Test {
 		invoke("shr_s", firstParameter, secondParameter, expectedResult);
 	}
 
+	@DisplayName("i64.shr_u")
+	@ParameterizedTest(name = "i64.shr_u({0}, {1}) = {2}")
+	@CsvSource({
+		"1,1,0",
+		"1,0,1",
+		"-1,1,0x7fffffffffffffff",
+		"0x7fffffffffffffff,1,0x3fffffffffffffff",
+		"0x8000000000000000,1,0x4000000000000000",
+		"0x4000000000000000,1,0x2000000000000000",
+		"1,64,1",
+		"1,65,0",
+		"1,-1,0",
+		"1,0x7fffffffffffffff,0",
+		"1,0x8000000000000000,1",
+		"0x8000000000000000,63,1",
+		"-1,64,-1",
+		"-1,65,0x7fffffffffffffff",
+		"-1,-1,1",
+		"-1,0x7fffffffffffffff,1",
+		"-1,0x8000000000000000,-1",
+	})
+	void shr_u(@WastValue long firstParameter, @WastValue long secondParameter, @WastValue long expectedResult) throws IOException {
+		invoke("shr_u", firstParameter, secondParameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invoke(functionName, firstParameter, secondParameter);
