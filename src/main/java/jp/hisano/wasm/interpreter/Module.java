@@ -324,6 +324,12 @@ public final class Module {
 		}
 	}
 
+	final static class Nop implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+		}
+	}
+
 	abstract static class BlockEndMarker implements Instruction {
 		@Override
 		public void execute(Frame frame) {

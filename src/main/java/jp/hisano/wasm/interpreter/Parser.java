@@ -134,6 +134,7 @@ import jp.hisano.wasm.interpreter.Module.Instruction;
 import jp.hisano.wasm.interpreter.Module.Kind;
 import jp.hisano.wasm.interpreter.Module.LocalGet;
 import jp.hisano.wasm.interpreter.Module.Loop;
+import jp.hisano.wasm.interpreter.Module.Nop;
 import jp.hisano.wasm.interpreter.Module.RefNull;
 import jp.hisano.wasm.interpreter.Module.Return;
 import jp.hisano.wasm.interpreter.Module.Unreachable;
@@ -247,6 +248,8 @@ final class Parser {
 		switch (instruction) {
 			case 0x00:
 				return new Unreachable();
+			case 0x01:
+				return new Nop();
 			case 0x02: {
 				Block block = new Block(parent, toValueType(byteBuffer.readVarsint7()));
 				block.setInstructions(parseInstructions(module, block));
