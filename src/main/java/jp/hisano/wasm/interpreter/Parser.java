@@ -115,6 +115,7 @@ import jp.hisano.wasm.interpreter.Module.I64Eqz;
 import jp.hisano.wasm.interpreter.Module.I64Extend16S;
 import jp.hisano.wasm.interpreter.Module.I64Extend32S;
 import jp.hisano.wasm.interpreter.Module.I64Extend8S;
+import jp.hisano.wasm.interpreter.Module.I64ExtendI32S;
 import jp.hisano.wasm.interpreter.Module.I64GeS;
 import jp.hisano.wasm.interpreter.Module.I64GeU;
 import jp.hisano.wasm.interpreter.Module.I64GtS;
@@ -625,8 +626,7 @@ final class Parser {
 				// TODO i32.trunc_f64_u命令
 				break;
 			case 0xac:
-				// TODO i64.extend_i32_s命令
-				break;
+				return new I64ExtendI32S();
 			case 0xad:
 				// TODO i64.extend_i32_u命令
 				break;

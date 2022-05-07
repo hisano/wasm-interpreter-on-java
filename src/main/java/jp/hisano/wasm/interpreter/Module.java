@@ -1511,6 +1511,13 @@ public final class Module {
 		}
 	}
 
+	final static class I64ExtendI32S extends PushValue {
+		@Override
+		Value getValue(Frame frame) {
+			return new Value((long) frame.pop().getI32());
+		}
+	}
+
 	final static class F64ConvertI32S implements Instruction {
 		@Override
 		public void execute(Frame frame) {
