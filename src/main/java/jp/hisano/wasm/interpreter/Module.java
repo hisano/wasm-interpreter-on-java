@@ -706,6 +706,12 @@ public final class Module {
 		}
 	}
 
+	final static class I64LeU extends I64TwoOperandsCmpOperator {
+		boolean calculate(long first, long second) {
+			return compareUnsigned(first, second) <= 0;
+		}
+	}
+
 	final static class F32Eq extends F32TwoOperandsCmpOperator {
 		@Override
 		boolean calculate(float first, float second) {
