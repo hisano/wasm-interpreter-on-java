@@ -1521,18 +1521,20 @@ public final class Module {
 
 		@Override
 		public void execute(Frame frame) {
+			boolean isExceptionThrown = false;
 			do {
 				try {
 					instructions.forEach(instruction -> {
 						instruction.execute(frame);
 					});
 				} catch (ExceptionToExitBlock e) {
+					isExceptionThrown = true;
 					if (e.isMoreExitRequired()) {
 						e.decrementDepth();
 						throw e;
 					}
 				}
-			} while (isBackwardExit);
+			} while (isExceptionThrown && isBackwardExit);
 		}
 	}
 

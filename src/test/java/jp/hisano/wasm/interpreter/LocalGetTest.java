@@ -64,6 +64,12 @@ class LocalGetTest {
 		assertEquals(6, (int) invoke("as-block-value", 6));
 	}
 
+	@DisplayName("as-loop-value")
+	@Test
+	void as_loop_value() throws IOException {
+		assertEquals(7, (int) invoke("as-loop-value", 7));
+	}
+
 	@DisplayName("as-br-value")
 	@Test
 	void as_br_value() throws IOException {
