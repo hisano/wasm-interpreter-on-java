@@ -10,8 +10,10 @@ import static java.lang.Double.isInfinite;
 import static java.lang.Double.isNaN;
 import static java.lang.Integer.*;
 import static java.lang.Integer.numberOfLeadingZeros;
+import static java.lang.Integer.numberOfTrailingZeros;
 import static java.lang.Long.divideUnsigned;
 import static java.lang.Long.numberOfLeadingZeros;
+import static java.lang.Long.numberOfTrailingZeros;
 import static java.lang.Long.remainderUnsigned;
 import static java.lang.Long.rotateLeft;
 import static java.lang.Long.rotateRight;
@@ -899,6 +901,13 @@ public final class Module {
 		@Override
 		long convert(long value) {
 			return numberOfLeadingZeros(value);
+		}
+	}
+
+	final static class I64Ctz extends I64Converter {
+		@Override
+		long convert(long value) {
+			return numberOfTrailingZeros(value);
 		}
 	}
 

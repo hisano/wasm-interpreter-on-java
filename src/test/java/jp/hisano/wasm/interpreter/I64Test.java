@@ -372,6 +372,20 @@ class I64Test {
 		invoke("clz", parameter, expectedResult);
 	}
 
+	@DisplayName("i64.ctz")
+	@ParameterizedTest(name = "i64.ctz({0}) = {1}")
+	@CsvSource({
+		"-1,0",
+		"0,64",
+		"0x00008000,15",
+		"0x00010000,16",
+		"0x8000000000000000,63",
+		"0x7fffffffffffffff,0",
+	})
+	void ctz(@WastValue long parameter, @WastValue long expectedResult) throws IOException {
+		invoke("ctz", parameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invokeFunction(functionName, firstParameter, secondParameter);

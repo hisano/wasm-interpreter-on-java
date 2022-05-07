@@ -100,6 +100,7 @@ import jp.hisano.wasm.interpreter.Module.I64Add;
 import jp.hisano.wasm.interpreter.Module.I64And;
 import jp.hisano.wasm.interpreter.Module.I64Clz;
 import jp.hisano.wasm.interpreter.Module.I64Const;
+import jp.hisano.wasm.interpreter.Module.I64Ctz;
 import jp.hisano.wasm.interpreter.Module.I64DivS;
 import jp.hisano.wasm.interpreter.Module.I64DivU;
 import jp.hisano.wasm.interpreter.Module.I64Mul;
@@ -382,6 +383,8 @@ final class Parser {
 
 			case 0x79:
 				return new I64Clz();
+			case 0x7a:
+				return new I64Ctz();
 
 			case 0x7c:
 				return new I64Add();
