@@ -195,6 +195,22 @@ class I64Test {
 		invoke("rem_u", firstParameter, secondParameter, expectedResult);
 	}
 
+	@DisplayName("i64.and")
+	@ParameterizedTest(name = "i64.and({0}, {1}) = {2}")
+	@CsvSource({
+		"1,0,0",
+		"0,1,0",
+		"1,1,1",
+		"0,0,0",
+		"0x7fffffffffffffff,0x8000000000000000,0",
+		"0x7fffffffffffffff,-1,0x7fffffffffffffff",
+		"0xf0f0ffff,0xfffff0f0,0xf0f0f0f0",
+		"0xffffffffffffffff,0xffffffffffffffff,0xffffffffffffffff",
+	})
+	void and(@WastValue long firstParameter, @WastValue long secondParameter, @WastValue long expectedResult) throws IOException {
+		invoke("and", firstParameter, secondParameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invoke(functionName, firstParameter, secondParameter);
