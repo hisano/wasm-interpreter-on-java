@@ -98,6 +98,7 @@ import jp.hisano.wasm.interpreter.Module.I32Sub;
 import jp.hisano.wasm.interpreter.Module.I32Xor;
 import jp.hisano.wasm.interpreter.Module.I64Add;
 import jp.hisano.wasm.interpreter.Module.I64And;
+import jp.hisano.wasm.interpreter.Module.I64Clz;
 import jp.hisano.wasm.interpreter.Module.I64Const;
 import jp.hisano.wasm.interpreter.Module.I64DivS;
 import jp.hisano.wasm.interpreter.Module.I64DivU;
@@ -378,6 +379,9 @@ final class Parser {
 				return new I32Rotl();
 			case 0x78:
 				return new I32Rotr();
+
+			case 0x79:
+				return new I64Clz();
 
 			case 0x7c:
 				return new I64Add();

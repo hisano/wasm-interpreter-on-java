@@ -9,7 +9,9 @@ import java.util.Map;
 import static java.lang.Double.isInfinite;
 import static java.lang.Double.isNaN;
 import static java.lang.Integer.*;
+import static java.lang.Integer.numberOfLeadingZeros;
 import static java.lang.Long.divideUnsigned;
+import static java.lang.Long.numberOfLeadingZeros;
 import static java.lang.Long.remainderUnsigned;
 import static java.lang.Long.rotateLeft;
 import static java.lang.Long.rotateRight;
@@ -881,6 +883,22 @@ public final class Module {
 		@Override
 		int convert(int value) {
 			return (short)value;
+		}
+	}
+
+	private static abstract class I64Converter implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			frame.pushI64(convert(frame.pop().getI64()));
+		}
+
+		abstract long convert(long value);
+	}
+
+	final static class I64Clz extends I64Converter {
+		@Override
+		long convert(long value) {
+			return numberOfLeadingZeros(value);
 		}
 	}
 
