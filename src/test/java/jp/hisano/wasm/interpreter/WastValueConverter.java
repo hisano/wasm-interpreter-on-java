@@ -4,6 +4,7 @@ import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.SimpleArgumentConverter;
 
 import static java.lang.Float.*;
+import static java.lang.Integer.*;
 import static java.lang.Long.*;
 
 class WastValueConverter extends SimpleArgumentConverter {
@@ -31,6 +32,14 @@ class WastValueConverter extends SimpleArgumentConverter {
 					return -parseUnsignedLong(value.substring(3).replace("_", ""), 16);
 			} else {
 				return parseLong(value);
+			}
+		} else if (targetType == int.class) {
+			if (value.startsWith("0x")) {
+				return parseUnsignedInt(value.substring(2).replace("_", ""), 16);
+			} else if (value.startsWith("-0x")) {
+				return -parseUnsignedInt(value.substring(3).replace("_", ""), 16);
+			} else {
+				return parseInt(value);
 			}
 		}
 		throw new ArgumentConversionException("not supported type: " + targetType.getSimpleName());

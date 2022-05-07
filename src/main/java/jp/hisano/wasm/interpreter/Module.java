@@ -657,6 +657,13 @@ public final class Module {
 		}
 	}
 
+	final static class I64Eqz implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			frame.pushI32(frame.pop().getI64() == 0? 1: 0);
+		}
+	}
+
 	final static class F32Eq extends F32TwoOperandsCmpOperator {
 		@Override
 		boolean calculate(float first, float second) {
