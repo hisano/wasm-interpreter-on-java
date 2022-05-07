@@ -700,6 +700,12 @@ public final class Module {
 		}
 	}
 
+	final static class I64LeS extends I64TwoOperandsCmpOperator {
+		boolean calculate(long first, long second) {
+			return first <= second;
+		}
+	}
+
 	final static class F32Eq extends F32TwoOperandsCmpOperator {
 		@Override
 		boolean calculate(float first, float second) {

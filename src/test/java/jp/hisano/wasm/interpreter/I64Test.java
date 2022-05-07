@@ -551,6 +551,28 @@ class I64Test {
 		invokeComparator("lt_u", firstParameter, secondParameter, expectedResult);
 	}
 
+	@DisplayName("i64.le_s")
+	@ParameterizedTest(name = "i64.le_s({0}) = {1}")
+	@CsvSource({
+		"0,0,1",
+		"1,1,1",
+		"-1,1,1",
+		"0x8000000000000000,0x8000000000000000,1",
+		"0x7fffffffffffffff,0x7fffffffffffffff,1",
+		"-1,-1,1",
+		"1,0,0",
+		"0,1,1",
+		"0x8000000000000000,0,1",
+		"0,0x8000000000000000,0",
+		"0x8000000000000000,-1,1",
+		"-1,0x8000000000000000,0",
+		"0x8000000000000000,0x7fffffffffffffff,1",
+		"0x7fffffffffffffff,0x8000000000000000,0",
+	})
+	void le_s(@WastValue long firstParameter, @WastValue long secondParameter, @WastValue int expectedResult) throws IOException {
+		invokeComparator("le_s", firstParameter, secondParameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invokeFunction(functionName, firstParameter, secondParameter);
