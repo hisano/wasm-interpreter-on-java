@@ -386,6 +386,22 @@ class I64Test {
 		invoke("ctz", parameter, expectedResult);
 	}
 
+	@DisplayName("i64.popcnt")
+	@ParameterizedTest(name = "i64.popcnt({0}) = {1}")
+	@CsvSource({
+		"-1,64",
+		"0,0",
+		"0x00008000,1",
+		"0x8000800080008000,4",
+		"0x7fffffffffffffff,63",
+		"0xAAAAAAAA55555555,32",
+		"0x99999999AAAAAAAA,32",
+		"0xDEADBEEFDEADBEEF,48",
+	})
+	void popcnt(@WastValue long parameter, @WastValue long expectedResult) throws IOException {
+		invoke("popcnt", parameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invokeFunction(functionName, firstParameter, secondParameter);

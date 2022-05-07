@@ -9,8 +9,10 @@ import java.util.Map;
 import static java.lang.Double.isInfinite;
 import static java.lang.Double.isNaN;
 import static java.lang.Integer.*;
+import static java.lang.Integer.bitCount;
 import static java.lang.Integer.numberOfLeadingZeros;
 import static java.lang.Integer.numberOfTrailingZeros;
+import static java.lang.Long.bitCount;
 import static java.lang.Long.divideUnsigned;
 import static java.lang.Long.numberOfLeadingZeros;
 import static java.lang.Long.numberOfTrailingZeros;
@@ -753,7 +755,7 @@ public final class Module {
 		}
 	}
 
-	final static class I32PopCnt extends I32Converter {
+	final static class I32Popcnt extends I32Converter {
 		@Override
 		int convert(int value) {
 			return bitCount(value);
@@ -908,6 +910,13 @@ public final class Module {
 		@Override
 		long convert(long value) {
 			return numberOfTrailingZeros(value);
+		}
+	}
+
+	final static class I64Popcnt extends I64Converter {
+		@Override
+		long convert(long value) {
+			return bitCount(value);
 		}
 	}
 

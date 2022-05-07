@@ -86,7 +86,7 @@ import jp.hisano.wasm.interpreter.Module.I32LtU;
 import jp.hisano.wasm.interpreter.Module.I32Mul;
 import jp.hisano.wasm.interpreter.Module.I32Ne;
 import jp.hisano.wasm.interpreter.Module.I32Or;
-import jp.hisano.wasm.interpreter.Module.I32PopCnt;
+import jp.hisano.wasm.interpreter.Module.I32Popcnt;
 import jp.hisano.wasm.interpreter.Module.I32RemS;
 import jp.hisano.wasm.interpreter.Module.I32RemU;
 import jp.hisano.wasm.interpreter.Module.I32Rotl;
@@ -105,6 +105,7 @@ import jp.hisano.wasm.interpreter.Module.I64DivS;
 import jp.hisano.wasm.interpreter.Module.I64DivU;
 import jp.hisano.wasm.interpreter.Module.I64Mul;
 import jp.hisano.wasm.interpreter.Module.I64Or;
+import jp.hisano.wasm.interpreter.Module.I64Popcnt;
 import jp.hisano.wasm.interpreter.Module.I64RemS;
 import jp.hisano.wasm.interpreter.Module.I64RemU;
 import jp.hisano.wasm.interpreter.Module.I64Rotl;
@@ -349,7 +350,7 @@ final class Parser {
 			case 0x68:
 				return new I32Ctz();
 			case 0x69:
-				return new I32PopCnt();
+				return new I32Popcnt();
 			case 0x6a:
 				return new I32Add();
 			case 0x6b:
@@ -385,6 +386,8 @@ final class Parser {
 				return new I64Clz();
 			case 0x7a:
 				return new I64Ctz();
+			case 0x7b:
+				return new I64Popcnt();
 
 			case 0x7c:
 				return new I64Add();
