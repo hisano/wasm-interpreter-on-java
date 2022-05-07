@@ -446,6 +446,17 @@ public final class Module {
 		abstract Value readMemory(Memory memory, int address);
 	}
 
+	final static class I32Load extends MemoryAccess {
+		I32Load(int align, int offset) {
+			super(align, offset);
+		}
+
+		@Override
+		Value readMemory(Memory memory, int address) {
+			return new Value(memory.readInt32(address));
+		}
+	}
+
 	final static class I32Load8S extends MemoryAccess {
 		I32Load8S(int align, int offset) {
 			super(align, offset);
@@ -465,6 +476,28 @@ public final class Module {
 		@Override
 		Value readMemory(Memory memory, int address) {
 			return new Value(memory.readUint8AsInt(address));
+		}
+	}
+
+	final static class I32Load16S extends MemoryAccess {
+		I32Load16S(int align, int offset) {
+			super(align, offset);
+		}
+
+		@Override
+		Value readMemory(Memory memory, int address) {
+			return new Value(memory.readInt16AsInt(address));
+		}
+	}
+
+	final static class I32Load16U extends MemoryAccess {
+		I32Load16U(int align, int offset) {
+			super(align, offset);
+		}
+
+		@Override
+		Value readMemory(Memory memory, int address) {
+			return new Value(memory.readUint16AsInt(address));
 		}
 	}
 

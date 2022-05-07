@@ -79,6 +79,9 @@ import jp.hisano.wasm.interpreter.Module.I32GtS;
 import jp.hisano.wasm.interpreter.Module.I32GtU;
 import jp.hisano.wasm.interpreter.Module.I32LeS;
 import jp.hisano.wasm.interpreter.Module.I32LeU;
+import jp.hisano.wasm.interpreter.Module.I32Load;
+import jp.hisano.wasm.interpreter.Module.I32Load16S;
+import jp.hisano.wasm.interpreter.Module.I32Load16U;
 import jp.hisano.wasm.interpreter.Module.I32Load8S;
 import jp.hisano.wasm.interpreter.Module.I32Load8U;
 import jp.hisano.wasm.interpreter.Module.I32LtS;
@@ -312,8 +315,7 @@ final class Parser {
 				break;
 
 			case 0x28:
-				// TODO i32.load命令
-				break;
+				return new I32Load(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
 			case 0x29:
 				// TODO i64.load命令
 				break;
@@ -328,9 +330,10 @@ final class Parser {
 				return new I32Load8S(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
 			case 0x2d:
 				return new I32Load8U(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
+			case 0x2e:
+				return new I32Load16S(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
 			case 0x2f:
-				// TODO i32.load16_u命令
-				break;
+				return new I32Load16U(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
 
 			case 0x30:
 				// TODO i64.load8_s命令
