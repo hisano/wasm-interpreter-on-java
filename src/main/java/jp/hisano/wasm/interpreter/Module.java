@@ -906,6 +906,13 @@ public final class Module {
 		}
 	}
 
+	final static class I64Extend16S extends I64Converter {
+		@Override
+		long convert(long value) {
+			return (short)value;
+		}
+	}
+
 	final static class I64Clz extends I64Converter {
 		@Override
 		long convert(long value) {

@@ -103,6 +103,7 @@ import jp.hisano.wasm.interpreter.Module.I64Const;
 import jp.hisano.wasm.interpreter.Module.I64Ctz;
 import jp.hisano.wasm.interpreter.Module.I64DivS;
 import jp.hisano.wasm.interpreter.Module.I64DivU;
+import jp.hisano.wasm.interpreter.Module.I64Extend16S;
 import jp.hisano.wasm.interpreter.Module.I64Extend8S;
 import jp.hisano.wasm.interpreter.Module.I64Mul;
 import jp.hisano.wasm.interpreter.Module.I64Or;
@@ -481,15 +482,17 @@ final class Parser {
 			case 0xa6:
 				return new F64Copysign();
 
-			case 0xC0:
+			case 0xc0:
 				return new I32Extend8S();
-			case 0xC1:
+			case 0xc1:
 				return new I32Extend16S();
 
-			case 0xC2:
+			case 0xc2:
 				return new I64Extend8S();
+			case 0xc3:
+				return new I64Extend16S();
 
-			case 0xD0:
+			case 0xd0:
 				return new RefNull(toValueType(byteBuffer.readVarsint7()));
 			default:
 				throw new UnsupportedOperationException("not implemented instruction: instruction = 0x" + toHexString(instruction) + ", readIndex = " + byteBuffer.getReadIndex());
