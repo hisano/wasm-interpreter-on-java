@@ -11,6 +11,7 @@ import static java.lang.Double.isNaN;
 import static java.lang.Integer.*;
 import static java.lang.Long.divideUnsigned;
 import static java.lang.Long.remainderUnsigned;
+import static java.lang.Long.rotateLeft;
 import static java.lang.Math.*;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToExitBlock;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToReturn;
@@ -845,14 +846,14 @@ public final class Module {
 		}
 	}
 
-	final static class I32RotL extends I32TwoOperandsOperator {
+	final static class I32Rotl extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
-			return rotateLeft(first, second);
+			return Integer.rotateLeft(first, second);
 		}
 	}
 
-	final static class I32RotR extends I32TwoOperandsOperator {
+	final static class I32Rotr extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
 			return rotateRight(first, second);
@@ -1000,6 +1001,13 @@ public final class Module {
 		@Override
 		long calculate(long first, long second) {
 			return first >>> second;
+		}
+	}
+
+	final static class I64Rotl extends I64TwoOperandsOperator {
+		@Override
+		long calculate(long first, long second) {
+			return rotateLeft(first, (int) second);
 		}
 	}
 

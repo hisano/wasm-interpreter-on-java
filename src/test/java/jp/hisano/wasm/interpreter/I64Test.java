@@ -314,6 +314,27 @@ class I64Test {
 		invoke("shr_u", firstParameter, secondParameter, expectedResult);
 	}
 
+	@DisplayName("i64.rotl")
+	@ParameterizedTest(name = "i64.rotl({0}, {1}) = {2}")
+	@CsvSource({
+		"1,1,2",
+		"1,0,1",
+		"-1,1,-1",
+		"1,64,1",
+		"0xabcd987602468ace,1,0x579b30ec048d159d",
+		"0xfe000000dc000000,4,0xe000000dc000000f",
+		"0xabcd1234ef567809,53,0x013579a2469deacf",
+		"0xabd1234ef567809c,63,0x55e891a77ab3c04e",
+		"0xabcd1234ef567809,0xf5,0x013579a2469deacf",
+		"0xabcd7294ef567809,0xffffffffffffffed,0xcf013579ae529dea",
+		"0xabd1234ef567809c,0x800000000000003f,0x55e891a77ab3c04e",
+		"1,63,0x8000000000000000",
+		"0x8000000000000000,1,1",
+	})
+	void rotl(@WastValue long firstParameter, @WastValue long secondParameter, @WastValue long expectedResult) throws IOException {
+		invoke("rotl", firstParameter, secondParameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invoke(functionName, firstParameter, secondParameter);
