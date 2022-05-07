@@ -913,6 +913,13 @@ public final class Module {
 		}
 	}
 
+	final static class I64Extend32S extends I64Converter {
+		@Override
+		long convert(long value) {
+			return (int)value;
+		}
+	}
+
 	final static class I64Clz extends I64Converter {
 		@Override
 		long convert(long value) {

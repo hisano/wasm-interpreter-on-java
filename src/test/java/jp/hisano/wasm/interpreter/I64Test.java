@@ -432,6 +432,24 @@ class I64Test {
 		invoke("extend16_s", parameter, expectedResult);
 	}
 
+	@DisplayName("i64.extend32_s")
+	@ParameterizedTest(name = "i64.extend32_s({0}) = {1}")
+	@CsvSource({
+		"0,0",
+		"0x7fff,32767",
+		"0x8000,32768",
+		"0xffff,65535",
+		"0x7fffffff,0x7fffffff",
+		"0x80000000,-0x80000000",
+		"0xffffffff,-1",
+		"0x01234567_00000000,0",
+		"0xfedcba98_80000000,-0x80000000",
+		"-1,-1",
+	})
+	void extend32_s(@WastValue long parameter, @WastValue long expectedResult) throws IOException {
+		invoke("extend32_s", parameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invokeFunction(functionName, firstParameter, secondParameter);
