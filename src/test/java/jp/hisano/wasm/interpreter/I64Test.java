@@ -402,6 +402,21 @@ class I64Test {
 		invoke("popcnt", parameter, expectedResult);
 	}
 
+	@DisplayName("i64.extend8_s")
+	@ParameterizedTest(name = "i64.extend8_s({0}) = {1}")
+	@CsvSource({
+		"0,0",
+		"0x7f,127",
+		"0x80,-128",
+		"0xff,-1",
+		"0x01234567_89abcd_00,0",
+		"0xfedcba98_765432_80,-0x80",
+		"-1,-1",
+	})
+	void extend8_s(@WastValue long parameter, @WastValue long expectedResult) throws IOException {
+		invoke("extend8_s", parameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invokeFunction(functionName, firstParameter, secondParameter);

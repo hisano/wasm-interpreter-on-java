@@ -899,6 +899,13 @@ public final class Module {
 		abstract long convert(long value);
 	}
 
+	final static class I64Extend8S extends I64Converter {
+		@Override
+		long convert(long value) {
+			return (byte)value;
+		}
+	}
+
 	final static class I64Clz extends I64Converter {
 		@Override
 		long convert(long value) {

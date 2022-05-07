@@ -103,6 +103,7 @@ import jp.hisano.wasm.interpreter.Module.I64Const;
 import jp.hisano.wasm.interpreter.Module.I64Ctz;
 import jp.hisano.wasm.interpreter.Module.I64DivS;
 import jp.hisano.wasm.interpreter.Module.I64DivU;
+import jp.hisano.wasm.interpreter.Module.I64Extend8S;
 import jp.hisano.wasm.interpreter.Module.I64Mul;
 import jp.hisano.wasm.interpreter.Module.I64Or;
 import jp.hisano.wasm.interpreter.Module.I64Popcnt;
@@ -484,6 +485,9 @@ final class Parser {
 				return new I32Extend8S();
 			case 0xC1:
 				return new I32Extend16S();
+
+			case 0xC2:
+				return new I64Extend8S();
 
 			case 0xD0:
 				return new RefNull(toValueType(byteBuffer.readVarsint7()));

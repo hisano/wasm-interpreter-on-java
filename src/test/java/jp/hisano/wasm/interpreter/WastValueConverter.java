@@ -26,7 +26,9 @@ class WastValueConverter extends SimpleArgumentConverter {
 			}
 		} else if (targetType == long.class) {
 			if (value.startsWith("0x")) {
-				return parseUnsignedLong(value.substring(2), 16);
+				return parseUnsignedLong(value.substring(2).replace("_", ""), 16);
+			} else if (value.startsWith("-0x")) {
+					return -parseUnsignedLong(value.substring(3).replace("_", ""), 16);
 			} else {
 				return parseLong(value);
 			}
