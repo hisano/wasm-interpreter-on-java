@@ -211,6 +211,22 @@ class I64Test {
 		invoke("and", firstParameter, secondParameter, expectedResult);
 	}
 
+	@DisplayName("i64.or")
+	@ParameterizedTest(name = "i64.or({0}, {1}) = {2}")
+	@CsvSource({
+		"1,0,1",
+		"0,1,1",
+		"1,1,1",
+		"0,0,0",
+		"0x7fffffffffffffff,0x8000000000000000,-1",
+		"0x8000000000000000,0,0x8000000000000000",
+		"0xf0f0ffff,0xfffff0f0,0xffffffff",
+		"0xffffffffffffffff,0xffffffffffffffff,0xffffffffffffffff",
+	})
+	void or(@WastValue long firstParameter, @WastValue long secondParameter, @WastValue long expectedResult) throws IOException {
+		invoke("or", firstParameter, secondParameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invoke(functionName, firstParameter, secondParameter);
