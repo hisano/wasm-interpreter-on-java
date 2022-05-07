@@ -227,6 +227,24 @@ class I64Test {
 		invoke("or", firstParameter, secondParameter, expectedResult);
 	}
 
+	@DisplayName("i64.xor")
+	@ParameterizedTest(name = "i64.xor({0}, {1}) = {2}")
+	@CsvSource({
+		"1,0,1",
+		"0,1,1",
+		"1,1,0",
+		"0,0,0",
+		"0x7fffffffffffffff,0x8000000000000000,-1",
+		"0x8000000000000000,0,0x8000000000000000",
+		"-1,0x8000000000000000,0x7fffffffffffffff",
+		"-1,0x7fffffffffffffff,0x8000000000000000",
+		"0xf0f0ffff,0xfffff0f0,0x0f0f0f0f",
+		"0xffffffffffffffff,0xffffffffffffffff,0",
+	})
+	void xor(@WastValue long firstParameter, @WastValue long secondParameter, @WastValue long expectedResult) throws IOException {
+		invoke("xor", firstParameter, secondParameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invoke(functionName, firstParameter, secondParameter);
