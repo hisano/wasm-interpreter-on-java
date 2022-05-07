@@ -109,6 +109,7 @@ import jp.hisano.wasm.interpreter.Module.I64Extend16S;
 import jp.hisano.wasm.interpreter.Module.I64Extend32S;
 import jp.hisano.wasm.interpreter.Module.I64Extend8S;
 import jp.hisano.wasm.interpreter.Module.I64GeS;
+import jp.hisano.wasm.interpreter.Module.I64GeU;
 import jp.hisano.wasm.interpreter.Module.I64GtS;
 import jp.hisano.wasm.interpreter.Module.I64GtU;
 import jp.hisano.wasm.interpreter.Module.I64LeS;
@@ -352,6 +353,8 @@ final class Parser {
 				return new I64LeU();
 			case 0x59:
 				return new I64GeS();
+			case 0x5a:
+				return new I64GeU();
 
 			case 0x5b:
 				return new F32Eq();
