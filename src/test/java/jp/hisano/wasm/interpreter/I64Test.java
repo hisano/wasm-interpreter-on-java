@@ -127,6 +127,42 @@ class I64Test {
 		invoke("div_u", firstParameter, secondParameter, expectedResult);
 	}
 
+	@DisplayName("i64.rem_s (trap)")
+	@ParameterizedTest(name = "i64.rem_s({0}, {1}) = \"{2}\"")
+	@CsvSource({
+		"1,0,integer divide by zero",
+		"0,0,integer divide by zero",
+	})
+	void rem_s_trap(@WastValue long firstParameter, @WastValue long secondParameter, String expectedTrapMessage) throws IOException {
+		invokeTrap("rem_s", firstParameter, secondParameter, expectedTrapMessage);
+	}
+
+	@DisplayName("i64.rem_s")
+	@ParameterizedTest(name = "i64.rem_s({0}, {1}) = {2}")
+	@CsvSource({
+		"0x7fffffffffffffff,-1,0",
+		"1,1,0",
+		"0,1,0",
+		"0,-1,0",
+		"-1,-1,0",
+		"0x8000000000000000,-1,0",
+		"0x8000000000000000,2,0",
+		"0x8000000000000001,1000,-807",
+		"5,2,1",
+		"-5,2,-1",
+		"5,-2,1",
+		"-5,-2,-1",
+		"7,3,1",
+		"-7,3,-1",
+		"7,-3,1",
+		"-7,-3,-1",
+		"11,5,1",
+		"17,7,3",
+	})
+	void rem_s(@WastValue long firstParameter, @WastValue long secondParameter, @WastValue long expectedResult) throws IOException {
+		invoke("rem_s", firstParameter, secondParameter, expectedResult);
+	}
+
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
 		TrapException trapException = assertThrows(TrapException.class, () -> {
 			invoke(functionName, firstParameter, secondParameter);

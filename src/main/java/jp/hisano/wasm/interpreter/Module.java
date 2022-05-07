@@ -938,6 +938,17 @@ public final class Module {
 		}
 	}
 
+	final static class I64RemS extends I64TwoOperandsOperator {
+		@Override
+		long calculate(long first, long second) {
+			try {
+				return first % second;
+			} catch (ArithmeticException e) {
+				throw new TrapException("integer divide by zero", e);
+			}
+		}
+	}
+
 	private static abstract class F32TwoOperandsOperator implements Instruction {
 		@Override
 		public void execute(Frame frame) {
