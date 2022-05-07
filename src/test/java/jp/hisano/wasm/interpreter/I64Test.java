@@ -59,6 +59,18 @@ class I64Test {
 		invoke("mul", first, second, expectedValue);
 	}
 
+	@DisplayName("i64.div_s (trap)")
+	@ParameterizedTest(name = "i64.div_s({0}, {1}) = \"{2}\"")
+	@CsvSource({
+		"1,0,integer divide by zero",
+		"0,0,integer divide by zero",
+		"0x8000000000000000,-1,integer overflow",
+		"0x8000000000000000,0,integer divide by zero",
+	})
+	void div_s_trap(@WastValue long first, @WastValue long second, String expectedTrapMessage) throws IOException {
+		invokeTrap("div_s", first, second, expectedTrapMessage);
+	}
+
 	@DisplayName("i64.div_s")
 	@ParameterizedTest(name = "i64.div_s({0}, {1}) = {2}")
 	@CsvSource({
@@ -83,20 +95,36 @@ class I64Test {
 		invoke("div_s", first, second, expectedValue);
 	}
 
-	@DisplayName("i64.div_s (trap)")
-	@ParameterizedTest(name = "i64.div_s({0}, {1}) = \"{2}\"")
+	@DisplayName("i64.div_u (trap)")
+	@ParameterizedTest(name = "i64.div_u({0}, {1}) = \"{2}\"")
 	@CsvSource({
 		"1,0,integer divide by zero",
 		"0,0,integer divide by zero",
-		"0x8000000000000000,-1,integer overflow",
-		"0x8000000000000000,0,integer divide by zero",
 	})
-	void div_s_trap(@WastValue long first, @WastValue long second, String expectedTrapMessage) throws IOException {
-		invokeTrap("div_s", first, second, expectedTrapMessage);
+	void div_u_trap(@WastValue long first, @WastValue long second, String expectedTrapMessage) throws IOException {
+		invokeTrap("div_u", first, second, expectedTrapMessage);
 	}
 
-	private static void invoke(String functionName, long firstParameter, long secondParameter, long expectedResult) throws IOException {
-		assertEquals(expectedResult, invoke(functionName, firstParameter, secondParameter));
+	@DisplayName("i64.div_u")
+	@ParameterizedTest(name = "i64.div_u({0}, {1}) = {2}")
+	@CsvSource({
+		"1,1,1",
+		"0,1,0",
+		"-1,-1,1",
+		"0x8000000000000000,-1,0",
+		"0x8000000000000000,2,0x4000000000000000",
+		"0x8ff00ff00ff00ff0,0x100000001,0x8ff00fef",
+		"0x8000000000000001,1000,0x20c49ba5e353f7",
+		"5,2,2",
+		"-5,2,0x7ffffffffffffffd",
+		"5,-2,0",
+		"-5,-2,0",
+		"7,3,2",
+		"11,5,2",
+		"17,7,2",
+	})
+	void div_u(@WastValue long first, @WastValue long second, @WastValue long expectedValue) throws IOException {
+		invoke("div_u", first, second, expectedValue);
 	}
 
 	private static void invokeTrap(String functionName, long firstParameter, long secondParameter, String expectedTrapMessage) throws IOException {
@@ -104,6 +132,10 @@ class I64Test {
 			invoke(functionName, firstParameter, secondParameter);
 		});
 		assertEquals(expectedTrapMessage, trapException.getMessage());
+	}
+
+	private static void invoke(String functionName, long firstParameter, long secondParameter, long expectedResult) throws IOException {
+		assertEquals(expectedResult, invoke(functionName, firstParameter, secondParameter));
 	}
 
 	private static long invoke(String functionName, long firstParameter, long secondParameter) throws IOException {

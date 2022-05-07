@@ -9,6 +9,7 @@ import java.util.Map;
 import static java.lang.Double.isInfinite;
 import static java.lang.Double.isNaN;
 import static java.lang.Integer.*;
+import static java.lang.Long.divideUnsigned;
 import static java.lang.Math.*;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToExitBlock;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToReturn;
@@ -783,7 +784,7 @@ public final class Module {
 	final static class I32DivU extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
-			return divideUnsigned(first, second);
+			return Integer.divideUnsigned(first, second);
 		}
 	}
 
@@ -920,6 +921,17 @@ public final class Module {
 					throw new TrapException("integer overflow");
 				}
 				return first / second;
+			} catch (ArithmeticException e) {
+				throw new TrapException("integer divide by zero", e);
+			}
+		}
+	}
+
+	final static class I64DivU extends I64TwoOperandsOperator {
+		@Override
+		long calculate(long first, long second) {
+			try {
+				return divideUnsigned(first, second);
 			} catch (ArithmeticException e) {
 				throw new TrapException("integer divide by zero", e);
 			}
