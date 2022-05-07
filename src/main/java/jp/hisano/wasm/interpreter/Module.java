@@ -8,11 +8,12 @@ import java.util.Map;
 
 import static java.lang.Double.isInfinite;
 import static java.lang.Double.isNaN;
-import static java.lang.Integer.*;
 import static java.lang.Integer.bitCount;
+import static java.lang.Integer.compareUnsigned;
 import static java.lang.Integer.numberOfLeadingZeros;
 import static java.lang.Integer.numberOfTrailingZeros;
 import static java.lang.Long.bitCount;
+import static java.lang.Long.compareUnsigned;
 import static java.lang.Long.divideUnsigned;
 import static java.lang.Long.numberOfLeadingZeros;
 import static java.lang.Long.numberOfTrailingZeros;
@@ -690,6 +691,12 @@ public final class Module {
 	final static class I64LtS extends I64TwoOperandsCmpOperator {
 		boolean calculate(long first, long second) {
 			return first < second;
+		}
+	}
+
+	final static class I64LtU extends I64TwoOperandsCmpOperator {
+		boolean calculate(long first, long second) {
+			return compareUnsigned(first, second) < 0;
 		}
 	}
 
