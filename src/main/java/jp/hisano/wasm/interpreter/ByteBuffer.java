@@ -77,7 +77,6 @@ final class ByteBuffer {
 	}
 
 	double readFloat64() {
-		// TODO -4が正しくデコードできない
 		return longBitsToDouble(readInt64());
 	}
 
@@ -90,7 +89,11 @@ final class ByteBuffer {
 	}
 
 	long readInt64() {
-		return (long) readUint8AsInt() | (readUint8AsInt() << 8) | (readUint8AsInt() << 16) | (readUint8AsInt() << 24) | (readUint8AsInt() << 32) | (readUint8AsInt() << 40) | (readUint8AsInt() << 48) | (readUint8AsInt() << 56);
+		return readUint8AsLong() | (readUint8AsLong() << 8) | (readUint8AsLong() << 16) | (readUint8AsLong() << 24) | (readUint8AsLong() << 32) | (readUint8AsLong() << 40) | (readUint8AsLong() << 48) | (readUint8AsLong() << 56);
+	}
+
+	private long readUint8AsLong() {
+		return readByte() & 0xffL;
 	}
 
 	int readUint8AsInt() {

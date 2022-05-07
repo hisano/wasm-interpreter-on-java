@@ -562,6 +562,33 @@ public final class Module {
 		}
 	}
 
+	final static class LocalSet implements Instruction {
+		private final int index;
+
+		LocalSet(int index) {
+			this.index = index;
+		}
+
+		@Override
+		public void execute(Frame frame) {
+			Value value = frame.getLocalVariable(index).getValue();
+			switch (value.getType()) {
+				case I32:
+					value.setI32(frame.pop().getI32());
+					break;
+				case I64:
+					value.setI64(frame.pop().getI64());
+					break;
+				case F32:
+					value.setF32(frame.pop().getF32());
+					break;
+				case F64:
+					value.setF64(frame.pop().getF64());
+					break;
+			}
+		}
+	}
+
 	final static class GlobalGet extends PushValue {
 		private final int index;
 
@@ -597,7 +624,7 @@ public final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			throw new UnsupportedOperationException();
+			frame.pushI64(value);
 		}
 	}
 
@@ -610,7 +637,7 @@ public final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			throw new UnsupportedOperationException();
+			frame.pushF32(value);
 		}
 	}
 
@@ -623,7 +650,7 @@ public final class Module {
 
 		@Override
 		public void execute(Frame frame) {
-			throw new UnsupportedOperationException();
+			frame.pushF64(value);
 		}
 	}
 
@@ -1481,6 +1508,46 @@ public final class Module {
 		@Override
 		double calculate(double first, double second) {
 			return copySign(first, second);
+		}
+	}
+
+	final static class F64ConvertI32S implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			frame.pushF64(frame.pop().getI32());
+		}
+	}
+
+	final static class F64ConvertI32U implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			frame.pushF64(fromUint32ToF64(frame.pop().getI32()));
+		}
+
+		private double fromUint32ToF64(int value) {
+			return value & 0xffffffffL;
+		}
+	}
+
+	final static class F64ConvertI64U implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			frame.pushF64(fromUint64ToF64(frame.pop().getI64()));
+		}
+
+		private double fromUint64ToF64(long value) {
+			double result = (double) (value & 0x7fffffffffffffffL);
+			if (value < 0) {
+				result += 0x1.0p63;
+			}
+			return result;
+		}
+	}
+
+	final static class F64PromoteF32 implements Instruction {
+		@Override
+		public void execute(Frame frame) {
+			frame.pushF64(frame.pop().getF32());
 		}
 	}
 

@@ -42,6 +42,9 @@ import jp.hisano.wasm.interpreter.Module.F64Abs;
 import jp.hisano.wasm.interpreter.Module.F64Add;
 import jp.hisano.wasm.interpreter.Module.F64Ceil;
 import jp.hisano.wasm.interpreter.Module.F64Const;
+import jp.hisano.wasm.interpreter.Module.F64ConvertI32S;
+import jp.hisano.wasm.interpreter.Module.F64ConvertI32U;
+import jp.hisano.wasm.interpreter.Module.F64ConvertI64U;
 import jp.hisano.wasm.interpreter.Module.F64Copysign;
 import jp.hisano.wasm.interpreter.Module.F64Div;
 import jp.hisano.wasm.interpreter.Module.F64Eq;
@@ -56,6 +59,7 @@ import jp.hisano.wasm.interpreter.Module.F64Mul;
 import jp.hisano.wasm.interpreter.Module.F64Ne;
 import jp.hisano.wasm.interpreter.Module.F64Nearest;
 import jp.hisano.wasm.interpreter.Module.F64Neg;
+import jp.hisano.wasm.interpreter.Module.F64PromoteF32;
 import jp.hisano.wasm.interpreter.Module.F64Sqrt;
 import jp.hisano.wasm.interpreter.Module.F64Sub;
 import jp.hisano.wasm.interpreter.Module.F64Trunc;
@@ -137,6 +141,7 @@ import jp.hisano.wasm.interpreter.Module.Instruction;
 import jp.hisano.wasm.interpreter.Module.Kind;
 import jp.hisano.wasm.interpreter.Module.Local;
 import jp.hisano.wasm.interpreter.Module.LocalGet;
+import jp.hisano.wasm.interpreter.Module.LocalSet;
 import jp.hisano.wasm.interpreter.Module.Loop;
 import jp.hisano.wasm.interpreter.Module.Nop;
 import jp.hisano.wasm.interpreter.Module.RefNull;
@@ -304,8 +309,7 @@ final class Parser {
 			case 0x20:
 				return new LocalGet(byteBuffer.readVaruint32());
 			case 0x21:
-				// TODO local.set命令
-				break;
+				return new LocalSet(byteBuffer.readVaruint32());
 			case 0x22:
 				// TODO local.tee命令
 				break;
@@ -654,20 +658,16 @@ final class Parser {
 				// TODO f32.demote_f64命令
 				break;
 			case 0xb7:
-				// TODO f64.convert_i32_s命令
-				break;
+				return new F64ConvertI32S();
 			case 0xb8:
-				// TODO f64.convert_i32_u命令
-				break;
+				return new F64ConvertI32U();
 			case 0xb9:
 				// TODO f64.convert_i64_s命令
 				break;
 			case 0xba:
-				// TODO f64.convert_i64_u命令
-				break;
+				return new F64ConvertI64U();
 			case 0xbb:
-				// TODO f64.promote_f32命令
-				break;
+				return new F64PromoteF32();
 			case 0xbc:
 				// TODO i32.reinterpret_f32命令
 				break;

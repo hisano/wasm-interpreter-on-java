@@ -118,6 +118,12 @@ class LocalGetTest {
 		invoke("type-mixed", 1, 2.2f, 3.3, 4, 5);
 	}
 
+	@DisplayName("read")
+	@Test
+	void read() throws IOException {
+		assertEquals(34.8, (double) invoke("read", 1L, 2f, 3.3, 4, 5));
+	}
+
 	private <T> T invoke(String functionName, Object... parameters) throws IOException {
 		return createInterpreter("spec/local_get/local_get.0.wasm").invoke(functionName, parameters);
 	}
