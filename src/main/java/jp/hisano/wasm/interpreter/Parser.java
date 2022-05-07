@@ -291,18 +291,99 @@ final class Parser {
 			case 0x11:
 				return new CallIndirect(module, byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
 
+			case 0x1a:
+				return new Drop();
+			case 0x1b:
+				// TODO select命令
+				break;
+
+			case 0x20:
+				return new LocalGet(byteBuffer.readVaruint32());
+			case 0x21:
+				// TODO local.set命令
+				break;
+			case 0x22:
+				// TODO local.tee命令
+				break;
+			case 0x23:
+				return new GlobalGet(byteBuffer.readVaruint32());
+			case 0x24:
+				// TODO global.set命令
+				break;
+
+			case 0x28:
+				// TODO i32.load命令
+				break;
+			case 0x29:
+				// TODO i64.load命令
+				break;
+			case 0x2a:
+				// TODO f32.load命令
+				break;
+			case 0x2b:
+				// TODO f64.load命令
+				break;
+
 			case 0x2c:
 				return new I32Load8S(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
 			case 0x2d:
 				return new I32Load8U(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
+			case 0x2f:
+				// TODO i32.load16_u命令
+				break;
 
-			case 0x1a:
-				return new Drop();
+			case 0x30:
+				// TODO i64.load8_s命令
+				break;
+			case 0x31:
+				// TODO i64.load8_u命令
+				break;
+			case 0x32:
+				// TODO i64.load16_s命令
+				break;
+			case 0x33:
+				// TODO i64.load16_u命令
+				break;
+			case 0x34:
+				// TODO i64.load32_s命令
+				break;
+			case 0x35:
+				// TODO i64.load32_u命令
+				break;
+			case 0x36:
+				// TODO i32.store命令
+				break;
+			case 0x37:
+				// TODO i64.store命令
+				break;
+			case 0x38:
+				// TODO f32.store命令
+				break;
+			case 0x39:
+				// TODO f64.store命令
+				break;
+			case 0x3a:
+				// TODO i32.store8命令
+				break;
+			case 0x3b:
+				// TODO i32.store16命令
+				break;
+			case 0x3c:
+				// TODO i64.store8命令
+				break;
+			case 0x3d:
+				// TODO i64.store16命令
+				break;
+			case 0x3e:
+				// TODO i64.store32命令
+				break;
 
-			case 0x20:
-				return new LocalGet(byteBuffer.readVaruint32());
-			case 0x23:
-				return new GlobalGet(byteBuffer.readVaruint32());
+			case 0x3f:
+				// TODO memory.size命令
+				break;
+			case 0x40:
+				// TODO memory.grow命令
+				break;
 
 			case 0x41:
 				return new I32Const(byteBuffer.readVarsint32());
@@ -520,6 +601,82 @@ final class Parser {
 			case 0xa6:
 				return new F64Copysign();
 
+			case 0xa7:
+				// TODO i32.wrap_i64命令
+				break;
+			case 0xa8:
+				// TODO i32.trunc_f32_s命令
+				break;
+			case 0xa9:
+				// TODO i32.trunc_f32_u命令
+				break;
+			case 0xaa:
+				// TODO i32.trunc_f64_s命令
+				break;
+			case 0xab:
+				// TODO i32.trunc_f64_u命令
+				break;
+			case 0xac:
+				// TODO i64.extend_i32_s命令
+				break;
+			case 0xad:
+				// TODO i64.extend_i32_u命令
+				break;
+			case 0xae:
+				// TODO i64.trunc_f32_s命令
+				break;
+			case 0xaf:
+				// TODO i64.trunc_f32_u命令
+				break;
+			case 0xb0:
+				// TODO i64.trunc_f64_s命令
+				break;
+			case 0xb1:
+				// TODO i64.trunc_f64_u命令
+				break;
+			case 0xb2:
+				// TODO f32.convert_i32_s命令
+				break;
+			case 0xb3:
+				// TODO f32.convert_i32_u命令
+				break;
+			case 0xb4:
+				// TODO f32.convert_i64_s命令
+				break;
+			case 0xb5:
+				// TODO f32.convert_i64_u命令
+				break;
+			case 0xb6:
+				// TODO f32.demote_f64命令
+				break;
+			case 0xb7:
+				// TODO f64.convert_i32_s命令
+				break;
+			case 0xb8:
+				// TODO f64.convert_i32_u命令
+				break;
+			case 0xb9:
+				// TODO f64.convert_i64_s命令
+				break;
+			case 0xba:
+				// TODO f64.convert_i64_u命令
+				break;
+			case 0xbb:
+				// TODO f64.promote_f32命令
+				break;
+			case 0xbc:
+				// TODO i32.reinterpret_f32命令
+				break;
+			case 0xbd:
+				// TODO i64.reinterpret_f64命令
+				break;
+			case 0xbe:
+				// TODO f32.reinterpret_i32命令
+				break;
+			case 0xbf:
+				// TODO f64.reinterpret_i64命令
+				break;
+
 			case 0xc0:
 				return new I32Extend8S();
 			case 0xc1:
@@ -534,9 +691,8 @@ final class Parser {
 
 			case 0xd0:
 				return new RefNull(toValueType(byteBuffer.readVarsint7()));
-			default:
-				throw new UnsupportedOperationException("not implemented instruction: instruction = 0x" + toHexString(instruction) + ", readIndex = " + byteBuffer.getReadIndex());
 		}
+		throw new UnsupportedOperationException("not implemented instruction: instruction = 0x" + toHexString(instruction) + ", readIndex = " + byteBuffer.getReadIndex());
 	}
 
 	private void parseImportSection(Module module) {
