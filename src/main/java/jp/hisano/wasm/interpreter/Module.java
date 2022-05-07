@@ -12,6 +12,7 @@ import static java.lang.Integer.*;
 import static java.lang.Long.divideUnsigned;
 import static java.lang.Long.remainderUnsigned;
 import static java.lang.Long.rotateLeft;
+import static java.lang.Long.rotateRight;
 import static java.lang.Math.*;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToExitBlock;
 import jp.hisano.wasm.interpreter.Frame.ExceptionToReturn;
@@ -856,7 +857,7 @@ public final class Module {
 	final static class I32Rotr extends I32TwoOperandsOperator {
 		@Override
 		int calculate(int first, int second) {
-			return rotateRight(first, second);
+			return Integer.rotateRight(first, second);
 		}
 	}
 
@@ -1008,6 +1009,13 @@ public final class Module {
 		@Override
 		long calculate(long first, long second) {
 			return rotateLeft(first, (int) second);
+		}
+	}
+
+	final static class I64Rotr extends I64TwoOperandsOperator {
+		@Override
+		long calculate(long first, long second) {
+			return rotateRight(first, (int) second);
 		}
 	}
 
