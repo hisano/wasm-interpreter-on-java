@@ -39,6 +39,26 @@ class ConversionsTest {
 		assertEquals(expectedResult, (long) invoke("i64.extend_i32_u", parameter));
 	}
 
+	@DisplayName("i32.wrap_i64")
+	@ParameterizedTest(name = "i32.wrap_i64({0}) = {1}")
+	@CsvSource({
+		"-1,-1",
+		"-100000,-100000",
+		"0x80000000,0x80000000",
+		"0xffffffff7fffffff,0x7fffffff",
+		"0xffffffff00000000,0x00000000",
+		"0xfffffffeffffffff,0xffffffff",
+		"0xffffffff00000001,0x00000001",
+		"0,0",
+		"1311768467463790320,0x9abcdef0",
+		"0x00000000ffffffff,0xffffffff",
+		"0x0000000100000000,0x00000000",
+		"0x0000000100000001,0x00000001",
+	})
+	void i32_wrap_i64(@WastValue long parameter, @WastValue int expectedResult) throws IOException {
+		assertEquals(expectedResult, (int) invoke("i32.wrap_i64", parameter));
+	}
+
 	private <T> T invoke(String functionName, Object... parameters) throws IOException {
 		return createInterpreter("spec/conversions/conversions.0.wasm").invoke(functionName, parameters);
 	}

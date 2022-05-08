@@ -102,6 +102,7 @@ import jp.hisano.wasm.interpreter.Module.I32Shl;
 import jp.hisano.wasm.interpreter.Module.I32ShrS;
 import jp.hisano.wasm.interpreter.Module.I32ShrU;
 import jp.hisano.wasm.interpreter.Module.I32Sub;
+import jp.hisano.wasm.interpreter.Module.I32WrapI64;
 import jp.hisano.wasm.interpreter.Module.I32Xor;
 import jp.hisano.wasm.interpreter.Module.I64Add;
 import jp.hisano.wasm.interpreter.Module.I64And;
@@ -612,8 +613,7 @@ final class Parser {
 				return new F64Copysign();
 
 			case 0xa7:
-				// TODO i32.wrap_i64命令
-				break;
+				return new I32WrapI64();
 			case 0xa8:
 				// TODO i32.trunc_f32_s命令
 				break;
