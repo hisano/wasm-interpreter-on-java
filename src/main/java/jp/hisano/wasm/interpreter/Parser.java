@@ -103,6 +103,7 @@ import jp.hisano.wasm.interpreter.Module.I32ShrS;
 import jp.hisano.wasm.interpreter.Module.I32ShrU;
 import jp.hisano.wasm.interpreter.Module.I32Sub;
 import jp.hisano.wasm.interpreter.Module.I32TruncF32S;
+import jp.hisano.wasm.interpreter.Module.I32TruncF32U;
 import jp.hisano.wasm.interpreter.Module.I32WrapI64;
 import jp.hisano.wasm.interpreter.Module.I32Xor;
 import jp.hisano.wasm.interpreter.Module.I64Add;
@@ -618,8 +619,7 @@ final class Parser {
 			case 0xa8:
 				return new I32TruncF32S();
 			case 0xa9:
-				// TODO i32.trunc_f32_u命令
-				break;
+				return new I32TruncF32U();
 			case 0xaa:
 				// TODO i32.trunc_f64_s命令
 				break;

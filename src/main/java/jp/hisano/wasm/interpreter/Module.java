@@ -1525,6 +1525,14 @@ public final class Module {
 		}
 	}
 
+	final static class I32TruncF32U extends PushValueInstruction {
+		@Override
+		Value getValue(Frame frame) {
+			// TODO Add unsigned f32 to i32 conversion
+			return new Value((int) frame.pop().getF32());
+		}
+	}
+
 	final static class I64ExtendI32S extends PushValueInstruction {
 		@Override
 		Value getValue(Frame frame) {
