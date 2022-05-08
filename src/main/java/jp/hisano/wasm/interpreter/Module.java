@@ -445,7 +445,7 @@ public final class Module {
 		}
 	}
 
-	static abstract class MemoryAccess extends PushValue {
+	static abstract class MemoryAccess extends PushValueInstruction {
 		private final int align;
 		private final int offset;
 
@@ -526,7 +526,7 @@ public final class Module {
 		}
 	}
 
-	private static abstract class PushValue implements Instruction {
+	private static abstract class PushValueInstruction implements Instruction {
 		@Override
 		public final void execute(Frame frame) {
 			Value value = getValue(frame);
@@ -549,7 +549,7 @@ public final class Module {
 		abstract Value getValue(Frame frame);
 	}
 
-	final static class LocalGet extends PushValue {
+	final static class LocalGet extends PushValueInstruction {
 		private final int index;
 
 		LocalGet(int index) {
@@ -589,7 +589,7 @@ public final class Module {
 		}
 	}
 
-	final static class GlobalGet extends PushValue {
+	final static class GlobalGet extends PushValueInstruction {
 		private final int index;
 
 		GlobalGet(int index) {
@@ -1511,10 +1511,17 @@ public final class Module {
 		}
 	}
 
-	final static class I64ExtendI32S extends PushValue {
+	final static class I64ExtendI32S extends PushValueInstruction {
 		@Override
 		Value getValue(Frame frame) {
 			return new Value((long) frame.pop().getI32());
+		}
+	}
+
+	final static class I64ExtendI32U extends PushValueInstruction {
+		@Override
+		Value getValue(Frame frame) {
+			return new Value(frame.pop().getI32() & 0xffffffffL);
 		}
 	}
 
