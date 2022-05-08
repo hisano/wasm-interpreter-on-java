@@ -59,6 +59,28 @@ class ConversionsTest {
 		assertEquals(expectedResult, (int) invoke("i32.wrap_i64", parameter));
 	}
 
+	@DisplayName("i32.trunc_f32_s")
+	@ParameterizedTest(name = "i32.trunc_f32_s({0}) = {1}")
+	@CsvSource({
+		"0.0,0",
+		"-0.0,0",
+		"0x1p-149,0",
+		"-0x1p-149,0",
+		"1.0,1",
+		"0x1.19999ap+0,1",
+		"1.5,1",
+		"-1.0,-1",
+		"-0x1.19999ap+0,-1",
+		"-1.5,-1",
+		"-1.9,-1",
+		"-2.0,-2",
+		"2147483520.0,2147483520",
+		"-2147483648.0,-2147483648",
+	})
+	void i32_trunc_f32_s(@WastValue float parameter, @WastValue int expectedResult) throws IOException {
+		assertEquals(expectedResult, (int) invoke("i32.trunc_f32_s", parameter));
+	}
+
 	private <T> T invoke(String functionName, Object... parameters) throws IOException {
 		return createInterpreter("spec/conversions/conversions.0.wasm").invoke(functionName, parameters);
 	}

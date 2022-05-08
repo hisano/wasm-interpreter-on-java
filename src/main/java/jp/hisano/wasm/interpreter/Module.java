@@ -1518,6 +1518,13 @@ public final class Module {
 		}
 	}
 
+	final static class I32TruncF32S extends PushValueInstruction {
+		@Override
+		Value getValue(Frame frame) {
+			return new Value((int) frame.pop().getF32());
+		}
+	}
+
 	final static class I64ExtendI32S extends PushValueInstruction {
 		@Override
 		Value getValue(Frame frame) {
