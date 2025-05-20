@@ -88,6 +88,7 @@ import jp.hisano.wasm.interpreter.Module.I32Load16S;
 import jp.hisano.wasm.interpreter.Module.I32Load16U;
 import jp.hisano.wasm.interpreter.Module.I32Load8S;
 import jp.hisano.wasm.interpreter.Module.I32Load8U;
+import jp.hisano.wasm.interpreter.Module.I64Load;
 import jp.hisano.wasm.interpreter.Module.I32LtS;
 import jp.hisano.wasm.interpreter.Module.I32LtU;
 import jp.hisano.wasm.interpreter.Module.I32Mul;
@@ -328,8 +329,7 @@ final class Parser {
 			case 0x28:
 				return new I32Load(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
 			case 0x29:
-				// TODO i64.load命令
-				break;
+				return new I64Load(byteBuffer.readVaruint32(), byteBuffer.readVaruint32());
 			case 0x2a:
 				// TODO f32.load命令
 				break;
@@ -738,10 +738,13 @@ final class Parser {
 			String name = byteBuffer.readUtf8();
 			int kind = byteBuffer.readVaruint7();
 			switch (kind) {
-				case 0x00:
+				case 0x00: // Function
 					module.addExportedFunction(name, byteBuffer.readVaruint32());
 					break;
-
+				case 0x02: // Memory
+					// TODO: Implement proper memory export handling. For now, just read and ignore the memory index.
+					byteBuffer.readVaruint32(); // Read memory_idx
+					break;
 				default:
 					throw new UnsupportedOperationException("not implemented kind (0x" + toHexString(kind) + ")");
 			}
