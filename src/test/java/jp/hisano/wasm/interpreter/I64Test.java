@@ -3,6 +3,7 @@ package jp.hisano.wasm.interpreter;
 import java.io.IOException;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -708,5 +709,21 @@ class I64Test {
 
 	private static <T> T invokeFunction(String functionName, Object... parameters) throws IOException {
 		return createInterpreter("spec/i64/i64.0.wasm").invoke(functionName, parameters);
+	}
+
+	@Test
+	@DisplayName("i64.load from i64_load_test.wasm")
+	void i64_load() throws IOException {
+		Interpreter interpreter = createInterpreter("spec/i64/i64_load_test.wasm");
+		long result = interpreter.invoke("test_i64_load");
+		assertEquals(0x123456789abcdef0L, result);
+	}
+
+	@Test
+	@DisplayName("i64.load with offset from i64_load_test.wasm")
+	void i64_load_offset() throws IOException {
+		Interpreter interpreter = createInterpreter("spec/i64/i64_load_test.wasm");
+		long result_offset = interpreter.invoke("test_i64_load_offset");
+		assertEquals(0xfedcba9876543210L, result_offset);
 	}
 }
