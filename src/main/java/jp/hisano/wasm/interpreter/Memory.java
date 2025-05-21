@@ -13,9 +13,24 @@ public final class Memory {
 		System.arraycopy(data, 0, this.data,offset,data.length);
 	}
 
-	int readInt32(int address) {
-		return readInt8(address) | (readUint8AsInt(address + 1) << 8) | (readUint8AsInt(address + 2) << 16) | (readUint8AsInt(address + 3) << 24);
-	}
+        int readInt32(int address) {
+                return readInt8(address) | (readUint8AsInt(address + 1) << 8) | (readUint8AsInt(address + 2) << 16) | (readUint8AsInt(address + 3) << 24);
+        }
+
+        long readInt64(int address) {
+                return readUint8AsLong(address)
+                        | (readUint8AsLong(address + 1) << 8)
+                        | (readUint8AsLong(address + 2) << 16)
+                        | (readUint8AsLong(address + 3) << 24)
+                        | (readUint8AsLong(address + 4) << 32)
+                        | (readUint8AsLong(address + 5) << 40)
+                        | (readUint8AsLong(address + 6) << 48)
+                        | (readUint8AsLong(address + 7) << 56);
+        }
+
+        private long readUint8AsLong(int address) {
+                return readInt8(address) & 0xffL;
+        }
 
 	int readInt16AsInt(int address) {
 		return (short) readUint16AsInt(address);

@@ -508,16 +508,27 @@ public final class Module {
 		}
 	}
 
-	final static class I32Load16U extends MemoryAccess {
-		I32Load16U(int align, int offset) {
-			super(align, offset);
-		}
+        final static class I32Load16U extends MemoryAccess {
+                I32Load16U(int align, int offset) {
+                        super(align, offset);
+                }
 
-		@Override
-		Value readMemory(Memory memory, int address) {
-			return new Value(memory.readUint16AsInt(address));
-		}
-	}
+                @Override
+                Value readMemory(Memory memory, int address) {
+                        return new Value(memory.readUint16AsInt(address));
+                }
+        }
+
+        final static class I64Load extends MemoryAccess {
+                I64Load(int align, int offset) {
+                        super(align, offset);
+                }
+
+                @Override
+                Value readMemory(Memory memory, int address) {
+                        return new Value(memory.readInt64(address));
+                }
+        }
 
 	final static class Drop implements Instruction {
 		@Override
