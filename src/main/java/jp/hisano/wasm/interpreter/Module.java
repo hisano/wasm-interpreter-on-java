@@ -475,6 +475,17 @@ public final class Module {
 		}
 	}
 
+	final static class I64Load extends MemoryAccess {
+		I64Load(int align, int offset) {
+			super(align, offset);
+		}
+
+		@Override
+		Value readMemory(Memory memory, int address) {
+			return new Value(memory.readInt64(address));
+		}
+	}
+
 	final static class I32Load8S extends MemoryAccess {
 		I32Load8S(int align, int offset) {
 			super(align, offset);

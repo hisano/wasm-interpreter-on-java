@@ -17,6 +17,10 @@ public final class Memory {
 		return readInt8(address) | (readUint8AsInt(address + 1) << 8) | (readUint8AsInt(address + 2) << 16) | (readUint8AsInt(address + 3) << 24);
 	}
 
+	long readInt64(int address) {
+		return (readInt32(address) & 0xFFFFFFFFL) | ((long)readInt32(address + 4) << 32);
+	}
+
 	int readInt16AsInt(int address) {
 		return (short) readUint16AsInt(address);
 	}
